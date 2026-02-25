@@ -1,41 +1,32 @@
+import styles from "./NavbarStyle.js";
 export default function Navbar() {
-   return (
-       <header style={styles.bar}>
-       <div style={styles.brand}>ERROR 404 Job Not Found:</div>
 
-        <nav style={styles.navLink}>
-            <a href="#signin" style={styles.link}>Sign In</a>
-            <a href="#createAccount" style={styles.link}>Create Account</a>
-            <a href="#jobs" style={styles.link}>Browse Job Opportunites</a>
-        </nav>
-        </header>
-    );
-    }
 
-    const styles = {
-    bar: {
-        backgroundColor: "#135379",
-        color: "white",
+  const onSignIn = (e) => {
+    e.preventDefault();
+    alert("Sign In clicked.");
+  };
 
-        display: "flex",
-        justifyContent: "space-between",
-        padding: "12px 22px",
-        width: "100%",
-    },
+  const onCreateAccount = (e) => {
+    e.preventDefault();
+    alert("Create Account clicked.");
+  };
 
-    brand: {
-        fontWeight: "bold",
-        color: "white",
-        fontSize: 20,
-    },
+  const onBrowseJobs = (e) => {
+    e.preventDefault();
+    alert("Browse Job Opportunities clicked.");
+  };
 
-    navLink: {
-        display: "flex",
-        gap: 90,
-    },
-
-    link: {
-        textDecoration: "none",
-        color:"#bfb8b9",
-    },
-};
+  return (
+    <nav style={styles.navbar}>
+        <div>
+            <span style={styles.logo}>JobSite</span>
+        </div>
+        <div style={styles.right}>
+            <a href="#" onClick={onSignIn} style={styles.link}>Sign In</a>
+            <a href="#" onClick={onCreateAccount} style={styles.link}>Create Account</a>
+            <a href="#" onClick={onBrowseJobs} style={styles.link}>Browse Job Opportunities</a>
+      </div>
+    </nav>
+  );
+}
