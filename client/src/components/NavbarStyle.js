@@ -21,7 +21,7 @@ export const styles = {
     link: {
         fontSize: "18px",
         fontWeight: 700,
-        color: "#7dd3fc", 
+        color: "#22ad68", 
         textDecoration: "none",
         padding: "10px", 
         borderRadius: "10px",
