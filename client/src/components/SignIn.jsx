@@ -1,11 +1,26 @@
-import "./App.css";
+export default function SignIn() {
 
-function Signin() {
+    function buttonClick() {
+            var x = document.getElementById("Sign In");
+            x.disabled = true;
+        }
 
     return (
-        
-     
-        <button type="button" id="Sign In">Sign In</button>
-    
-    
-    );}
+        // style={{}}
+        <div style="background-color:gray;">
+            <h3>Sign In </h3>
+            <div>
+                <div>
+                    <label>Username</label>
+                    <input type="text"/>
+                </div>
+
+                <div>
+                    <label>password</label>
+                    <input type="password"/>
+                </div>
+            </div>
+            <button type="button" id="Sign In" onClick={buttonClick}>Sign In</button>
+        </div>
+
+);}
