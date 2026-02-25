@@ -40,3 +40,20 @@
 .read-the-docs {
   color: #888;
 }
+.search-bar {
+  margin-top: 1rem;
+  padding: 0.5rem;
+  width: 100%;
+  max-width: 400px;
+  font-size: 1rem;
+}
+#salary-filter {
+  margin-top: 1rem;
+}
+#salary-filter-div {
+  display: flex;
+  justify-content: center;
+  color: #333;
+  max-width: 300px;
+  margin: 0 auto;
+}
