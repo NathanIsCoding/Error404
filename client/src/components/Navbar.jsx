@@ -1,4 +1,4 @@
-import styles from "./NavbarStyle.js";
+import {styles} from "./NavbarStyle.js";
 export default function Navbar() {
 
 
