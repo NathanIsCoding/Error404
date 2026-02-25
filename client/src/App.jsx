@@ -1,33 +1,36 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import Navbar from './components/Navbar'
+import FilterBlock from './components/FilterBlock'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [jobType, setJobType] = useState('')
+  const [industry, setIndustry] = useState('')
+  const [salary, setSalary] = useState(0)
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <main>
+        <aside>
+          <FilterBlock 
+            searchTerm={searchTerm}
+            onSearchChange={(e) => setSearchTerm(e.target.value)}
+            jobType={jobType}
+            onJobTypeChange={(e) => setJobType(e.target.value)}
+            industry={industry}
+            onIndustryChange={(e) => setIndustry(e.target.value)}
+            salary={salary}
+            onSalaryChange={(e) => setSalary(e.target.value)}
+          />
+        </aside>
+
+        <section>
+          <div className="job-listings-container">
+            {/* Job listings will go here */}
+          </div>
+        </section>
+      </main>
     </>
   )
 }
