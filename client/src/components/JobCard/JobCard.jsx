@@ -1,5 +1,5 @@
 import './JobCard.css';
-import reactLogo from '../assets/react.svg'
+import reactLogo from '../../assets/react.svg'
 
 export function JobCard() { 
 
