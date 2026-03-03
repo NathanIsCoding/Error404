@@ -27,7 +27,6 @@ function App() {
 
         <section>
           <div className="job-listings-container">
-            {/* Job listings will go here */}
           </div>
         </section>
       </main>
