@@ -1,0 +1,27 @@
+.card { 
+    background-color: white;
+    display: flex;
+    color: black;
+    padding: 20px;
+    width: 800px;
+    border-radius: 15px;
+}
+
+.cardImg { 
+    display: inline;
+    margin-right: 10px;
+}
+
+.textRow {
+    display: flex;
+    flex-direction:  column;
+}
+
+.expandButton {
+    margin-left: auto;
+}
+
+p { 
+    margin: 0;
+    text-align: left;
+}
