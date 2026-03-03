@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './App.css'
 import Navbar from './components/Navbar'
-import FilterBlock from './components/FilterBlock'
+import FilterBlock from './components/FilterBlock/FilterBlock'
 
 function App() {
   const [searchTerm, setSearchTerm] = useState('')
