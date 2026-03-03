@@ -1,7 +1,7 @@
 import './JobCard.css';
 import reactLogo from '../../assets/react.svg'
 
-export function JobCard() { 
+function JobCard() { 
 
     function clicked(){ 
         alert('CLICKED!');
@@ -20,4 +20,6 @@ export function JobCard() {
     );
 
 }
+
+export default JobCard;
 

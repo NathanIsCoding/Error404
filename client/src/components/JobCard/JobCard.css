@@ -3,6 +3,7 @@
     display: flex;
     color: black;
     padding: 20px;
+    margin-bottom: 20px;
     width: 800px;
     border-radius: 15px;
 }

@@ -1,5 +1,7 @@
 import React from "react";
-import SearchBar from "../SearchBar";
+import SearchBar from "./SearchBar/SearchBar.jsx";
+import '../FilterBlock/FilterBlock.css';
+
 function FilterBlock(props) {
   return (
     <div className="filter-block">

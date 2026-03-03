@@ -1,0 +1,32 @@
+.navbar {
+    display: "flex";
+    justify-content: "space-between";
+    align-items: "center";
+    padding: "18px 28px";
+    background-color: white;
+}
+
+.logo {
+    font-weight: 800;
+    font-size: "22px";
+    color: black;
+    letter-spacing: "0.5px";
+    padding: "10px";
+}
+
+.right {
+    display: "flex";
+    gap: "22px";
+    align-items: "center";
+}
+
+.link {
+    font-size: "18px";
+    font-weight: 700;
+    color: "#22ad68"; 
+    text-decoration: "none";
+    padding: "10px";
+    border-radius: "10px";
+    border: "1px solid #2b2b2b";
+    background-color: "#1a1a1a";
+}
