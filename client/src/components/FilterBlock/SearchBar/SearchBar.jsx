@@ -1,4 +1,6 @@
+import '../SearchBar/SearchBar.css';
 import React from "react";
+
 const SearchBar = ({ searchTerm, onSearchChange }) => {
   return (
     <div className="search-bar">

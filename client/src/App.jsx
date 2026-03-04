@@ -1,8 +1,9 @@
-import Navbar from "./components/Navbar";
 import { useState } from 'react'
 import './App.css'
-import Navbar from './components/Navbar'
-import FilterBlock from './components/FilterBlock/FilterBlock'
+import Navbar from "./components/Navbar/Navbar.jsx";
+import FilterBlock from './components/FilterBlock/FilterBlock.jsx'
+import JobCard from './components/JobCard/JobCard.jsx'
+
 
 function App() {
   const [searchTerm, setSearchTerm] = useState('')
@@ -13,23 +14,30 @@ function App() {
   return (
     <>
       <main>
-        <aside>
-          <FilterBlock 
-            searchTerm={searchTerm}
-            onSearchChange={(e) => setSearchTerm(e.target.value)}
-            jobType={jobType}
-            onJobTypeChange={(e) => setJobType(e.target.value)}
-            industry={industry}
-            onIndustryChange={(e) => setIndustry(e.target.value)}
-            salary={salary}
-            onSalaryChange={(e) => setSalary(e.target.value)}
-          />
-        </aside>
-
-        <section>
-          <div className="job-listings-container">
+        <Navbar/>
+        <div className='flex'>
+          <div>
+            <FilterBlock 
+              searchTerm={searchTerm}
+              onSearchChange={(e) => setSearchTerm(e.target.value)}
+              jobType={jobType}
+              onJobTypeChange={(e) => setJobType(e.target.value)}
+              industry={industry}
+              onIndustryChange={(e) => setIndustry(e.target.value)}
+              salary={salary}
+              onSalaryChange={(e) => setSalary(e.target.value)}
+            />
           </div>
-        </section>
+        
+          <div className="job-listings-container">
+            <JobCard/>
+            <JobCard/>
+            <JobCard/>
+          </div>
+
+        </div>
+        
+
       </main>
     </>
   )
