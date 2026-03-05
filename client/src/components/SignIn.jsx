@@ -1,6 +1,4 @@
-import "./App.css";
-
-
+import './SignIn.css';
 
 function Signin() {
 
@@ -13,16 +11,16 @@ function Signin() {
         
      
         
-        <div style="background-color:gray;">
+        <div className='slot'>
             <h3>Sign In </h3>
             <div>
                 <div>
-                    <label style="color:blue;">Username</label>
+                    <label className='username'>Username</label>
                     <input type="text"/>
                 </div>
                 
                 <div>
-                    <label style="color:red;">password</label>
+                    <label className='password'>password</label>
                     <input type="password"/>
                 </div>
             </div>
@@ -30,3 +28,5 @@ function Signin() {
         </div>
         
     );}
+
+    export default Signin;
