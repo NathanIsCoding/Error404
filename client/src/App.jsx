@@ -13,10 +13,10 @@ function App() {
 
   return (
     <>
+     <Navbar/>
       <main>
-        <Navbar/>
-        <div className='flex'>
-          <div>
+        <div className='flex justify-center'>
+          <div className='ml-5 grow-1'>
             <FilterBlock 
               searchTerm={searchTerm}
               onSearchChange={(e) => setSearchTerm(e.target.value)}
@@ -29,7 +29,7 @@ function App() {
             />
           </div>
         
-          <div className="job-listings-container">
+          <div className="job-listings-container mx-5 grow-2">
             <JobCard/>
             <JobCard/>
             <JobCard/>

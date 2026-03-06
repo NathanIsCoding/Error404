@@ -19,14 +19,14 @@ export default function Navbar() {
   };
 
   return (
-    <nav className='navbar'>
+    <nav className='bg-primary navbar'>
         <div>
             <span className='logo'>JobSite</span>
         </div>
         <div className='right'>
-            <a href="#" onClick={onSignIn} className='link'>Sign In</a>
-            <a href="#" onClick={onCreateAccount} className='link'>Create Account</a>
-            <a href="#" onClick={onBrowseJobs} className='link'>Browse Job Opportunities</a>
+            <a href="#" onClick={onSignIn} className='text-black link'>Sign In</a>
+            <a href="#" onClick={onCreateAccount} className='text-black link'>Create Account</a>
+            <a href="#" onClick={onBrowseJobs} className='text-black link'>Browse Job Opportunities</a>
       </div>
     </nav>
   );
