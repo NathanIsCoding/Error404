@@ -1,16 +1,8 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
 .card {
   padding: 2em;
 }
 
-.search-bar {
-  margin-top: 1rem;
+.search-bar { 
   padding: 0.5rem;
   width: 100%;
   max-width: 400px;
@@ -25,12 +17,4 @@
   color: #333;
   max-width: 300px;
   margin: 0 auto;
-}
-
-.flex{ 
-  display: flex;
-}
-
-.job-listings-container{
-  margin: 20px 20px;
 }

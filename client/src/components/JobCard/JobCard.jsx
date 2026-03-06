@@ -8,7 +8,7 @@ function JobCard() {
     }
     
     return(
-        <div className='card'>
+        <div className='bg-primary card'>
             <img src={reactLogo} className='cardImg'></img>
             <div className='textRow'>
                 <p className='text'>Company Title - Position Name</p>

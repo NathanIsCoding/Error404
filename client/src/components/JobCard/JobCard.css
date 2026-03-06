@@ -1,10 +1,8 @@
 .card { 
-    background-color: white;
     display: flex;
-    color: black;
     padding: 20px;
     margin-bottom: 20px;
-    width: 800px;
+    min-width: 800px;
     border-radius: 15px;
 }
 
@@ -19,7 +17,7 @@
 }
 
 .expandButton {
-    margin-left: auto;
+    margin-left: auto;  
 }
 
 p { 
