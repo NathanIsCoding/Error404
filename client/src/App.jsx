@@ -1,9 +1,10 @@
 import { useState } from 'react'
+
 import './App.css'
 import Navbar from "./components/Navbar/Navbar.jsx";
 import FilterBlock from './components/FilterBlock/FilterBlock.jsx'
 import JobCard from './components/JobCard/JobCard.jsx'
-
+import SignIn from './components/SignIn/SignIn.jsx'
 
 function App() {
   const [searchTerm, setSearchTerm] = useState('')
@@ -13,7 +14,7 @@ function App() {
 
   return (
     <>
-     <Navbar/>
+      <Navbar/>
       <main>
         <div className='flex justify-center'>
           <div className='ml-5 grow-1'>
@@ -33,6 +34,10 @@ function App() {
             <JobCard/>
             <JobCard/>
             <JobCard/>
+          </div>
+
+          <div className="signin-container mx-5">
+            <SignIn/>
           </div>
 
         </div>
