@@ -5,16 +5,18 @@ import Navbar from "./components/Navbar/Navbar.jsx";
 import FilterBlock from './components/FilterBlock/FilterBlock.jsx'
 import JobCard from './components/JobCard/JobCard.jsx'
 import SignIn from './components/SignIn/SignIn.jsx'
+import CreateAccount from './components/CreateAccount/CreateAccount.jsx'
 
 function App() {
   const [searchTerm, setSearchTerm] = useState('')
   const [jobType, setJobType] = useState('')
   const [industry, setIndustry] = useState('')
   const [salary, setSalary] = useState(0)
+  const [showCreateAccount, setShowCreateAccount] = useState(false)
 
   return (
     <>
-      <Navbar/>
+      <Navbar onCreateAccount={() => setShowCreateAccount(true)} />
       <main>
         <div className='flex justify-center'>
           <div className='ml-5 grow-1'>
@@ -44,6 +46,7 @@ function App() {
         
 
       </main>
+      {showCreateAccount && <CreateAccount onClose={() => setShowCreateAccount(false)} />}
     </>
   )
 }
