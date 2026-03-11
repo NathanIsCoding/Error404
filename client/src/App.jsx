@@ -29,6 +29,7 @@ function App() {
               onIndustryChange={(e) => setIndustry(e.target.value)}
               salary={salary}
               onSalaryChange={(e) => setSalary(e.target.value)}
+              onDataReceived={(data) => console.log("Received from child:", data)}
             />
           </div>
         

@@ -1,11 +1,42 @@
-import React from "react";
-import SearchBar from "./SearchBar/SearchBar.jsx";
+import React, { useState } from "react";
 import '../FilterBlock/FilterBlock.css';
 
 function FilterBlock(props) {
+  const [searchTerm, setSearchTerm] = useState('');
+
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch(`http://localhost:3000/api/search?q=${encodeURIComponent(searchTerm)}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        //Assign data to props for handling in parent
+        props.onDataReceived(data, `Success: ${data.message}`);
+      } 
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
   return (
     <div className="bg-primary filter-block">
-      <SearchBar searchTerm={props.searchTerm} onSearchChange={(e) => props.onSearchChange(e)} />
+      <form>
+         <div className="search-bar">
+            <input 
+              className='rounded-full w-100'
+              type="text"
+              placeholder="Search..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
         <br />
         <div>
            <div>
@@ -46,8 +77,14 @@ function FilterBlock(props) {
                 onChange={(e) => props.onSalaryChange(e)} 
               />
             </div>
-
+            <div>
+              <button onClick={handleSubmit}>
+                Submit
+              </button>
+            </div>
         </div>
+
+      </form>
     </div>
   );
 }

@@ -16,6 +16,7 @@ mongoose.connect(process.env.MONGODB_URI).then(() => {
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var filterRouter = require('./routes/filter')
 
 var app = express();
 
@@ -73,6 +74,26 @@ app.post('/api/accounts', (req, res) => {
       res.json({ status: 'ok', message: 'Account created successfully', account: newAccount });
     });
   });
+});
+
+// app.post('api/submit', (req, res) => {
+//   const { name } = req.body;
+//     res.json({ 
+//         message: "Successfully received submission for: ${name}",
+//         receivedData: { name }
+//     });
+// });
+
+app.get('/api/search', (req, res) => {
+    const searchTerm = req.query.q?.toLowerCase();
+    const rawData = fs.readFileSync('./public/javascripts/filler.js');
+    const items = JSON.parse(rawData);
+    const results = items.filter(item => 
+        item.title.toLowerCase().includes(searchTerm),  
+        item.category.toLowerCase().includes(searchTerm)
+    );
+
+    res.json(results);
 });
 
 // catch 404 and forward to error handler
