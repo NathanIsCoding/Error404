@@ -16,7 +16,7 @@ mongoose.connect(process.env.MONGODB_URI).then(() => {
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var filterRouter = require('./routes/filter')
+var filterRouter = require('./routes/filter');
 
 var app = express();
 
@@ -76,22 +76,18 @@ app.post('/api/accounts', (req, res) => {
   });
 });
 
-// app.post('api/submit', (req, res) => {
-//   const { name } = req.body;
-//     res.json({ 
-//         message: "Successfully received submission for: ${name}",
-//         receivedData: { name }
-//     });
-// });
-
 app.get('/api/search', (req, res) => {
+    const fs = require('fs');
     const searchTerm = req.query.q?.toLowerCase();
-    const rawData = fs.readFileSync('./public/javascripts/filler.js');
+    const filePath = path.join(__dirname, 'public', 'jobs.json');
+    const rawData = fs.readFileSync(filePath, 'utf8');
     const items = JSON.parse(rawData);
-    const results = items.filter(item => 
-        item.title.toLowerCase().includes(searchTerm),  
-        item.category.toLowerCase().includes(searchTerm)
+    console.log(items);
+    const results = items.filter(item =>
+        item.company.toLowerCase().includes(searchTerm)
     );
+
+    console.log(results);
 
     res.json(results);
 });
@@ -109,7 +105,7 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.render('error', { title: 'Error' });
 });
 
 module.exports = app;

@@ -13,6 +13,7 @@ function App() {
   const [industry, setIndustry] = useState('')
   const [salary, setSalary] = useState(0)
   const [showCreateAccount, setShowCreateAccount] = useState(false)
+  const [jobs, setJobs] = useState([])
 
   return (
     <>
@@ -29,14 +30,14 @@ function App() {
               onIndustryChange={(e) => setIndustry(e.target.value)}
               salary={salary}
               onSalaryChange={(e) => setSalary(e.target.value)}
-              onDataReceived={(data) => console.log("Received from child:", data)}
+              onDataReceived={(data) => setJobs(Array.isArray(data) ? data : [])}
             />
           </div>
         
           <div className="job-listings-container mx-5 grow-2">
-            <JobCard/>
-            <JobCard/>
-            <JobCard/>
+            {jobs.map((job, index) => (
+              <JobCard key={index} job={job} />
+            ))}
           </div>
 
           <div className="signin-container mx-5">

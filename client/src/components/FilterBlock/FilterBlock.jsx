@@ -14,14 +14,15 @@ function FilterBlock(props) {
         headers: { 'Content-Type': 'application/json' }
       });
 
-      const data = await response.json();
-      if (response.ok) {
-        //Assign data to props for handling in parent
-        props.onDataReceived(data, `Success: ${data.message}`);
-      } 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
+      const data = await response.json();
+      props.onDataReceived(data, `Success: ${data.message || 'Search completed'}`);
     } catch (error) {
-      console.error(error);
+      console.error('Search error:', error);
+      props.onDataReceived([], `Error: ${error.message}`);
     }
   };
   
