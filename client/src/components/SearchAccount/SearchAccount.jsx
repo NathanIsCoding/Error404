@@ -16,13 +16,8 @@ const formatCreatedAt = (createdAt) => {
 };
 
 const SearchAccount = ({ onClose }) => {
-  // Stores what the user types into the input box
   const [username, setUsername] = useState('');
-
-  // Stores the account returned from the server
   const [searchResult, setSearchResult] = useState(null);
-
-  // Stores any error message
   const [errorMessage, setErrorMessage] = useState('');
 
   const handleSubmit = async (e) => {
@@ -49,18 +44,14 @@ const SearchAccount = ({ onClose }) => {
       const data = await response.json();
 
       if (response.ok) {
-        // Save returned account info into state
         setSearchResult(data.account);
       } else {
-        // Show backend error if one exists
         setErrorMessage(data.error || 'Account not found');
       }
     } catch (error) {
       console.error('Error fetching account:', error);
       setErrorMessage('Unable to connect to server');
     }
-
-    // Optional: clear the input after search
     setUsername('');
   };
 
