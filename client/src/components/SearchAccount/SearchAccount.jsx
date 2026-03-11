@@ -1,12 +1,66 @@
 import React, { useState } from 'react';
 import '../CreateAccount/CreateAccount.css';
 
+const formatCreatedAt = (createdAt) => {
+  if (!createdAt) {
+    return 'Unknown';
+  }
+
+  const parsedDate = new Date(createdAt);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return createdAt;
+  }
+
+  return parsedDate.toLocaleString();
+};
+
 const SearchAccount = ({ onClose }) => {
+  // Stores what the user types into the input box
   const [username, setUsername] = useState('');
 
-  const handleSubmit = (e) => {
+  // Stores the account returned from the server
+  const [searchResult, setSearchResult] = useState(null);
+
+  // Stores any error message
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(username);
+
+    const trimmedUsername = username.trim();
+
+    if (!trimmedUsername) {
+      setErrorMessage('Please enter a username');
+      setSearchResult(null);
+      return;
+    }
+
+    // Clear old messages/results before starting a new search
+    setErrorMessage('');
+    setSearchResult(null);
+
+    try {
+      // Send a GET request to the backend
+      const response = await fetch(`http://localhost:3000/api/accounts/${encodeURIComponent(trimmedUsername)}`, {
+        method: 'GET',
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Save returned account info into state
+        setSearchResult(data.account);
+      } else {
+        // Show backend error if one exists
+        setErrorMessage(data.error || 'Account not found');
+      }
+    } catch (error) {
+      console.error('Error fetching account:', error);
+      setErrorMessage('Unable to connect to server');
+    }
+
+    // Optional: clear the input after search
     setUsername('');
   };
 
@@ -14,7 +68,9 @@ const SearchAccount = ({ onClose }) => {
     <div className="create-account-modal">
       <div className="create-account">
         <button onClick={onClose} className="close-button">X</button>
-        <h1>Search Accounts</h1>
+
+        <h1>Search Account</h1>
+
         <form onSubmit={handleSubmit}>
           <label htmlFor="username">Username:</label>
           <input
@@ -25,9 +81,38 @@ const SearchAccount = ({ onClose }) => {
             onChange={(e) => setUsername(e.target.value)}
             required
           />
+
           <br />
           <button type="submit">Search</button>
         </form>
+
+        {searchResult && (
+          <div
+            style={{
+              marginTop: '20px',
+              padding: '10px',
+              backgroundColor: '#f0f0f0',
+              borderRadius: '5px'
+            }}
+          >
+            <p><strong>Username:</strong> {searchResult.username}</p>
+            <p><strong>Email:</strong> {searchResult.email}</p>
+            <p><strong>Created At:</strong> {formatCreatedAt(searchResult.createdAt)}</p>
+          </div>
+        )}
+
+        {errorMessage && (
+          <p
+            style={{
+              color: 'red',
+              marginTop: '11px',
+              fontSize: '16px',
+              textAlign: 'center'
+            }}
+          >
+            {errorMessage}
+          </p>
+        )}
       </div>
     </div>
   );

@@ -18,7 +18,10 @@ function App() {
 
   return (
     <>
-      <Navbar onCreateAccount={() => setShowCreateAccount(true)} onSearchAccount={() => setShowSearchAccount(true)} />
+      <Navbar
+        onCreateAccount={() => setShowCreateAccount(true)}
+        onSearchAccount={() => setShowSearchAccount(true)}
+      />
       <main>
         <div className='flex justify-center'>
           <div className='ml-5 grow-1'>
