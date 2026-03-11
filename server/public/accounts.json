@@ -1,8 +1,50 @@
 [
   {
-    "username": "user4",
-    "email": "email@gmail.com4",
-    "password": "434444444",
-    "createdAt": "2026-03-11T00:35:59.568Z"
+    "username": "first_user123",
+    "email": "email@gmail.com",
+    "password": "pw",
+    "createdAt": "2026-03-10T22:20:03.142-07:00"
+  },
+  {
+    "username": "second_user_456",
+    "email": "email2@gmail.com",
+    "password": "pw22",
+    "createdAt": "2026-03-10T22:21:28.101-07:00"
+  },
+  {
+    "username": "joe99",
+    "email": "em2342@gmail.com",
+    "password": "23423234",
+    "createdAt": "2026-03-10T22:21:43.094-07:00"
+  },
+  {
+    "username": "bobby",
+    "email": "123123sdfa@gmail.com",
+    "password": "232434fadsda",
+    "createdAt": "2026-03-10T22:21:54.724-07:00"
+  },
+  {
+    "username": "John",
+    "email": "b@gmail.com",
+    "password": "pwpwpwpwpwpw",
+    "createdAt": "2026-03-10T22:22:12.647-07:00"
+  },
+  {
+    "username": "Numbers",
+    "email": "ch@gmail.com",
+    "password": "pasword",
+    "createdAt": "2026-03-10T22:22:30.072-07:00"
+  },
+  {
+    "username": "England123",
+    "email": "london@gmail.com",
+    "password": "london123",
+    "createdAt": "2026-03-10T22:22:55.748-07:00"
+  },
+  {
+    "username": "number-8",
+    "email": "8@gmail.com",
+    "password": "mypassword",
+    "createdAt": "2026-03-10T22:23:20.814-07:00"
   }
 ]
