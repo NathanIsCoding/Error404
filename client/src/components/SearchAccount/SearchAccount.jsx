@@ -16,17 +16,17 @@ const formatCreatedAt = (createdAt) => {
 };
 
 const SearchAccount = ({ onClose }) => {
-  const [username, setUsername] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [searchResult, setSearchResult] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const trimmedUsername = username.trim();
+    const trimmedSearchTerm = searchTerm.trim();
 
-    if (!trimmedUsername) {
-      setErrorMessage('Please enter a username');
+    if (!trimmedSearchTerm) {
+      setErrorMessage('Please enter a username or email');
       setSearchResult(null);
       return;
     }
@@ -37,7 +37,7 @@ const SearchAccount = ({ onClose }) => {
 
     try {
       // Send a GET request to the backend
-      const response = await fetch(`http://localhost:3000/api/accounts/${encodeURIComponent(trimmedUsername)}`, {
+      const response = await fetch(`http://localhost:3000/api/accounts/${encodeURIComponent(trimmedSearchTerm)}`, {
         method: 'GET',
       });
 
@@ -52,7 +52,7 @@ const SearchAccount = ({ onClose }) => {
       console.error('Error fetching account:', error);
       setErrorMessage('Unable to connect to server');
     }
-    setUsername('');
+    setSearchTerm('');
   };
 
   return (
@@ -63,13 +63,13 @@ const SearchAccount = ({ onClose }) => {
         <h1>Search Account</h1>
 
         <form onSubmit={handleSubmit}>
-          <label htmlFor="username">Username:</label>
+          <label htmlFor="searchTerm">Username or Email:</label>
           <input
             type="text"
-            id="username"
-            name="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            id="searchTerm"
+            name="searchTerm"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             required
           />
 
