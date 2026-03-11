@@ -5,12 +5,27 @@ const CreateAccount = ({ onClose }) => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [responseMessage, setResponseMessage] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const account = { username, email, password };
-    console.log('New account created:', JSON.stringify(account, null, 2));
-    onClose();
+    try {
+      const response = await fetch('http://localhost:3000/api/accounts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(account)
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setResponseMessage(`Success: ${data.message}`);
+      } else {
+        setResponseMessage(`Error: ${data.error}`);
+      }
+    } catch (error) {
+      console.error(error);
+      setResponseMessage('Error: Unable to connect to server');
+    }
   };
 
   return (
@@ -51,6 +66,7 @@ const CreateAccount = ({ onClose }) => {
           <br />
           <button type="submit">Create Account</button>
         </form>
+        {responseMessage && <p style={{ color: responseMessage.startsWith('Success') ? 'green' : 'red', marginTop: '11px', fontSize: '30px',textAlign: 'center' }}>{responseMessage}</p>}
       </div>
     </div>
   );
