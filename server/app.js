@@ -16,7 +16,7 @@ mongoose.connect(process.env.MONGODB_URI).then(() => {
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var filterRouter = require('./routes/filter');
+const fs = require('fs');
 
 var app = express();
 
@@ -35,7 +35,6 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
 app.post('/api/accounts', (req, res) => {
-  const fs = require('fs');
   const newAccount = req.body;
   // helper that returns the current moment formatted with a fixed
   // "-07:00" offset.  We subtract seven hours from UTC and then
@@ -76,8 +75,15 @@ app.post('/api/accounts', (req, res) => {
   });
 });
 
+app.get('/api/loadJobs',(req, res) => {
+  const filePath = path.join(__dirname, 'public', 'jobs.json');
+  const rawData = fs.readFileSync(filePath, 'utf8');
+  const results = JSON.parse(rawData);
+
+  res.json(results);
+});
+
 app.get('/api/search', (req, res) => {
-    const fs = require('fs');
     const searchTerm = req.query.q?.toLowerCase();
     const filePath = path.join(__dirname, 'public', 'jobs.json');
     const rawData = fs.readFileSync(filePath, 'utf8');
