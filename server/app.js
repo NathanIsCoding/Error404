@@ -36,6 +36,10 @@ app.use('/users', usersRouter);
 app.post('/api/accounts', (req, res) => {
   const fs = require('fs');
   const newAccount = req.body;
+  // ensure there's a timestamp (in case client doesn't send one)
+  if (!newAccount.createdAt) {
+    newAccount.createdAt = new Date().toISOString();
+  }
   const filePath = path.join(__dirname, 'public', 'accounts.json');
   fs.readFile(filePath, 'utf8', (err, data) => {
     if (err) {

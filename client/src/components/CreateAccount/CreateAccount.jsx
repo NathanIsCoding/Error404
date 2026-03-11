@@ -9,7 +9,8 @@ const CreateAccount = ({ onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const account = { username, email, password };
+    // include a timestamp so server can record when the account was created
+    const account = { username, email, password, createdAt: new Date().toISOString() };
     try {
       const response = await fetch('http://localhost:3000/api/accounts', {
         method: 'POST',
