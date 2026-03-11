@@ -1,16 +1,16 @@
 import React from 'react';
 import '../Navbar/Navbar.css'
 
-export default function Navbar() {
+export default function Navbar({ onCreateAccount }) {
 
   const onSignIn = (e) => {
     e.preventDefault();
     alert("Sign In clicked.");
   };
 
-  const onCreateAccount = (e) => {
+  const handleCreateAccount = (e) => {
     e.preventDefault();
-    alert("Create Account clicked.");
+    if (onCreateAccount) onCreateAccount();
   };
 
   const onBrowseJobs = (e) => {
@@ -25,7 +25,7 @@ export default function Navbar() {
         </div>
         <div className='right'>
             <a href="#" onClick={onSignIn} className='text-black link'>Sign In</a>
-            <a href="#" onClick={onCreateAccount} className='text-black link'>Create Account</a>
+            <a href="#" onClick={handleCreateAccount} className='text-black link'>Create Account</a>
             <a href="#" onClick={onBrowseJobs} className='text-black link'>Browse Job Opportunities</a>
       </div>
     </nav>

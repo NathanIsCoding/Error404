@@ -4,6 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var mongoose = require('mongoose');
+var cors = require('cors');
 require('dotenv').config();
 
 // connect to mongodb
@@ -26,10 +27,41 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+
+app.post('/api/accounts', (req, res) => {
+  const fs = require('fs');
+  const newAccount = req.body;
+  // ensure there's a timestamp (in case client doesn't send one)
+  if (!newAccount.createdAt) {
+    newAccount.createdAt = new Date().toISOString();
+  }
+  const filePath = path.join(__dirname, 'public', 'accounts.json');
+  fs.readFile(filePath, 'utf8', (err, data) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Error reading file' });
+    }
+    let accounts = [];
+    try {
+      accounts = JSON.parse(data);
+    } catch (e) {
+      accounts = [];
+    }
+    accounts.push(newAccount);
+    fs.writeFile(filePath, JSON.stringify(accounts, null, 2), (err) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Error writing file' });
+      }
+      res.json({ status: 'ok', message: 'Account created successfully', account: newAccount });
+    });
+  });
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
