@@ -75,6 +75,7 @@ app.get('/api/accounts/:lookup', (req, res) => {
         username: matchingAccount.username,
         email: matchingAccount.email,
         createdAt: matchingAccount.createdAt,
+        isAdmin: Boolean(matchingAccount.isAdmin),
       },
     });
   });
@@ -98,6 +99,8 @@ app.post('/api/accounts', (req, res) => {
   // always assign our canonical timestamp regardless of what the client
   // sent (if anything), so that every account has a UTC-7:00 creation time
   newAccount.createdAt = getUtcMinus7Timestamp();
+  // all new accounts are non-admin by default
+  newAccount.isAdmin = false;
   const filePath = path.join(__dirname, 'public', 'accounts.json');
   fs.readFile(filePath, 'utf8', (err, data) => {
     if (err) {
