@@ -34,6 +34,52 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
+app.get('/api/accounts/:lookup', (req, res) => {
+  const fs = require('fs');
+  const filePath = path.join(__dirname, 'public', 'accounts.json');
+  const requestedLookup = req.params.lookup.trim();
+  const normalizedLookup = requestedLookup.toLowerCase();
+  const isEmailLookup = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(requestedLookup);
+
+  fs.readFile(filePath, 'utf8', (err, data) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Error reading file' });
+    }
+
+    let accounts = [];
+
+    try {
+      accounts = JSON.parse(data);
+    } catch (parseError) {
+      console.error(parseError);
+      return res.status(500).json({ error: 'Error parsing accounts data' });
+    }
+
+    const matchingAccount = accounts.find((account) => {
+      if (isEmailLookup) {
+        return typeof account.email === 'string' &&
+          account.email.trim().toLowerCase() === normalizedLookup;
+      }
+
+      return typeof account.username === 'string' &&
+        account.username.trim().toLowerCase() === normalizedLookup;
+    });
+
+    if (!matchingAccount) {
+      return res.status(404).json({ error: 'Account not found' });
+    }
+
+    return res.json({
+      account: {
+        username: matchingAccount.username,
+        email: matchingAccount.email,
+        createdAt: matchingAccount.createdAt,
+      },
+    });
+  });
+});
+
 app.post('/api/accounts', (req, res) => {
   const newAccount = req.body;
   // helper that returns the current moment formatted with a fixed

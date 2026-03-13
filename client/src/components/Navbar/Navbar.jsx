@@ -1,7 +1,7 @@
 import React from 'react';
 import '../Navbar/Navbar.css'
 
-export default function Navbar({ onCreateAccount }) {
+export default function Navbar({ onCreateAccount, onSearchAccount }) {
 
   const onSignIn = (e) => {
     e.preventDefault();
@@ -11,6 +11,11 @@ export default function Navbar({ onCreateAccount }) {
   const handleCreateAccount = (e) => {
     e.preventDefault();
     if (onCreateAccount) onCreateAccount();
+  };
+
+  const handleSearchAccount = (e) => {
+    e.preventDefault();
+    if (onSearchAccount) onSearchAccount();
   };
 
   const onBrowseJobs = (e) => {
@@ -26,6 +31,7 @@ export default function Navbar({ onCreateAccount }) {
         <div className='right'>
             <a href="#" onClick={onSignIn} className='text-black link'>Sign In</a>
             <a href="#" onClick={handleCreateAccount} className='text-black link'>Create Account</a>
+            <a href="#" onClick={handleSearchAccount} className='text-black link'>Search Accounts</a>
             <a href="#" onClick={onBrowseJobs} className='text-black link'>Browse Job Opportunities</a>
       </div>
     </nav>
