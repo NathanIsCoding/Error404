@@ -33,10 +33,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
-app.get('/api/accounts/:username', (req, res) => {
+app.get('/api/accounts/:lookup', (req, res) => {
   const fs = require('fs');
   const filePath = path.join(__dirname, 'public', 'accounts.json');
-  const requestedUsername = req.params.username.trim().toLowerCase();
+  const requestedLookup = req.params.lookup.trim();
+  const normalizedLookup = requestedLookup.toLowerCase();
+  const isEmailLookup = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(requestedLookup);
 
   fs.readFile(filePath, 'utf8', (err, data) => {
     if (err) {
@@ -53,10 +55,15 @@ app.get('/api/accounts/:username', (req, res) => {
       return res.status(500).json({ error: 'Error parsing accounts data' });
     }
 
-    const matchingAccount = accounts.find((account) => (
-      typeof account.username === 'string' &&
-      account.username.trim().toLowerCase() === requestedUsername
-    ));
+    const matchingAccount = accounts.find((account) => {
+      if (isEmailLookup) {
+        return typeof account.email === 'string' &&
+          account.email.trim().toLowerCase() === normalizedLookup;
+      }
+
+      return typeof account.username === 'string' &&
+        account.username.trim().toLowerCase() === normalizedLookup;
+    });
 
     if (!matchingAccount) {
       return res.status(404).json({ error: 'Account not found' });
