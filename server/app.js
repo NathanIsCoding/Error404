@@ -79,47 +79,36 @@ app.get('/api/accounts/:lookup', (req, res) => {
   });
 });
 
-app.post('/api/accounts', (req, res) => {
-  const fs = require('fs');
-  const newAccount = req.body;
-  // helper that returns the current moment formatted with a fixed
-  // "-07:00" offset.  We subtract seven hours from UTC and then
-  // append the offset so the resulting string is e.g.
-  // "2026-03-10T08:00:00.000-07:00".  This avoids any client-side
-  // clock or timezone issues and guarantees the stored value is always
-  // in UTC−07:00.
+app.post('/api/accounts', async (req, res) => {
   const getUtcMinus7Timestamp = () => {
     const now = new Date();
-    const offsetMs = 7 * 60 * 60 * 1000; // seven hours in milliseconds
+    const offsetMs = 7 * 60 * 60 * 1000;
     const adjusted = new Date(now.getTime() - offsetMs);
     return adjusted.toISOString().replace('Z', '-07:00');
   };
 
-  // always assign our canonical timestamp regardless of what the client
-  // sent (if anything), so that every account has a UTC-7:00 creation time
-  newAccount.createdAt = getUtcMinus7Timestamp();
-  const filePath = path.join(__dirname, 'public', 'accounts.json');
-  fs.readFile(filePath, 'utf8', (err, data) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ error: 'Error reading file' });
-    }
-    let accounts = [];
-    try {
-      accounts = JSON.parse(data);
-    } catch (e) {
-      accounts = [];
-    }
-    accounts.push(newAccount);
-    fs.writeFile(filePath, JSON.stringify(accounts, null, 2), (err) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).json({ error: 'Error writing file' });
-      }
-      res.json({ status: 'ok', message: 'Account created successfully', account: newAccount });
-    });
-  });
+  const newAccount = {
+    username: req.body.username,
+    email: req.body.email,
+    password: req.body.password,
+    createdAt: getUtcMinus7Timestamp(),
+  };
+
+  try {
+    await createAccount(newAccount);
+    res.json({ status: 'ok', message: 'Account created successfully', account: newAccount });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error creating account' });
+  }
 });
+
+async function createAccount(account) {
+  console.log("Attempting to create account");
+  const users = mongoose.connection.client.db("data").collection("users");
+  const result = await users.insertOne(account);
+  console.log(`A document was inserted with the _id: ${result.insertedId}`);
+}
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
