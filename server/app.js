@@ -16,6 +16,7 @@ mongoose.connect(process.env.MONGODB_URI).then(() => {
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+const fs = require('fs');
 
 var app = express();
 
@@ -80,7 +81,6 @@ app.get('/api/accounts/:lookup', (req, res) => {
 });
 
 app.post('/api/accounts', (req, res) => {
-  const fs = require('fs');
   const newAccount = req.body;
   // helper that returns the current moment formatted with a fixed
   // "-07:00" offset.  We subtract seven hours from UTC and then
@@ -121,6 +121,29 @@ app.post('/api/accounts', (req, res) => {
   });
 });
 
+app.get('/api/loadJobs',(req, res) => {
+  const filePath = path.join(__dirname, 'public', 'jobs.json');
+  const rawData = fs.readFileSync(filePath, 'utf8');
+  const results = JSON.parse(rawData);
+
+  res.json(results);
+});
+
+app.get('/api/search', (req, res) => {
+    const searchTerm = req.query.q?.toLowerCase();
+    const filePath = path.join(__dirname, 'public', 'jobs.json');
+    const rawData = fs.readFileSync(filePath, 'utf8');
+    const items = JSON.parse(rawData);
+    console.log(items);
+    const results = items.filter(item =>
+        item.company.toLowerCase().includes(searchTerm)
+    );
+
+    console.log(results);
+
+    res.json(results);
+});
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
@@ -134,7 +157,7 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.render('error', { title: 'Error' });
 });
 
 module.exports = app;

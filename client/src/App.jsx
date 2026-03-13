@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 import './App.css'
 import Navbar from "./components/Navbar/Navbar.jsx";
@@ -15,6 +15,22 @@ function App() {
   const [salary, setSalary] = useState(0)
   const [showCreateAccount, setShowCreateAccount] = useState(false)
   const [showSearchAccount, setShowSearchAccount] = useState(false)
+  const [jobs, setJobs] = useState([])
+
+  useEffect(() => {
+      const fetchJobs = async () => {
+        try {
+          const response = await fetch('http://localhost:3000/api/loadJobs')
+          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
+          const data = await response.json()
+          setJobs(Array.isArray(data) ? data : [])
+        } catch (error) {
+          console.error('Failed to fetch jobs:', error)
+        }
+      }
+
+      fetchJobs()
+    }, [])
 
   return (
     <>
@@ -34,18 +50,19 @@ function App() {
               onIndustryChange={(e) => setIndustry(e.target.value)}
               salary={salary}
               onSalaryChange={(e) => setSalary(e.target.value)}
+              onDataReceived={(data) => setJobs(Array.isArray(data) ? data : [])}
             />
           </div>
         
           <div className="job-listings-container mx-5 grow-2">
-            <JobCard/>
-            <JobCard/>
-            <JobCard/>
+            {jobs.map((job, index) => (
+              <JobCard key={index} job={job} />
+            ))}
           </div>
 
-          <div className="signin-container mx-5">
+          {/* <div className="signin-container mx-5">
             <SignIn/>
-          </div>
+          </div> */}
 
         </div>
         
