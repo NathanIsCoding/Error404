@@ -6,6 +6,7 @@ import FilterBlock from './components/FilterBlock/FilterBlock.jsx'
 import JobCard from './components/JobCard/JobCard.jsx'
 import SignIn from './components/SignIn/SignIn.jsx'
 import CreateAccount from './components/CreateAccount/CreateAccount.jsx'
+import SearchAccount from './components/SearchAccount/SearchAccount.jsx'
 
 function App() {
   const [searchTerm, setSearchTerm] = useState('')
@@ -13,10 +14,14 @@ function App() {
   const [industry, setIndustry] = useState('')
   const [salary, setSalary] = useState(0)
   const [showCreateAccount, setShowCreateAccount] = useState(false)
+  const [showSearchAccount, setShowSearchAccount] = useState(false)
 
   return (
     <>
-      <Navbar onCreateAccount={() => setShowCreateAccount(true)} />
+      <Navbar
+        onCreateAccount={() => setShowCreateAccount(true)}
+        onSearchAccount={() => setShowSearchAccount(true)}
+      />
       <main>
         <div className='flex justify-center'>
           <div className='ml-5 grow-1'>
@@ -47,6 +52,7 @@ function App() {
 
       </main>
       {showCreateAccount && <CreateAccount onClose={() => setShowCreateAccount(false)} />}
+      {showSearchAccount && <SearchAccount onClose={() => setShowSearchAccount(false)} />}
     </>
   )
 }
