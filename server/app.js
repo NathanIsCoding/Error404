@@ -82,6 +82,29 @@ app.get('/api/accounts/:lookup', (req, res) => {
 
 app.post('/api/accounts', (req, res) => {
   const newAccount = req.body;
+  let normalizedUsername = '';
+  if (typeof newAccount.username === 'string') {
+    normalizedUsername = newAccount.username.trim().toLowerCase();
+  } else {
+    normalizedUsername = '';
+  }
+
+  let normalizedEmail = '';
+  if (typeof newAccount.email === 'string') {
+    normalizedEmail = newAccount.email.trim().toLowerCase();
+  } else {
+    normalizedEmail = '';
+  }
+
+  if (!normalizedUsername || !normalizedEmail) {
+    return res.status(400).json({ error: 'Username and email are required to create an account' });
+  }
+
+  const accountToStore = {
+    ...newAccount,
+    username: newAccount.username.trim(),
+    email: newAccount.email.trim(),
+  };
   // helper that returns the current moment formatted with a fixed
   // "-07:00" offset.  We subtract seven hours from UTC and then
   // append the offset so the resulting string is e.g.
@@ -97,7 +120,7 @@ app.post('/api/accounts', (req, res) => {
 
   // always assign our canonical timestamp regardless of what the client
   // sent (if anything), so that every account has a UTC-7:00 creation time
-  newAccount.createdAt = getUtcMinus7Timestamp();
+  accountToStore.createdAt = getUtcMinus7Timestamp();
   const filePath = path.join(__dirname, 'public', 'accounts.json');
   fs.readFile(filePath, 'utf8', (err, data) => {
     if (err) {
@@ -110,13 +133,36 @@ app.post('/api/accounts', (req, res) => {
     } catch (e) {
       accounts = [];
     }
-    accounts.push(newAccount);
+
+    const isUsernameTaken = accounts.some((account) =>
+      typeof account.username === 'string' &&
+      account.username.trim().toLowerCase() === normalizedUsername
+    );
+
+    if (isUsernameTaken) {
+      return res.status(409).json({
+        error: 'Your account was not created because this username is already taken',
+      });
+    }
+
+    const isEmailRegistered = accounts.some((account) =>
+      typeof account.email === 'string' &&
+      account.email.trim().toLowerCase() === normalizedEmail
+    );
+
+    if (isEmailRegistered) {
+      return res.status(409).json({
+        error: 'Your account was not created because this email is already registered with a different account',
+      });
+    }
+
+    accounts.push(accountToStore);
     fs.writeFile(filePath, JSON.stringify(accounts, null, 2), (err) => {
       if (err) {
         console.error(err);
         return res.status(500).json({ error: 'Error writing file' });
       }
-      res.json({ status: 'ok', message: 'Account created successfully', account: newAccount });
+      res.json({ status: 'ok', message: 'Account created successfully', account: accountToStore });
     });
   });
 });
