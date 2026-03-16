@@ -15,17 +15,17 @@ function JobCard({job}) {
             <div className='flex flex-row'>
                 <img src={reactLogo} className='cardImg'></img>
                 <div className='textRow'>
-                    <p className='text'>{job.company} - {job.title}</p>
-                    <p className='text'>{job.salary}</p>
+                    <p className=''>{job.company} - {job.title}</p>
+                    <p className=''>{job.salary}</p>
                 </div>
                 <button onClick={clicked} className='expandButton'>Expand</button>
                 <button onClick={clicked}>Apply</button>
             </div>
             
             {isExpanded && (
-                <div className=''>
+                <div className='description bg-tertiary'>
                     <p>
-                        LOREM IPSUM
+                        {job.description}
                     </p>
                 </div>
             )}

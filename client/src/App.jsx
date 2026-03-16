@@ -34,7 +34,7 @@ function App() {
           if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
           const data = await response.json()
           //Change this to modify how many jobs are being displayed per page.
-          setJobMatrix(chunkJobs(data, 5))
+          setJobMatrix(chunkJobs(data, 6))
         } catch (error) {
           console.error('Failed to fetch jobs:', error)
         }
@@ -66,13 +66,19 @@ function App() {
           </div>
         
           <div className="job-listings-container mx-5 grow-2">
-            {jobMatrix[currentPage]?.map((job, index) => (
-                <JobCard key={index} job={job} />
-            ))}
+              
+              <div style={{ overflowY: 'auto', height: '80vh' }}>
+                  {jobMatrix[currentPage]?.map((job, index) => (
+                      <JobCard key={index} job={job} />
+                  ))}
+              </div>
 
-            {/* Paginator */}
-            <button onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 0}>Prev</button>
-            <button onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === jobMatrix.length - 1}>Next</button>
+              {/* Paginator */}
+              <div>
+                  <button onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 0}>Prev</button>
+                  <button onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === jobMatrix.length - 1}>Next</button>
+              </div>
+
           </div>
 
           {/* <div className="signin-container mx-5">
