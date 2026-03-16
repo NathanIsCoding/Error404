@@ -67,7 +67,7 @@ function App() {
         
           <div className="job-listings-container mx-5 grow-2">
               
-              <div style={{ overflowY: 'auto', height: '80vh' }}>
+              <div className='overflow-auto h-[80vh] scroll-box'>
                   {jobMatrix[currentPage]?.map((job, index) => (
                       <JobCard key={index} job={job} />
                   ))}
