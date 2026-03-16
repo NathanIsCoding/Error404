@@ -116,7 +116,13 @@ app.post('/api/accounts', (req, res) => {
         console.error(err);
         return res.status(500).json({ error: 'Error writing file' });
       }
-      res.json({ status: 'ok', message: 'Account created successfully', account: newAccount });
+      res.json({ 
+        status: 'ok', message: 'Account created successfully', 
+        account: { 
+          username: newAccount.username, 
+          email: newAccount.email, 
+          createdAt: newAccount.createdAt }}
+        );
     });
   });
 });
