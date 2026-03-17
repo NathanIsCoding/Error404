@@ -123,7 +123,7 @@ app.post('/api/accounts', (req, res) => {
   // sent (if anything), so that every account has a UTC-7:00 creation time
   accountToStore.createdAt = getUtcMinus7Timestamp();
   // all new accounts are non-admin by default
-  newAccount.isAdmin = false;
+  accountToStore.isAdmin = false;
   const filePath = path.join(__dirname, 'public', 'accounts.json');
   fs.readFile(filePath, 'utf8', (err, data) => {
     if (err) {
@@ -168,9 +168,9 @@ app.post('/api/accounts', (req, res) => {
       res.json({ 
         status: 'ok', message: 'Account created successfully', 
         account: { 
-          username: newAccount.username, 
-          email: newAccount.email, 
-          createdAt: newAccount.createdAt }}
+          username: accountToStore.username, 
+          email: accountToStore.email, 
+          createdAt: accountToStore.createdAt }}
         );
     });
   });
