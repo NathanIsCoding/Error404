@@ -5,7 +5,9 @@
   "scripts": {
     "start": "node ./bin/www",
     "test:db": "node test-db.js",
-    "test:docker": "node test-db-docker.js"
+    "test:docker": "node test-db-docker.js",
+    "clear:db": "node clear-db.js",
+    "populate:db": "node populate-db.js"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
