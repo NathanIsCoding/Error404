@@ -60,9 +60,9 @@ function App() {
             ))}
           </div>
 
-          {/* <div className="signin-container mx-5">
+          { <div className="signin-container mx-5">
             <SignIn/>
-          </div> */}
+          </div> }
 
         </div>
         
