@@ -17,6 +17,7 @@ mongoose.connect(process.env.MONGODB_URI).then(() => {
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 const fs = require('fs');
+const Job = require('./models/Job');
 
 var app = express();
 
@@ -176,12 +177,14 @@ app.post('/api/accounts', (req, res) => {
   });
 });
 
-app.get('/api/loadJobs',(req, res) => {
-  const filePath = path.join(__dirname, 'public', 'jobs.json');
-  const rawData = fs.readFileSync(filePath, 'utf8');
-  const results = JSON.parse(rawData);
-
-  res.json(results);
+app.get('/api/loadJobs', async (req, res) => {
+  try {
+    const jobs = await Job.find();
+    res.json(jobs);
+  } catch (error) {
+    console.error('Error fetching jobs:', error);
+    res.status(500).json({ error: 'Failed to fetch jobs' });
+  }
 });
 
 app.get('/api/search', (req, res) => {
