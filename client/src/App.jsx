@@ -15,6 +15,7 @@ function App() {
   const [salary, setSalary] = useState(0)
   const [showCreateAccount, setShowCreateAccount] = useState(false)
   const [showSearchAccount, setShowSearchAccount] = useState(false)
+  const [showSignIn, setShowSignIn] = useState(false)
   const [jobs, setJobs] = useState([])
 
   useEffect(() => {
@@ -37,6 +38,7 @@ function App() {
       <Navbar
         onCreateAccount={() => setShowCreateAccount(true)}
         onSearchAccount={() => setShowSearchAccount(true)}
+        onSignIn={() => setShowSignIn(true)}
       />
       <main>
         <div className='flex justify-center'>
@@ -61,7 +63,7 @@ function App() {
           </div>
 
           { <div className="signin-container mx-5">
-            <SignIn/>
+            {/*<SignIn/>*/}
           </div> }
 
         </div>
@@ -70,6 +72,7 @@ function App() {
       </main>
       {showCreateAccount && <CreateAccount onClose={() => setShowCreateAccount(false)} />}
       {showSearchAccount && <SearchAccount onClose={() => setShowSearchAccount(false)} />}
+      {showSignIn && <SignIn onClose={() => setShowSignIn(false)} />}
     </>
   )
 }
