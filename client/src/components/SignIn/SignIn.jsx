@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './SignIn.css';
 
-const Signin=({onClose})=> {
+const SignIn=({onClose})=> {
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -9,11 +9,11 @@ const Signin=({onClose})=> {
 
     const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const account = { username, email, password };
+    
+    const account = { username, password };
     try {
       const response = await fetch('http://localhost:3000/api/accounts', {
-        method: 'GET',
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(account)
       });
@@ -31,8 +31,8 @@ const Signin=({onClose})=> {
 
     return (
         
-        <div className="create-login-modal">
-        <div className="create-login">
+        <div className="login-modal">
+        <div className="login">
             <button onClick={onClose} className="close-button">X</button>
             <h1>Sign In</h1>
             <form onSubmit={handleSubmit}>
@@ -62,4 +62,4 @@ const Signin=({onClose})=> {
         
     );}
 
-export default Signin;
+export default SignIn;

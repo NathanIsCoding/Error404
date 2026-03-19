@@ -1,4 +1,4 @@
-.create-login-modal {
+.login-modal {
   position: fixed;
   top: 0;
   left: 0;
@@ -11,7 +11,7 @@
   z-index: 1000;
 }
 
-.create-login {
+.login {
   width: clamp(400px, 80vw, 800px);
   margin: 0 auto;
   padding: 40px 20px 20px 20px;
