@@ -6,6 +6,7 @@ const locations = ['San Francisco, CA', 'New York, NY', 'Los Angeles, CA', 'Aust
 const industries = ['tech', 'software', 'data-science', 'design'];
 const jobTypes = ['full-time', 'part-time', 'contract', 'internship'];
 const jobTitles = ['Software Engineer', 'Data Scientist', 'UX/UI Designer', 'DevOps Engineer', 'Product Manager', 'Backend Engineer', 'Frontend Engineer', 'Full Stack Developer', 'Machine Learning Engineer', 'Solutions Architect'];
+const companies = ['TechCorp', 'InnovateX', 'DataWorks', 'DesignHub', 'CloudNet', 'AI Solutions', 'Webify', 'AppMasters', 'CyberTech', 'NextGen Software'];
 
 function getRandomElement(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
@@ -20,7 +21,9 @@ function getRandomIndustries() {
   const count = Math.floor(Math.random() * 2)+ 1;
   return getRandomElements(industries, count);
 }
-
+function getRandomCompany() {
+  return getRandomElement(companies);
+}
 function getRandomSalary(jobType) {
   const base = Math.floor(Math.random() * 80000) + 40000;
   if (jobType === 'internship') return Math.floor(base * 0.3);
@@ -41,6 +44,7 @@ function generateJobs(count) {
   const timestamp = Date.now();
   for (let i = 0; i < count; i++) {
     jobs.push({
+      company: getRandomCompany(),
       jobId: 'job-' + timestamp + '-' + i,
       title: getRandomElement(jobTitles),
       jobType: getRandomElement(jobTypes),

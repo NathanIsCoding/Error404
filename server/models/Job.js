@@ -12,7 +12,7 @@ const jobSchema = new mongoose.Schema({
   },
   company: {
     type: String,
-    required: false
+    required: true,
   },
   jobType: {
     type: String,
@@ -41,7 +41,7 @@ const jobSchema = new mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: () => new Date(new Date().getTime() - 7 * 60 * 60 * 1000) // UTC-7 (PDT)
+    default: () => Date.now()
   }
 });
 
