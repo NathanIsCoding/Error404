@@ -41,3 +41,14 @@ input {
   color: white;
   padding: 10px;
 }
+
+/* Removes scroll bar for all platforms */
+.scroll-box {
+    overflow-y: auto;
+    scrollbar-width: none;    
+    -ms-overflow-style: none;
+}
+
+.scroll-box::-webkit-scrollbar {
+    display: none;
+}
