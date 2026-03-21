@@ -1,6 +1,6 @@
 require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
 const mongoose = require('mongoose');
-const Job = require('./models/Job');
+const Job = require('../models/Job');
 
 const locations = ['San Francisco, CA', 'New York, NY', 'Los Angeles, CA', 'Austin, TX', 'Seattle, WA', 'Boston, MA', 'Denver, CO', 'Portland, OR', 'Chicago, IL', 'Remote'];
 const industries = ['tech', 'software', 'data-science', 'design'];

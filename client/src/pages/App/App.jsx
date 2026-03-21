@@ -1,14 +1,28 @@
 import { useState, useEffect } from 'react'
 
 import './App.css'
-import Navbar from "./components/Navbar/Navbar.jsx";
-import FilterBlock from './components/FilterBlock/FilterBlock.jsx'
-import JobCard from './components/JobCard/JobCard.jsx'
-import SignIn from './components/SignIn/SignIn.jsx'
-import CreateAccount from './components/CreateAccount/CreateAccount.jsx'
-import SearchAccount from './components/SearchAccount/SearchAccount.jsx'
+import Navbar from "../../components/Navbar/Navbar.jsx";
+import FilterBlock from '../../components/FilterBlock/FilterBlock.jsx'
+import JobCard from '../../components/JobCard/JobCard.jsx'
+import SignIn from '../../components/SignIn/SignIn.jsx'
+import CreateAccount from '../../components/CreateAccount/CreateAccount.jsx'
+import SearchAccount from '../../components/SearchAccount/SearchAccount.jsx'
 
-function App() {
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Admin from '../Admin/Admin.jsx'; // adjust path if needed
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<MainApp />} />
+        <Route path="/admin" element={<Admin />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+function MainApp() {
   const [searchTerm, setSearchTerm] = useState('')
   const [jobType, setJobType] = useState('')
   const [industry, setIndustry] = useState('')
@@ -94,5 +108,3 @@ function App() {
     </>
   )
 }
-
-export default App

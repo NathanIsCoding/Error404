@@ -1,9 +1,9 @@
 require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
 const mongoose = require('mongoose');
-const User = require('./models/User');
-const Job = require('./models/Job');
-const Resume = require('./models/Resume');
-const CoverLetter = require('./models/CoverLetter');
+const User = require('../models/User');
+const Job = require('../models/Job');
+const Resume = require('../models/Resume');
+const CoverLetter = require('../models/CoverLetter');
 
 async function clearDatabase() {
   try {
