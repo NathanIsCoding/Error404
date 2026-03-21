@@ -1,0 +1,19 @@
+.userList {
+    height: 60vh;
+    border-radius: 15px;
+}
+
+.statCard { 
+    width: 19em;
+    height: 15em;
+    border-radius: 15px;
+}
+
+.mainPanel { 
+    width: 68vw
+}
+
+.sidePanel { 
+    width: 28.5vw;
+    border-radius: 15px;
+}

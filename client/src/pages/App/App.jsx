@@ -9,7 +9,7 @@ import CreateAccount from '../../components/CreateAccount/CreateAccount.jsx'
 import SearchAccount from '../../components/SearchAccount/SearchAccount.jsx'
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Admin from '../Admin/Admin.jsx'; // adjust path if needed
+import Admin from '../Admin/Admin.jsx';
 
 export default function App() {
   return (

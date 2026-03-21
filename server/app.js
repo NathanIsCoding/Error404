@@ -18,6 +18,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 const fs = require('fs');
 const Job = require('./models/Job');
+const User = require('./models/User');
 
 var app = express();
 
@@ -164,6 +165,16 @@ app.get('/api/loadJobs', async (req, res) => {
   try {
     const jobs = await Job.find();
     res.json(jobs);
+  } catch (error) {
+    console.error('Error fetching jobs:', error);
+    res.status(500).json({ error: 'Failed to fetch jobs' });
+  }
+});
+
+app.get('/api/loadUsers', async (req, res) => {
+  try {
+    const users = await User.find();
+    res.json(users);
   } catch (error) {
     console.error('Error fetching jobs:', error);
     res.status(500).json({ error: 'Failed to fetch jobs' });

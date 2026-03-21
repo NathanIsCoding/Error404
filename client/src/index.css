@@ -52,3 +52,11 @@ input {
 .scroll-box::-webkit-scrollbar {
     display: none;
 }
+
+.logo {
+    font-weight: 800;
+    font-size: 22px;
+    color: black;
+    letter-spacing: 0.5px;
+    padding: 10px;
+}
