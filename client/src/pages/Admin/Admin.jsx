@@ -1,38 +1,52 @@
 import { useState, useEffect } from 'react'
 import Navbar from "../../components/Navbar/Navbar"
 import './Admin.css'
-import UserCard from '../../components/UserCard/UserCard'
+import UserCard from '../../components/UserCard/UserCard.jsx'
+import AdminJobCard from '../../components/AdminJobCard/AdminJobCard.jsx'
+import AdminListPanel from '../../components/AdminListPanel/AdminListPanel.jsx'
 
 function Admin() { 
 
-    const [userMatrix, setUserMatrix] = useState([])
-    const [currentPage, setCurrentPage] = useState(0)
+    const [allUsers, setAllUsers] = useState([]);
+    const [allJobs, setAllJobs] = useState([]);
 
-    // When users load, chunk them into pages
-    function chunkUsers(users, size) {
-        const matrix = []
-        for (let i = 0; i < users.length; i += size) {
-            matrix.push(users.slice(i, i + size))
-        }
-        return matrix
-    }
+    const [activeTab, setActiveTab] = useState('users')
 
-    
     useEffect(() => {
-        const fetchJobs = async () => {
+        const fetchUsers = async () => {
             try {
                 const response = await fetch('http://localhost:3000/api/loadUsers')
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
                 const data = await response.json()
                 //Change this to modify how many jobs are being displayed per page.
-                setUserMatrix(chunkUsers(data, 6))
+                setAllUsers(data)
+            } catch (error) {
+                console.error('Failed to fetch users:', error)
+            }
+        }
+
+        const fetchJobs = async () => {
+            try {
+                const response = await fetch('http://localhost:3000/api/loadJobs')
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
+                const data = await response.json()
+                setAllJobs(data)
             } catch (error) {
                 console.error('Failed to fetch jobs:', error)
             }
         }
 
         fetchJobs()
+        fetchUsers()
     }, [])
+
+    const userFilterFn = (user, term) =>
+        user.username?.toLowerCase().includes(term.toLowerCase()) ||
+        user.email?.toLowerCase().includes(term.toLowerCase())
+
+    const jobFilterFn = (job, term) =>
+        job.title?.toLowerCase().includes(term.toLowerCase()) ||
+        job.company?.toLowerCase().includes(term.toLowerCase())
 
     return(
         <main>
@@ -41,44 +55,60 @@ function Admin() {
                 <div className="mainPanel flex flex-col mr-3">
                     <div className="flex flex-row justify-between mb-5">
                         <div className="statCard bg-primary p-3 mr-3">
-                            <span className="logo">card 1</span>
+                            <span className="logo">Total Users</span>
+                            <h1 className='statCardValues'>{allUsers.length}</h1>
                         </div>
-
                         <div className="statCard bg-primary p-3 mr-3">
-                            <span className="logo">card 2</span>
+                            <span className="logo">Total Jobs</span>
+                            <h1 className='statCardValues'>800</h1>
                         </div>
-
                         <div className="statCard bg-primary p-3 mr-3">
                             <span className="logo">card 3</span>
+                            <h1 className='statCardValues'>60</h1>
                         </div>
-
                         <div className="statCard bg-primary p-3">
                             <span className="logo">card 4</span>
+                            <h1 className='statCardValues'>60</h1>
                         </div>
                     </div>
 
-                    <div className="userList bg-primary p-3">
-                        <p className="logo">User List</p>
-
-                        <div className='overflow-auto h-95 scroll-box'>
-                            {userMatrix[currentPage]?.map((user, index) => (
-                                <UserCard key={index} user={user} />
-                            ))}
-                        </div>
-
-                        {/* Paginator */}
-                        <div>
-                            <button onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 0}>Prev</button>
-                            <button onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === userMatrix.length - 1}>Next</button>
-                        </div>
+                     <div className="flex gap-2 mb-3">
+                        <button
+                            className={activeTab === 'users' ? 'tab-active' : 'tab'}
+                            onClick={() => setActiveTab('users')}
+                        >
+                            Users
+                        </button>
+                        <button
+                            className={activeTab === 'jobs' ? 'tab-active' : 'tab'}
+                            onClick={() => setActiveTab('jobs')}
+                        >
+                            Jobs
+                        </button>
                     </div>
+
+                    {activeTab === 'users' ? (
+                        <AdminListPanel
+                            title="User List"
+                            items={allUsers}
+                            CardComponent={UserCard}
+                            filterFn={userFilterFn}
+                        />
+                    ) : (
+                        <AdminListPanel
+                            title="Job List"
+                            items={allJobs}
+                            CardComponent={AdminJobCard}
+                            filterFn={jobFilterFn}
+                        />
+                    )}
+
                 </div>
 
                 <div className="sidePanel bg-primary p-3">
-                    side panel
+                    Support Tickets
                 </div>
             </div>
-
         </main>
     )
 }

@@ -17,3 +17,8 @@
     width: 28.5vw;
     border-radius: 15px;
 }
+
+.statCardValues { 
+    font-size: 5em;
+    text-align: center;
+}

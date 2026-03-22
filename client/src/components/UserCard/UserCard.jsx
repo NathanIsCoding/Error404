@@ -1,20 +1,21 @@
 import '../UserCard/UserCard.css'
 
-function UserCard({user}){ 
+function UserCard({data: user}){ 
 
     return(
-        <div className="usercard bg-black text-white flex justify-between items-center p-2">
-            <span className='mr-3'>{user.username}</span>
-            <span className='mr-3'>{user.email}</span>
-            <span className='mr-3'>{user.rating}</span>
-            <label className='mr-3 flex gap-1'>
+        <div className="usercard bg-black text-white items-center grid p-2" 
+            style={{ gridTemplateColumns: '1fr 2fr 1fr 1fr 2fr 1fr' }}>
+            <span className='ml-2'>{user.username}</span>
+            <span className='ml-2'>{user.email}</span>
+            <span className='ml-2'>{user.rating}</span>
+            <label className='flex gap-1 ml-2'>
                 <input type='checkbox' checked={user.isAdmin} readOnly />
                 Admin
             </label>
-            <span className='mr-3'>{user.createdAt}</span>
-            <button className='deleteButton'>Delete</button>
+            <span className='ml-2'>{user.createdAt}</span>
+            <button className='justify-self-end'>Delete</button>
         </div>
-    )
+    );
 }
 
 export default UserCard;

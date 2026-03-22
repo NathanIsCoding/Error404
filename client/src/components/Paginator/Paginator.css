@@ -1,0 +1,22 @@
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+}
+
+button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    outline: none;
+}
+
+button:hover {
+    background: none;
+}
+
+button:focus{
+    background: none;
+    border: none;
+    cursor: pointer;
+    outline: none;
+}
