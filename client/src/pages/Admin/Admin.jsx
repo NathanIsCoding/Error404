@@ -54,54 +54,37 @@ function Admin() {
             <div className="flex flex-row justify-between px-5">
                 <div className="mainPanel flex flex-col mr-3">
                     <div className="flex flex-row justify-between mb-5">
+
                         <div className="statCard bg-primary p-3 mr-3">
                             <span className="logo">Total Users</span>
                             <h1 className='statCardValues'>{allUsers.length}</h1>
                         </div>
+
                         <div className="statCard bg-primary p-3 mr-3">
                             <span className="logo">Total Jobs</span>
-                            <h1 className='statCardValues'>800</h1>
+                            <h1 className='statCardValues'>{allJobs.length}</h1>
                         </div>
+
                         <div className="statCard bg-primary p-3 mr-3">
-                            <span className="logo">card 3</span>
+                            <span className="logo">Total Support Tickets</span>
                             <h1 className='statCardValues'>60</h1>
                         </div>
+                        
                         <div className="statCard bg-primary p-3">
                             <span className="logo">card 4</span>
                             <h1 className='statCardValues'>60</h1>
                         </div>
+
                     </div>
 
-                     <div className="flex gap-2 mb-3">
-                        <button
-                            className={activeTab === 'users' ? 'tab-active' : 'tab'}
-                            onClick={() => setActiveTab('users')}
-                        >
-                            Users
-                        </button>
-                        <button
-                            className={activeTab === 'jobs' ? 'tab-active' : 'tab'}
-                            onClick={() => setActiveTab('jobs')}
-                        >
-                            Jobs
-                        </button>
-                    </div>
-
-                    {activeTab === 'users' ? (
-                        <AdminListPanel
-                            title="User List"
-                            items={allUsers}
-                            CardComponent={UserCard}
-                            filterFn={userFilterFn}
-                        />
-                    ) : (
-                        <AdminListPanel
-                            title="Job List"
-                            items={allJobs}
-                            CardComponent={AdminJobCard}
-                            filterFn={jobFilterFn}
-                        />
-                    )}
+                   <AdminListPanel
+                        title={activeTab === 'users' ? 'User List' : 'Job List'}
+                        items={activeTab === 'users' ? allUsers : allJobs}
+                        CardComponent={activeTab === 'users' ? UserCard : AdminJobCard}
+                        filterFn={activeTab === 'users' ? userFilterFn : jobFilterFn}
+                        activeTab={activeTab}
+                        onTabChange={setActiveTab}
+                    />
 
                 </div>
 

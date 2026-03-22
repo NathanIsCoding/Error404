@@ -10,8 +10,8 @@ function Paginator({ currentPage, totalPages, onPageChange }) {
     }
 
     return (
-        <div className="flex justify-center items-center gap-3">
-            <div className='bg-black text-white rounded-full'>
+        <div className="flex justify-center items-center gap-3 mt-3">
+            <div className='paginator bg-black text-white rounded-full'>
                 <button onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 0}> 
                     {'<'} 
                 </button>

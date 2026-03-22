@@ -2,7 +2,7 @@ import './AdminListPanel.css'
 import Paginator from '../Paginator/Paginator';
 import { useState } from 'react';
 
-function AdminListPanel({title, items, CardComponent, filterFn, pageSize = 6}) {
+function AdminListPanel({title, items, CardComponent, filterFn, activeTab, onTabChange, pageSize = 6}) {
     
     // When data loads, chunk it into pages
     function chunkData(data, size) {
@@ -28,10 +28,18 @@ function AdminListPanel({title, items, CardComponent, filterFn, pageSize = 6}) {
 
     return(
         <div className="userList bg-primary p-3">
-            <div className='flex justify-between mb-3'>                     
-                <p className="logo">User List</p> 
+            <div className='flex justify-between mb-3'>
+                <div className="flex items-center gap-3">
+                    <p className="logo">{title}</p>
+                    <button className={activeTab === 'users' ? 'tab-active' : 'tab'}onClick={() => onTabChange('users')}>
+                        Users
+                    </button>
+                    <button className={activeTab === 'jobs' ? 'tab-active' : 'tab'} onClick={() => onTabChange('jobs')}>
+                        Jobs
+                    </button>
+                </div>
                 <input
-                    name='search' 
+                    name='search'
                     className='rounded-full pl-5 w-100'
                     type="text"
                     placeholder={`Search ${title.toLowerCase()}...`}

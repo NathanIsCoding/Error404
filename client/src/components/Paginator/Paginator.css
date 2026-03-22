@@ -3,18 +3,18 @@ input[type="number"]::-webkit-outer-spin-button {
     -webkit-appearance: none;
 }
 
-button {
+.paginator button {
     background: none;
     border: none;
     cursor: pointer;
     outline: none;
 }
 
-button:hover {
+.paginator button:hover {
     background: none;
 }
 
-button:focus{
+.paginator button:focus{
     background: none;
     border: none;
     cursor: pointer;
