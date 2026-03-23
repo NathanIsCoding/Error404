@@ -39,7 +39,7 @@ function AdminSupportTicketPanel({items, filterFn, onDelete, pageSize = 4}) {
                 />
             </div>
             
-                 <div className='overflow-auto scroll-box h-[85vh] mt-3'>
+                 <div className='overflow-auto scroll-box h-[90vh] mt-3'>
                     {displayMatrix[currentPage]?.map((item, index) => (
                         <SupportTicketCard key={index} data={item} onDelete={onDelete} />
                     ))}
