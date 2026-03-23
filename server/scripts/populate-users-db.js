@@ -1,5 +1,6 @@
 require('dotenv').config({ path: require('path').resolve(__dirname, '../../.env') });
 const mongoose = require('mongoose');
+const crypto = require('crypto');
 const User = require('../models/User');
 
 const firstNames = ['Alice', 'Bob', 'Carol', 'David', 'Eva', 'Frank', 'Grace', 'Henry', 'Iris', 'Jack',
@@ -20,6 +21,11 @@ const descriptions = [
   '',
   ''
 ];
+
+function generateUserId() {
+  return crypto.randomBytes(16).toString('hex');
+}
+
 
 function getRandomElement(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
@@ -53,7 +59,6 @@ function generateRating() {
 
 function generateUsers(count) {
   const users = [];
-  const timestamp = Date.now();
   const usedEmails = new Set();
   const usedUsernames = new Set();
 
@@ -70,12 +75,12 @@ function generateUsers(count) {
 
     let email = generateEmail(firstName, lastName, i);
     while (usedEmails.has(email)) {
-      email = `${firstName.toLowerCase()}${i}_${timestamp}@${getRandomElement(domains)}`;
+      email = `${firstName.toLowerCase()}${i}_${Date.now()}@${getRandomElement(domains)}`;
     }
     usedEmails.add(email);
 
     users.push({
-      userId: 'user-' + timestamp + '-' + i,
+      userId: generateUserId(),
       username,
       email,
       password: '$2b$10$placeholderhashedpasswordfortestingpurposesonly',
