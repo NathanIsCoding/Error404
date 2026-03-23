@@ -1,4 +1,4 @@
 .userList {
-    height: 60vh;
+    height: fit-content;
     border-radius: 15px;
 }

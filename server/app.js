@@ -19,6 +19,7 @@ var usersRouter = require('./routes/users');
 const fs = require('fs');
 const Job = require('./models/Job');
 const User = require('./models/User');
+const Ticket = require('./models/SupportTicket')
 
 var app = express();
 
@@ -175,18 +176,18 @@ app.get('/api/loadJobs', async (req, res) => {
 // Jobs delete
 app.delete('/api/deleteJob/:jobId', async (req, res) => {
     try {
-        const { jobId } = req.params
+        const jobId = req.params.jobId;
 
-        const deletedJob = await Job.findOneAndDelete({ jobId: jobId })
+        const deletedJob = await Job.findOneAndDelete({ jobId: jobId });
 
         if (!deletedJob) {
-            return res.status(404).json({ message: 'Job not found' })
+            return res.status(404).json({ message: 'Job not found' });
         }
 
-        res.status(200).json({ message: 'Job deleted successfully' })
+        res.status(200).json({ message: 'Job deleted successfully' });
     } catch (error) {
-        console.error('Error deleting job:', error)
-        res.status(500).json({ message: 'Internal server error' })
+        console.error('Error deleting job:', error);
+        res.status(500).json({ message: 'Internal server error' });
     }
 })
 
@@ -204,18 +205,47 @@ app.get('/api/loadUsers', async (req, res) => {
 // User Delete
 app.delete('/api/deleteUser/:userId', async (req, res) => {
     try {
-        const { userId } = req.params
+        const userId = req.params.userId;
         
-        const deletedUser = await User.findOneAndDelete({ userId: userId })
+        const deletedUser = await User.findOneAndDelete({ userId: userId });
         
         if (!deletedUser) {
-            return res.status(404).json({ message: 'User not found' })
+            return res.status(404).json({ message: 'User not found' });
         }
 
-        res.status(200).json({ message: 'User deleted successfully' })
+        res.status(200).json({ message: 'User deleted successfully' });
     } catch (error) {
-        console.error('Error deleting user:', error)
-        res.status(500).json({ message: 'Internal server error' })
+        console.error('Error deleting user:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+})
+
+// Ticket Get
+app.get('/api/loadTickets', async (req, res) => {
+  try {
+    const Tickets = await Ticket.find();
+    res.json(Tickets);
+  } catch (error) {
+    console.error('Error fetching jobs:', error);
+    res.status(500).json({ error: 'Failed to fetch jobs' });
+  }
+});
+
+// Ticket Delete
+app.delete('/api/deleteTicket/:ticketId', async (req, res) => {
+    try {
+        const ticketId = req.params.ticketId;
+
+        const deletedTicket = await Ticket.findOneAndDelete({ ticketId: ticketId });
+        
+        if (!deletedTicket) {
+            return res.status(404).json({ message: 'Ticket not found' });
+        }
+
+        res.status(200).json({ message: 'Ticket deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting ticket:', error);
+        res.status(500).json({ message: 'Internal server error' });
     }
 })
 

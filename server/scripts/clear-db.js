@@ -4,6 +4,7 @@ const User = require('../models/User');
 const Job = require('../models/Job');
 const Resume = require('../models/Resume');
 const CoverLetter = require('../models/CoverLetter');
+const SupportTicket = require('../models/SupportTicket');
 
 async function clearDatabase() {
   try {
@@ -12,6 +13,7 @@ async function clearDatabase() {
     await Resume.deleteMany({});
     await User.deleteMany({});
     await Job.deleteMany({});
+    await SupportTicket.deleteMany({});
     console.log('Database completely erased!');
     
   } catch (error) {

@@ -75,7 +75,11 @@ function MainApp() {
               onIndustryChange={(e) => setIndustry(e.target.value)}
               salary={salary}
               onSalaryChange={(e) => setSalary(e.target.value)}
-              onDataReceived={(data) => setJobs(Array.isArray(data) ? data : [])}
+              onDataReceived={(data) => {
+                  const newData = Array.isArray(data) ? data : []
+                  setJobMatrix(chunkJobs(newData, 6))
+                  setCurrentPage(0)
+              }}
             />
           </div>
         

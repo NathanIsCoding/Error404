@@ -2,6 +2,7 @@ import './AdminListPanel.css'
 import Paginator from '../Paginator/Paginator';
 import { useState } from 'react';
 
+// eslint-disable-next-line no-unused-vars
 function AdminListPanel({title, items, CardComponent, filterFn, activeTab, onTabChange, onDelete, pageSize = 6}) {
     
     // When data loads, chunk it into pages

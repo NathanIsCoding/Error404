@@ -4,9 +4,11 @@ import './Admin.css'
 import UserCard from '../../components/UserCard/UserCard.jsx'
 import AdminJobCard from '../../components/AdminJobCard/AdminJobCard.jsx'
 import AdminListPanel from '../../components/AdminListPanel/AdminListPanel.jsx'
+import AdminSupportTicketPanel from '../../components/AdminSupportTicketPanel/AdminSupportTicketPanel.jsx'
 
 function Admin() { 
 
+    const [allTickets, setAllTickets] = useState([]);
     const [allUsers, setAllUsers] = useState([]);
     const [allJobs, setAllJobs] = useState([]);
 
@@ -36,6 +38,18 @@ function Admin() {
             }
         }
 
+        const fetchTickets = async () => { 
+            try { 
+                const response = await fetch('http://localhost:3000/api/loadTickets')
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
+                const data = await response.json()
+                setAllTickets(data)
+            } catch (error) { 
+                console.error('Failed to fetch tickets:', error)
+            }
+        }
+
+        fetchTickets()
         fetchJobs()
         fetchUsers()
     }, [])
@@ -47,6 +61,10 @@ function Admin() {
     const jobFilterFn = (job, term) =>
         job.title?.toLowerCase().includes(term.toLowerCase()) ||
         job.company?.toLowerCase().includes(term.toLowerCase())
+
+    const ticketFilterFn = (ticket, term) =>
+        ticket.title?.toLowerCase().includes(term.toLowerCase()) ||
+        ticket.ticketId?.toLowerCase().includes(term.toLowerCase())
 
     const handleDeleteUser = async (userId) => {
         try {
@@ -65,6 +83,16 @@ function Admin() {
             setAllJobs(prev => prev.filter(job => job.jobId !== jobId))
         } catch (error) {
             console.error('Failed to delete job:', error)
+        }
+    }
+
+    const handleDeleteTicket = async (ticketId) => {
+        try {
+            const response = await fetch(`http://localhost:3000/api/deleteTicket/${ticketId}`, { method: 'DELETE'})
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
+            setAllTickets(prev => prev.filter(ticket => ticket.ticketId !== ticketId))
+        } catch (error) {
+            console.error('Failed to delete ticket:', error)
         }
     }
 
@@ -87,7 +115,7 @@ function Admin() {
 
                         <div className="statCard bg-primary p-3 mr-3">
                             <span className="logo">Total Support Tickets</span>
-                            <h1 className='statCardValues'>60</h1>
+                            <h1 className='statCardValues'>{allTickets.length}</h1>
                         </div>
                         
                         <div className="statCard bg-primary p-3">
@@ -109,9 +137,11 @@ function Admin() {
 
                 </div>
 
-                <div className="sidePanel bg-primary p-3">
-                    Support Tickets
-                </div>
+                <AdminSupportTicketPanel
+                    items={allTickets}
+                    filterFn={ticketFilterFn}
+                    onDelete={handleDeleteTicket}
+                />
             </div>
         </main>
     )

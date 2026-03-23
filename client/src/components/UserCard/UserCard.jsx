@@ -17,8 +17,8 @@ function UserCard({data: user, onDelete}){
     };
 
     return(
-        <div className="usercard bg-black text-white items-center grid p-2" 
-            style={{ gridTemplateColumns: '1fr 2fr 1fr 1fr 2fr 1fr' }}>
+        <div className="usercard bg-black text-white items-center grid p-3" 
+            style={{ gridTemplateColumns: '1fr 2fr 1fr 1fr 2fr 0.2fr' }}>
             <span className='ml-2'>{user.username}</span>
             <span className='ml-2'>{user.email}</span>
             <span className='ml-2'>{user.rating}</span>
@@ -27,7 +27,9 @@ function UserCard({data: user, onDelete}){
                 Admin
             </label>
             <span className='ml-2'>{formatCreatedAt(user.createdAt)}</span>
-            <button className='justify-self-end' onClick={() => onDelete(user.userId)}>Delete</button>
+            <button onClick={() => onDelete(user.userId)} className='!bg-red-500 !p-1 flex justify-center'>
+                <span className="material-symbols-outlined">close</span>
+            </button>
         </div>
     );
 }
