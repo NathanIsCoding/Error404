@@ -39,7 +39,6 @@ button:focus-visible {
 input { 
   background-color: #1a1a1a;
   color: white;
-  padding: 10px;
 }
 
 /* Removes scroll bar for all platforms */
@@ -51,4 +50,12 @@ input {
 
 .scroll-box::-webkit-scrollbar {
     display: none;
+}
+
+.logo {
+    font-weight: 800;
+    font-size: 22px;
+    color: black;
+    letter-spacing: 0.5px;
+    padding: 10px;
 }

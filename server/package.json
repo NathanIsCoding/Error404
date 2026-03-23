@@ -4,10 +4,12 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "test:db": "node test-db.js",
-    "test:docker": "node test-db-docker.js",
-    "clear:db": "node clear-db.js",
-    "populate:db": "node populate-db.js"
+    "test:db": "node ./scripts/test-db.js",
+    "test:docker": "node ./scripts/test-db-docker.js",
+    "clear:db": "node ./scripts/clear-db.js",
+    "populate:db": "node ./scripts/populate-db.js",
+    "populateUser:db": "node ./scripts/populate-users-db.js",
+    "populateSupport:db": "node ./scripts/populate-support-db.js"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",

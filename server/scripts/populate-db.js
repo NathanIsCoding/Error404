@@ -1,12 +1,17 @@
-require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
+require('dotenv').config({ path: require('path').resolve(__dirname, '../../.env') });
 const mongoose = require('mongoose');
-const Job = require('./models/Job');
+const crypto = require('crypto');
+const Job = require('../models/Job');
 
 const locations = ['San Francisco, CA', 'New York, NY', 'Los Angeles, CA', 'Austin, TX', 'Seattle, WA', 'Boston, MA', 'Denver, CO', 'Portland, OR', 'Chicago, IL', 'Remote'];
 const industries = ['tech', 'software', 'data-science', 'design'];
 const jobTypes = ['full-time', 'part-time', 'contract', 'internship'];
 const jobTitles = ['Software Engineer', 'Data Scientist', 'UX/UI Designer', 'DevOps Engineer', 'Product Manager', 'Backend Engineer', 'Frontend Engineer', 'Full Stack Developer', 'Machine Learning Engineer', 'Solutions Architect'];
 const companies = ['TechCorp', 'InnovateX', 'DataWorks', 'DesignHub', 'CloudNet', 'AI Solutions', 'Webify', 'AppMasters', 'CyberTech', 'NextGen Software'];
+
+function generateJobId() {
+  return crypto.randomBytes(16).toString('hex');
+}
 
 function getRandomElement(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
@@ -41,11 +46,10 @@ function generateJobDescription(title) {
 
 function generateJobs(count) {
   const jobs = [];
-  const timestamp = Date.now();
   for (let i = 0; i < count; i++) {
     jobs.push({
       company: getRandomCompany(),
-      jobId: 'job-' + timestamp + '-' + i,
+      jobId: generateJobId(),
       title: getRandomElement(jobTitles),
       jobType: getRandomElement(jobTypes),
       industry: getRandomIndustries(),

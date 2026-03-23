@@ -1,0 +1,22 @@
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+}
+
+.paginator button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    outline: none;
+}
+
+.paginator button:hover {
+    background: none;
+}
+
+.paginator button:focus{
+    background: none;
+    border: none;
+    cursor: pointer;
+    outline: none;
+}
