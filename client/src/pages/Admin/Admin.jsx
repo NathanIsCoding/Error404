@@ -48,6 +48,26 @@ function Admin() {
         job.title?.toLowerCase().includes(term.toLowerCase()) ||
         job.company?.toLowerCase().includes(term.toLowerCase())
 
+    const handleDeleteUser = async (userId) => {
+        try {
+            const response = await fetch(`http://localhost:3000/api/deleteUser/${userId}`, { method: 'DELETE'})
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
+            setAllUsers(prev => prev.filter(user => user.userId !== userId))
+        } catch (error) {
+            console.error('Failed to delete user:', error)
+        }
+    }
+
+    const handleDeleteJob = async (jobId) => {
+        try {
+            const response = await fetch(`http://localhost:3000/api/deleteJob/${jobId}`, { method: 'DELETE'})
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
+            setAllJobs(prev => prev.filter(job => job.jobId !== jobId))
+        } catch (error) {
+            console.error('Failed to delete job:', error)
+        }
+    }
+
     return(
         <main>
             <Navbar/>
@@ -84,6 +104,7 @@ function Admin() {
                         filterFn={activeTab === 'users' ? userFilterFn : jobFilterFn}
                         activeTab={activeTab}
                         onTabChange={setActiveTab}
+                        onDelete={activeTab === 'users' ? handleDeleteUser : handleDeleteJob}
                     />
 
                 </div>

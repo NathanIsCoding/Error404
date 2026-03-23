@@ -1,6 +1,20 @@
 import '../UserCard/UserCard.css'
 
-function UserCard({data: user}){ 
+function UserCard({data: user, onDelete}){ 
+
+    const formatCreatedAt = (createdAt) => {
+        if (!createdAt) {
+            return 'Unknown';
+        }
+
+        const parsedDate = new Date(createdAt);
+
+        if (Number.isNaN(parsedDate.getTime())) {
+            return createdAt;
+        }
+
+        return parsedDate.toLocaleString();
+    };
 
     return(
         <div className="usercard bg-black text-white items-center grid p-2" 
@@ -12,8 +26,8 @@ function UserCard({data: user}){
                 <input type='checkbox' checked={user.isAdmin} readOnly />
                 Admin
             </label>
-            <span className='ml-2'>{user.createdAt}</span>
-            <button className='justify-self-end'>Delete</button>
+            <span className='ml-2'>{formatCreatedAt(user.createdAt)}</span>
+            <button className='justify-self-end' onClick={() => onDelete(user.userId)}>Delete</button>
         </div>
     );
 }

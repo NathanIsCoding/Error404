@@ -1,6 +1,6 @@
 import './AdminJobCard.css'
 
-function AdminJobCard({data: job}) { 
+function AdminJobCard({data: job, onDelete}) { 
 
     return(
         <div className="usercard bg-black text-white items-center grid p-2" 
@@ -14,7 +14,7 @@ function AdminJobCard({data: job}) {
                 <input type='checkbox' checked={job.isActive} readOnly />
                 Active
             </label>
-            <button className='justify-self-end'>Delete</button>
+            <button className='justify-self-end' onClick={() => onDelete(job.jobId)}>Delete</button>
         </div>
     );
 }
