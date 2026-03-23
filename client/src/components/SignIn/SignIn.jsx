@@ -5,29 +5,58 @@ const SignIn=({onClose})=> {
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [responseMessage, setResponseMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    const account = { username, password };
-    try {
-      const response = await fetch('http://localhost:3000/api/accounts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(account)
-      });
-      const data = await response.json();
-      if (response.ok) {
-        setResponseMessage(`Success: ${data.message}`);
-      } else {
-        setResponseMessage(`Error: ${data.error}`);
+      
+      
+      
+      e.preventDefault();
+      
+      
+      const account = { username, password };
+      try {
+        // Send a GET request to the backend
+        const response = await fetch(`http://localhost:3000/api/accounts/${encodeURIComponent(username)}`, {
+          method: 'GET',
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          if(username==data.account){
+            if(password==data.account){
+              return('Logged In')
+            }else{
+              setErrorMessage(data.error || 'Password incorrect')
+            }
+
+          }else{
+            setErrorMessage(data.error || 'Username incorrect')
+          }
+        } else {
+          setErrorMessage(data.error || 'Account not found');
+        }
+      } catch (error) {
+        console.error('Error fetching account:', error);
+        setErrorMessage('Unable to connect to server');
       }
-    } catch (error) {
-      console.error(error);
-      setResponseMessage('Error: Unable to connect to server');
+
+    };
+
+  /*const validate = accounts.find((account) => {
+    if (isusernameLookup) {
+      return typeof account.username === 'string' &&
+          account.email.trim().toLowerCase() === normalizedLookup;
     }
-  };
+
+    return typeof account.password === 'string' &&
+      account.username.trim().toLowerCase() === normalizedLookup;
+  });*/
+
+  
+
+
 
     return (
         
@@ -56,7 +85,30 @@ const SignIn=({onClose})=> {
             />
             <button type="submit">Login</button>
             </form>
-            {responseMessage && <p style={{ color: responseMessage.startsWith('Success') ? 'green' : 'red', marginTop: '11px', fontSize: '30px',textAlign: 'center' }}>{responseMessage}</p>}
+            {responseMessage &&  
+            <p 
+              style={{ 
+                color: responseMessage.startsWith('Success') ? 'green' : 'red',
+                marginTop: '11px', 
+                fontSize: '30px',
+                textAlign: 'center'
+                 }}
+                 >
+                 {responseMessage}
+                 </p>}
+
+            {errorMessage && (
+            <p
+              style={{
+                color: 'red',
+                marginTop: '11px',
+                fontSize: '16px',
+                textAlign: 'center'
+              }}
+            >
+             {errorMessage}
+            </p>
+        )}
         </div>
         </div>
         
