@@ -5,7 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var mongoose = require('mongoose');
 var cors = require('cors');
-require('dotenv').config();
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
 // connect to mongodb
 mongoose.connect(process.env.MONGODB_URI).then(() => {
@@ -17,6 +17,9 @@ mongoose.connect(process.env.MONGODB_URI).then(() => {
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 const fs = require('fs');
+const Job = require('./models/Job');
+const User = require('./models/User');
+const Ticket = require('./models/SupportTicket')
 
 var app = express();
 
@@ -75,111 +78,176 @@ app.get('/api/accounts/:lookup', (req, res) => {
         username: matchingAccount.username,
         email: matchingAccount.email,
         createdAt: matchingAccount.createdAt,
+        isAdmin: Boolean(matchingAccount.isAdmin),
       },
     });
   });
 });
 
-app.post('/api/accounts', (req, res) => {
-  const newAccount = req.body;
-  let normalizedUsername = '';
-  if (typeof newAccount.username === 'string') {
-    normalizedUsername = newAccount.username.trim().toLowerCase();
-  } else {
-    normalizedUsername = '';
-  }
+app.post('/api/accounts', async (req, res) => {
+  const getUtcMinus7Timestamp = () => {
+    const now = new Date();
+    const offsetMs = 7 * 60 * 60 * 1000;
+    const adjusted = new Date(now.getTime() - offsetMs);
+    return adjusted.toISOString().replace('Z', '-07:00');
+  };
 
-  let normalizedEmail = '';
-  if (typeof newAccount.email === 'string') {
-    normalizedEmail = newAccount.email.trim().toLowerCase();
-  } else {
-    normalizedEmail = '';
-  }
+  const { username, email, password } = req.body;
 
+  // Normalize inputs (from the JSON version)
+  const normalizedUsername = typeof username === 'string' ? username.trim().toLowerCase() : '';
+  const normalizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : '';
+
+  // Validate required fields
   if (!normalizedUsername || !normalizedEmail) {
     return res.status(400).json({ error: 'Username and email are required to create an account' });
   }
 
   const accountToStore = {
-    ...newAccount,
-    username: newAccount.username.trim(),
-    email: newAccount.email.trim(),
-  };
-  // helper that returns the current moment formatted with a fixed
-  // "-07:00" offset.  We subtract seven hours from UTC and then
-  // append the offset so the resulting string is e.g.
-  // "2026-03-10T08:00:00.000-07:00".  This avoids any client-side
-  // clock or timezone issues and guarantees the stored value is always
-  // in UTC−07:00.
-  const getUtcMinus7Timestamp = () => {
-    const now = new Date();
-    const offsetMs = 7 * 60 * 60 * 1000; // seven hours in milliseconds
-    const adjusted = new Date(now.getTime() - offsetMs);
-    return adjusted.toISOString().replace('Z', '-07:00');
+    username: username.trim(),
+    email: email.trim(),
+    password,
+    createdAt: getUtcMinus7Timestamp(),
+    isAdmin: false, // all new accounts are non-admin by default
   };
 
-  // always assign our canonical timestamp regardless of what the client
-  // sent (if anything), so that every account has a UTC-7:00 creation time
-  accountToStore.createdAt = getUtcMinus7Timestamp();
-  const filePath = path.join(__dirname, 'public', 'accounts.json');
-  fs.readFile(filePath, 'utf8', (err, data) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ error: 'Error reading file' });
-    }
-    let accounts = [];
-    try {
-      accounts = JSON.parse(data);
-    } catch (e) {
-      accounts = [];
-    }
-
-    const isUsernameTaken = accounts.some((account) =>
-      typeof account.username === 'string' &&
-      account.username.trim().toLowerCase() === normalizedUsername
-    );
-
-    if (isUsernameTaken) {
-      return res.status(409).json({
-        error: 'Your account was not created because this username is already taken',
-      });
-    }
-
-    const isEmailRegistered = accounts.some((account) =>
-      typeof account.email === 'string' &&
-      account.email.trim().toLowerCase() === normalizedEmail
-    );
-
-    if (isEmailRegistered) {
-      return res.status(409).json({
-        error: 'Your account was not created because this email is already registered with a different account',
-      });
-    }
-
-    accounts.push(accountToStore);
-    fs.writeFile(filePath, JSON.stringify(accounts, null, 2), (err) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).json({ error: 'Error writing file' });
-      }
-      res.json({ 
-        status: 'ok', message: 'Account created successfully', 
-        account: { 
-          username: newAccount.username, 
-          email: newAccount.email, 
-          createdAt: newAccount.createdAt }}
-        );
+  try {
+    await createAccount(accountToStore, normalizedUsername, normalizedEmail);
+    res.json({
+      status: 'ok',
+      message: 'Account created successfully',
+      account: {
+        username: accountToStore.username,
+        email: accountToStore.email,
+        createdAt: accountToStore.createdAt,
+      },
     });
+  } catch (err) {
+    if (err.code === 'USERNAME_TAKEN') {
+      return res.status(409).json({ error: 'Your account was not created because this username is already taken' });
+    }
+    if (err.code === 'EMAIL_REGISTERED') {
+      return res.status(409).json({ error: 'Your account was not created because this email is already registered with a different account' });
+    }
+    console.error(err);
+    res.status(500).json({ error: 'Error creating account' });
+  }
+});
+
+async function createAccount(account, normalizedUsername, normalizedEmail) {
+  console.log("Attempting to create account");
+  const users = mongoose.connection.client.db("data").collection("users");
+
+  // Check for duplicate username (case-insensitive)
+  const existingUsername = await users.findOne({
+    username: { $regex: new RegExp(`^${normalizedUsername}$`, 'i') }
   });
+  if (existingUsername) {
+    const err = new Error('Username already taken');
+    err.code = 'USERNAME_TAKEN';
+    throw err;
+  }
+
+  // Check for duplicate email (case-insensitive)
+  const existingEmail = await users.findOne({
+    email: { $regex: new RegExp(`^${normalizedEmail}$`, 'i') }
+  });
+  if (existingEmail) {
+    const err = new Error('Email already registered');
+    err.code = 'EMAIL_REGISTERED';
+    throw err;
+  }
+
+  const result = await users.insertOne(account);
+  console.log(`A document was inserted with the _id: ${result.insertedId}`);
+}
+
+// Jobs Get
+app.get('/api/loadJobs', async (req, res) => {
+  try {
+    const jobs = await Job.find();
+    res.json(jobs);
+  } catch (error) {
+    console.error('Error fetching jobs:', error);
+    res.status(500).json({ error: 'Failed to fetch jobs' });
+  }
 });
 
-app.get('/api/loadJobs',(req, res) => {
-  const filePath = path.join(__dirname, 'public', 'jobs.json');
-  const rawData = fs.readFileSync(filePath, 'utf8');
-  const results = JSON.parse(rawData);
+// Jobs delete
+app.delete('/api/deleteJob/:jobId', async (req, res) => {
+    try {
+        const jobId = req.params.jobId;
 
-  res.json(results);
+        const deletedJob = await Job.findOneAndDelete({ jobId: jobId });
+
+        if (!deletedJob) {
+            return res.status(404).json({ message: 'Job not found' });
+        }
+
+        res.status(200).json({ message: 'Job deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting job:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+})
+
+// User Get
+app.get('/api/loadUsers', async (req, res) => {
+  try {
+    const users = await User.find().select('-password');
+    res.json(users);
+  } catch (error) {
+    console.error('Error fetching jobs:', error);
+    res.status(500).json({ error: 'Failed to fetch jobs' });
+  }
 });
+
+// User Delete
+app.delete('/api/deleteUser/:userId', async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        
+        const deletedUser = await User.findOneAndDelete({ userId: userId });
+        
+        if (!deletedUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json({ message: 'User deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+})
+
+// Ticket Get
+app.get('/api/loadTickets', async (req, res) => {
+  try {
+    const Tickets = await Ticket.find();
+    res.json(Tickets);
+  } catch (error) {
+    console.error('Error fetching jobs:', error);
+    res.status(500).json({ error: 'Failed to fetch jobs' });
+  }
+});
+
+// Ticket Delete
+app.delete('/api/deleteTicket/:ticketId', async (req, res) => {
+    try {
+        const ticketId = req.params.ticketId;
+
+        const deletedTicket = await Ticket.findOneAndDelete({ ticketId: ticketId });
+        
+        if (!deletedTicket) {
+            return res.status(404).json({ message: 'Ticket not found' });
+        }
+
+        res.status(200).json({ message: 'Ticket deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting ticket:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+})
 
 app.get('/api/search', (req, res) => {
     const searchTerm = req.query.q?.toLowerCase();

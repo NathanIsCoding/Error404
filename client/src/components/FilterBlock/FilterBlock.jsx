@@ -31,7 +31,7 @@ function FilterBlock(props) {
       <form>
          <div className="search-bar">
             <input 
-              className='rounded-full w-100'
+              className='rounded-full w-100 pl-5 p-3'
               type="text"
               placeholder="Search..."
               value={searchTerm}
