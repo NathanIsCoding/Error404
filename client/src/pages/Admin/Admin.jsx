@@ -6,7 +6,7 @@ import AdminJobCard from '../../components/AdminJobCard/AdminJobCard.jsx'
 import AdminListPanel from '../../components/AdminListPanel/AdminListPanel.jsx'
 import AdminSupportTicketPanel from '../../components/AdminSupportTicketPanel/AdminSupportTicketPanel.jsx'
 
-function Admin() { 
+function Admin({ user, setUser }) { 
 
     const [allTickets, setAllTickets] = useState([]);
     const [allUsers, setAllUsers] = useState([]);
@@ -98,7 +98,7 @@ function Admin() {
 
     return(
         <main>
-            <Navbar/>
+            <Navbar user={user} setUser={setUser} />
             <div className="flex flex-row justify-between px-5">
                 <div className="mainPanel flex flex-col mr-3">
                     <div className="flex flex-row justify-between mb-5">
