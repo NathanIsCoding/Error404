@@ -44,7 +44,7 @@ router.post('/login', async (req, res) => {
 });
 
 router.get('/me', requireAuth, (req, res) => {
-  res.json({ email: req.user.email, isAdmin: req.user.isAdmin });
+  res.json({ userId: req.user.userId, isAdmin: req.user.isAdmin });
 });
 
 router.post('/logout', (req, res) => {
