@@ -133,19 +133,62 @@ app.delete('/api/deleteTicket/:ticketId', async (req, res) => {
     }
 })
 
-app.get('/api/search', (req, res) => {
-    const searchTerm = req.query.q?.toLowerCase();
-    const filePath = path.join(__dirname, 'public', 'jobs.json');
-    const rawData = fs.readFileSync(filePath, 'utf8');
-    const items = JSON.parse(rawData);
-    console.log(items);
-    const results = items.filter(item =>
-        item.company.toLowerCase().includes(searchTerm)
-    );
+// Search jobs from MongoDB with filters
+app.get('/api/search', async (req, res) => {
+    try {
+        const { q, jobType, industry, salary } = req.query;
+        const filter = {};
 
-    console.log(results);
+        if (q) {
+            const regex = new RegExp(q, 'i');
+            filter.$or = [
+                { title: regex },
+                { company: regex },
+                { description: regex }
+            ];
+        }
 
-    res.json(results);
+        if (jobType) {
+            filter.jobType = jobType;
+        }
+
+        if (industry) {
+            filter.industry = industry;
+        }
+
+        if (salary && Number(salary) > 0) {
+            filter.salary = { $gte: Number(salary) };
+        }
+
+        const results = await Job.find(filter);
+        res.json(results);
+    } catch (error) {
+        console.error('Search error:', error);
+        res.status(500).json({ error: 'Search failed' });
+    }
+});
+
+// Job Update
+app.put('/api/updateJob/:jobId', async (req, res) => {
+    try {
+        const jobId = req.params.jobId;
+        const updates = req.body;
+
+        const updatedJob = await Job.findOneAndUpdate(
+            { jobId: jobId },
+            { $set: updates },
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedJob) {
+            return res.status(404).json({ message: 'Job not found' });
+        }
+
+        res.status(200).json(updatedJob);
+    } catch (error) {
+        console.error('Error updating job:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
 });
 
 // catch 404 and forward to error handler

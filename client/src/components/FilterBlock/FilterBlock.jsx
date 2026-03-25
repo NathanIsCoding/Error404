@@ -9,7 +9,13 @@ function FilterBlock(props) {
     e.preventDefault();
 
     try {
-      const response = await fetch(`http://localhost:3000/api/search?q=${encodeURIComponent(searchTerm)}`, {
+      const params = new URLSearchParams();
+      if (searchTerm) params.append('q', searchTerm);
+      if (props.jobType) params.append('jobType', props.jobType);
+      if (props.industry) params.append('industry', props.industry);
+      if (props.salary && Number(props.salary) > 0) params.append('salary', props.salary);
+
+      const response = await fetch(`http://localhost:3000/api/search?${params.toString()}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
       });

@@ -3,7 +3,7 @@ import Paginator from '../Paginator/Paginator';
 import { useState } from 'react';
 
 // eslint-disable-next-line no-unused-vars
-function AdminListPanel({title, items, CardComponent, filterFn, activeTab, onTabChange, onDelete, pageSize = 6}) {
+function AdminListPanel({title, items, CardComponent, filterFn, activeTab, onTabChange, onDelete, onUpdate, pageSize = 6}) {
     
     // When data loads, chunk it into pages
     function chunkData(data, size) {
@@ -49,7 +49,7 @@ function AdminListPanel({title, items, CardComponent, filterFn, activeTab, onTab
 
             <div className='h-95'>
                 {displayMatrix[currentPage]?.map((item, index) => (
-                    <CardComponent key={index} data={item} onDelete={onDelete} />
+                    <CardComponent key={index} data={item} onDelete={onDelete} onUpdate={onUpdate} />
                 ))}
                 {filteredItems.length === 0 && searchTerm && (
                     <p className="text-center text-black mt-4">No results found.</p>
