@@ -26,7 +26,7 @@ function AdminSupportTicketPanel({items, filterFn, onDelete, pageSize = 4}) {
         }
 
     return(
-        <div className="sidePanel bg-primary p-3">
+        <div className="sidePanel bg-primary p-3 flex flex-col">
             <div className='flex'>
                 <span className="logo">Support Tickets</span>
                 <input
@@ -39,7 +39,7 @@ function AdminSupportTicketPanel({items, filterFn, onDelete, pageSize = 4}) {
                 />
             </div>
             
-                 <div className='overflow-auto scroll-box h-[90vh] mt-3'>
+                 <div className='flex-1 overflow-auto mt-3'>
                     {displayMatrix[currentPage]?.map((item, index) => (
                         <SupportTicketCard key={index} data={item} onDelete={onDelete} />
                     ))}

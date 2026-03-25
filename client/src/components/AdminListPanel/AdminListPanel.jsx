@@ -26,7 +26,7 @@ function AdminListPanel({title, items, CardComponent, filterFn, activeTab, onTab
     }
 
     return(
-        <div className="userList bg-primary p-3">
+        <div className="userList bg-primary p-3 flex flex-col">
             <div className='flex justify-between mb-3'>
                 <div className="flex items-center gap-3">
                     <p className="logo">{title}</p>
@@ -47,7 +47,7 @@ function AdminListPanel({title, items, CardComponent, filterFn, activeTab, onTab
                 />
             </div>
 
-            <div className='h-95'>
+            <div className='flex-1 overflow-auto'>
                 {displayMatrix[currentPage]?.map((item, index) => (
                     <CardComponent key={index} data={item} onDelete={onDelete} onUpdate={onUpdate} />
                 ))}
