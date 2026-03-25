@@ -27,7 +27,7 @@ function AdminSupportTicketPanel({items, filterFn, onDelete, pageSize = 4}) {
 
     return(
         <div className="sidePanel bg-primary p-3 flex flex-col">
-            <div className='flex'>
+            <div className='flex justify-between'>
                 <span className="logo">Support Tickets</span>
                 <input
                     name='search'
