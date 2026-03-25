@@ -86,6 +86,21 @@ function Admin() {
         }
     }
 
+    const handleUpdateJob = async (jobId, updates) => {
+        try {
+            const response = await fetch(`http://localhost:3000/api/updateJob/${jobId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updates)
+            })
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
+            const updatedJob = await response.json()
+            setAllJobs(prev => prev.map(job => job.jobId === jobId ? updatedJob : job))
+        } catch (error) {
+            console.error('Failed to update job:', error)
+        }
+    }
+
     const handleDeleteTicket = async (ticketId) => {
         try {
             const response = await fetch(`http://localhost:3000/api/deleteTicket/${ticketId}`, { method: 'DELETE'})
@@ -133,6 +148,7 @@ function Admin() {
                         activeTab={activeTab}
                         onTabChange={setActiveTab}
                         onDelete={activeTab === 'users' ? handleDeleteUser : handleDeleteJob}
+                        onUpdate={activeTab === 'jobs' ? handleUpdateJob : undefined}
                     />
 
                 </div>
