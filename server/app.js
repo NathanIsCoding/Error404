@@ -37,37 +37,17 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
-app.get('/api/accounts/:lookup', (req, res) => {
-  const fs = require('fs');
-  const filePath = path.join(__dirname, 'public', 'accounts.json');
-  const requestedLookup = req.params.lookup.trim();
-  const normalizedLookup = requestedLookup.toLowerCase();
-  const isEmailLookup = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(requestedLookup);
+app.get('/api/accounts/:lookup', async (req, res) => {
+  try {
+    const requestedLookup = req.params.lookup.trim();
+    const normalizedLookup = requestedLookup.toLowerCase();
+    const isEmailLookup = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(requestedLookup);
 
-  fs.readFile(filePath, 'utf8', (err, data) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ error: 'Error reading file' });
-    }
+    const query = isEmailLookup
+      ? { email: normalizedLookup }
+      : { username: { $regex: new RegExp(`^${normalizedLookup.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') } };
 
-    let accounts = [];
-
-    try {
-      accounts = JSON.parse(data);
-    } catch (parseError) {
-      console.error(parseError);
-      return res.status(500).json({ error: 'Error parsing accounts data' });
-    }
-
-    const matchingAccount = accounts.find((account) => {
-      if (isEmailLookup) {
-        return typeof account.email === 'string' &&
-          account.email.trim().toLowerCase() === normalizedLookup;
-      }
-
-      return typeof account.username === 'string' &&
-        account.username.trim().toLowerCase() === normalizedLookup;
-    });
+    const matchingAccount = await User.findOne(query);
 
     if (!matchingAccount) {
       return res.status(404).json({ error: 'Account not found' });
@@ -81,7 +61,10 @@ app.get('/api/accounts/:lookup', (req, res) => {
         isAdmin: Boolean(matchingAccount.isAdmin),
       },
     });
-  });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: 'Error looking up account' });
+  }
 });
 
 app.post('/api/accounts', async (req, res) => {
