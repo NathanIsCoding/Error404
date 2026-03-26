@@ -10,6 +10,7 @@ import CreateAccount from '../../components/CreateAccount/CreateAccount.jsx'
 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Admin from '../Admin/Admin.jsx';
+import Applications from '../Applications/Applications.jsx';
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -31,6 +32,7 @@ export default function App() {
       <Routes>
        <Route path="/" element={<MainApp user={user} setUser={setUser} />} />
         <Route path="/admin" element={user?.isAdmin ? <Admin user={user} setUser={setUser} /> : <Navigate to="/" />} />
+        <Route path="/application/:username" element={<Applications user={user} setUser={setUser} />} />
       </Routes>
     </BrowserRouter>
   );
@@ -58,7 +60,7 @@ function MainApp({user, setUser}) {
   useEffect(() => {
       const fetchJobs = async () => {
         try {
-          const response = await fetch('http://localhost:3000/api/loadJobs')
+          const response = await fetch('/api/loadJobs')
           if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
           const data = await response.json()
           //Change this to modify how many jobs are being displayed per page.
@@ -103,7 +105,7 @@ function MainApp({user, setUser}) {
               
               <div className='overflow-auto h-[80vh] scroll-box'>
                   {jobMatrix[currentPage]?.map((job, index) => (
-                      <JobCard key={index} job={job} />
+                      <JobCard key={index} job={job} user={user} />
                   ))}
               </div>
 

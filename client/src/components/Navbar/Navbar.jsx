@@ -21,7 +21,7 @@ export default function Navbar({user, setUser, onSignIn, onCreateAccount}) {
   const handleSignOut = async (e) => {
     e.preventDefault();
     try {
-      await fetch('http://localhost:3000/api/accounts/logout', { 
+      await fetch('/api/accounts/logout', { 
         method: 'POST',
         credentials: 'include' 
       });
@@ -39,6 +39,9 @@ export default function Navbar({user, setUser, onSignIn, onCreateAccount}) {
         </div>
         <div className='right'>
             <a href="#" onClick={(e) => { e.preventDefault(); navigate('/'); }} className='text-black link'>Job Board</a>
+            {user && (
+              <a href="#" onClick={(e) => { e.preventDefault(); navigate(`/application/${user.username}`); }} className='text-black link'>My Applications</a>
+            )}
             {user?.isAdmin && (
               <a href="#" onClick={(e) => { e.preventDefault(); navigate('/admin'); }} className='text-black link'>Admin Dashboard</a>
             )}

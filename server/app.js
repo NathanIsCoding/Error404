@@ -14,6 +14,7 @@ connectDB();
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var accountsRouter = require('./routes/accounts');
+var applicationsRouter = require('./routes/applications');
 
 const Job = require('./models/Job');
 const User = require('./models/User');
@@ -30,7 +31,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
   credentials: true
 }));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -38,6 +39,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/api/accounts', accountsRouter);
+app.use('/api/applications', applicationsRouter);
 
 // Jobs Get
 app.get('/api/loadJobs', async (req, res) => {

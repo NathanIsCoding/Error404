@@ -15,7 +15,7 @@ function FilterBlock(props) {
       if (props.industry) params.append('industry', props.industry);
       if (props.salary && Number(props.salary) > 0) params.append('salary', props.salary);
 
-      const response = await fetch(`http://localhost:3000/api/search?${params.toString()}`, {
+      const response = await fetch(`/api/search?${params.toString()}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
       });
