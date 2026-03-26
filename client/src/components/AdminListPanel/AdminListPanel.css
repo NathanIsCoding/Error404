@@ -2,3 +2,28 @@
     height: 100%;
     border-radius: 15px;
 }
+
+.tab,
+.tab-active {
+    padding: 0.4rem 1.2rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border: 2px solid black;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.tab {
+    background-color: transparent;
+    color: black;
+}
+
+.tab:hover {
+    background-color: rgba(0, 0, 0, 0.15);
+}
+
+.tab-active {
+    background-color: black;
+    color: white;
+}
