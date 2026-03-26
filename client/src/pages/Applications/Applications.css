@@ -6,6 +6,8 @@
 
 .applications-container h2 {
     margin-bottom: 20px;
+    color: white;
+    font-size: 2rem;
 }
 
 .application-card {
