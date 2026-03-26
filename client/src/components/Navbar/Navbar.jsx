@@ -21,7 +21,7 @@ export default function Navbar({user, setUser, onSignIn, onCreateAccount}) {
   const handleSignOut = async (e) => {
     e.preventDefault();
     try {
-      await fetch('http://localhost:3000/api/accounts/logout', { 
+      await fetch('/api/accounts/logout', { 
         method: 'POST',
         credentials: 'include' 
       });

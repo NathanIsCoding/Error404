@@ -17,7 +17,7 @@ function Admin({ user, setUser }) {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await fetch('http://localhost:3000/api/loadUsers')
+                const response = await fetch('/api/loadUsers')
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
                 const data = await response.json()
                 //Change this to modify how many jobs are being displayed per page.
@@ -29,7 +29,7 @@ function Admin({ user, setUser }) {
 
         const fetchJobs = async () => {
             try {
-                const response = await fetch('http://localhost:3000/api/loadJobs')
+                const response = await fetch('/api/loadJobs')
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
                 const data = await response.json()
                 setAllJobs(data)
@@ -40,7 +40,7 @@ function Admin({ user, setUser }) {
 
         const fetchTickets = async () => { 
             try { 
-                const response = await fetch('http://localhost:3000/api/loadTickets')
+                const response = await fetch('/api/loadTickets')
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
                 const data = await response.json()
                 setAllTickets(data)
@@ -68,7 +68,7 @@ function Admin({ user, setUser }) {
 
     const handleDeleteUser = async (userId) => {
         try {
-            const response = await fetch(`http://localhost:3000/api/deleteUser/${userId}`, { method: 'DELETE'})
+            const response = await fetch(`/api/deleteUser/${userId}`, { method: 'DELETE'})
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
             setAllUsers(prev => prev.filter(user => user.userId !== userId))
         } catch (error) {
@@ -78,7 +78,7 @@ function Admin({ user, setUser }) {
 
     const handleDeleteJob = async (jobId) => {
         try {
-            const response = await fetch(`http://localhost:3000/api/deleteJob/${jobId}`, { method: 'DELETE'})
+            const response = await fetch(`/api/deleteJob/${jobId}`, { method: 'DELETE'})
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
             setAllJobs(prev => prev.filter(job => job.jobId !== jobId))
         } catch (error) {
@@ -88,7 +88,7 @@ function Admin({ user, setUser }) {
 
     const handleUpdateJob = async (jobId, updates) => {
         try {
-            const response = await fetch(`http://localhost:3000/api/updateJob/${jobId}`, {
+            const response = await fetch(`/api/updateJob/${jobId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(updates)
@@ -103,7 +103,7 @@ function Admin({ user, setUser }) {
 
     const handleDeleteTicket = async (ticketId) => {
         try {
-            const response = await fetch(`http://localhost:3000/api/deleteTicket/${ticketId}`, { method: 'DELETE'})
+            const response = await fetch(`/api/deleteTicket/${ticketId}`, { method: 'DELETE'})
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
             setAllTickets(prev => prev.filter(ticket => ticket.ticketId !== ticketId))
         } catch (error) {

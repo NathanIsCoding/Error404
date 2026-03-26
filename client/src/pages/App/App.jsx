@@ -60,7 +60,7 @@ function MainApp({user, setUser}) {
   useEffect(() => {
       const fetchJobs = async () => {
         try {
-          const response = await fetch('http://localhost:3000/api/loadJobs')
+          const response = await fetch('/api/loadJobs')
           if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
           const data = await response.json()
           //Change this to modify how many jobs are being displayed per page.

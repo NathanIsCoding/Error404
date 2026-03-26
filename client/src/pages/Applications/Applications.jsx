@@ -12,7 +12,7 @@ export default function Applications({ user, setUser }) {
   useEffect(() => {
     const fetchApplications = async () => {
       try {
-        const res = await fetch(`http://localhost:3000/api/applications/${encodeURIComponent(username)}`, {
+        const res = await fetch(`/api/applications/${encodeURIComponent(username)}`, {
           credentials: 'include'
         });
         if (!res.ok) throw new Error('Failed to fetch applications');
