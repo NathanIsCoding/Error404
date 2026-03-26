@@ -5,7 +5,8 @@
 }
 
 .mainPanel { 
-    width: 68vw
+    width: 68vw;
+    height: 100%;
 }
 
 .sidePanel { 

@@ -2,6 +2,7 @@ require('dotenv').config({ path: require('path').resolve(__dirname, '../../.env'
 const mongoose = require('mongoose');
 const crypto = require('crypto');
 const User = require('../models/User');
+const bcrypt = require('bcrypt');
 
 const firstNames = ['Alice', 'Bob', 'Carol', 'David', 'Eva', 'Frank', 'Grace', 'Henry', 'Iris', 'Jack',
   'Karen', 'Leo', 'Mia', 'Noah', 'Olivia', 'Paul', 'Quinn', 'Rachel', 'Sam', 'Tara'];
@@ -57,7 +58,7 @@ function generateRating() {
   return parseFloat((Math.random() * 3 + 2).toFixed(1)); // 2.0 - 5.0
 }
 
-function generateUsers(count) {
+async function generateUsers(count, hashedPassword) {
   const users = [];
   const usedEmails = new Set();
   const usedUsernames = new Set();
@@ -83,7 +84,7 @@ function generateUsers(count) {
       userId: generateUserId(),
       username,
       email,
-      password: '$2b$10$placeholderhashedpasswordfortestingpurposesonly',
+      password: hashedPassword,
       description: getRandomElement(descriptions),
       rating: generateRating(),
       isAdmin: i === 0, // Make the first user an admin
@@ -105,7 +106,8 @@ async function populateDB() {
     console.log('Cleared users collection');
 
     console.log('Generating 50 users...');
-    const users = generateUsers(50);
+    const hashedPassword = await bcrypt.hash('pass123', 12);
+    const users = await generateUsers(50, hashedPassword);
     const insertedUsers = await User.insertMany(users);
     console.log(`Inserted ${insertedUsers.length} users`);
 

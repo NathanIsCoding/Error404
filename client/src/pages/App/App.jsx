@@ -6,29 +6,43 @@ import FilterBlock from '../../components/FilterBlock/FilterBlock.jsx'
 import JobCard from '../../components/JobCard/JobCard.jsx'
 import SignIn from '../../components/SignIn/SignIn.jsx'
 import CreateAccount from '../../components/CreateAccount/CreateAccount.jsx'
-import SearchAccount from '../../components/SearchAccount/SearchAccount.jsx'
 
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Admin from '../Admin/Admin.jsx';
 
 export default function App() {
+  const [user, setUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
+ //retains state on page refresh
+ useEffect(() => {
+    fetch('/api/accounts/me', { credentials: 'include' })
+      .then(res => res.ok ? res.json() : null)
+      .then(data => { if (data) setUser(data); })
+      .catch(() => {})
+      .finally(() => setAuthLoading(false));
+  }, []);
+
+  if (authLoading) return null;
+  
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<MainApp />} />
-        <Route path="/admin" element={<Admin />} />
+       <Route path="/" element={<MainApp user={user} setUser={setUser} />} />
+        <Route path="/admin" element={user?.isAdmin ? <Admin user={user} setUser={setUser} /> : <Navigate to="/" />} />
       </Routes>
     </BrowserRouter>
   );
 }
 
-function MainApp() {
+function MainApp({user, setUser}) {
   const [searchTerm, setSearchTerm] = useState('')
   const [jobType, setJobType] = useState('')
   const [industry, setIndustry] = useState('')
   const [salary, setSalary] = useState(0)
   const [showCreateAccount, setShowCreateAccount] = useState(false)
-  const [showSearchAccount, setShowSearchAccount] = useState(false)
+  const [showSignIn, setShowSignIn] = useState(false)
   const [jobMatrix, setJobMatrix] = useState([])
   const [currentPage, setCurrentPage] = useState(0)
 
@@ -60,8 +74,10 @@ function MainApp() {
   return (
     <>
       <Navbar
+        user={user}
+        setUser={setUser}
+        onSignIn={() => setShowSignIn(true)}
         onCreateAccount={() => setShowCreateAccount(true)}
-        onSearchAccount={() => setShowSearchAccount(true)}
       />
       <main>
         <div className='flex justify-center'>
@@ -99,16 +115,21 @@ function MainApp() {
 
           </div>
 
-          {/* <div className="signin-container mx-5">
-            <SignIn/>
-          </div> */}
-
         </div>
         
 
       </main>
+      {showSignIn && (
+        <SignIn
+          onClose={() => setShowSignIn(false)}
+          onSuccess={(userData) => {
+            setUser(userData);
+            setShowSignIn(false);
+          }}
+        />
+      )}
+
       {showCreateAccount && <CreateAccount onClose={() => setShowCreateAccount(false)} />}
-      {showSearchAccount && <SearchAccount onClose={() => setShowSearchAccount(false)} />}
     </>
   )
 }
