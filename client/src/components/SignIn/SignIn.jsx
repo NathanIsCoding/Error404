@@ -1,32 +1,98 @@
+import React, { useState } from 'react';
 import './SignIn.css';
 
-function Signin() {
+const SignIn = ({ onClose, onSuccess }) => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [responseMessage, setResponseMessage] = useState('');
 
-    function buttonClick() {
-            var x = document.getElementById("Sign In");
-            x.disabled = true;
-        }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-    return (
-        
-     
-        
-        <div className='slot'>
-            <h3>Sign In </h3>
-            <div>
-                <div>
-                    <label className='username'>Username</label>
-                    <input type="text"/>
-                </div>
-                
-                <div>
-                    <label className='password'>password</label>
-                    <input type="password"/>
-                </div>
-            </div>
-            <button type="button" id="Sign In" onclick="buttonClick()">Sign In</button>
-        </div>
-        
-    );}
+    // Clear previous messages on each attempt
+    setErrorMessage('');
+    setResponseMessage('');
 
-    export default Signin;
+    try {
+      const response = await fetch('/api/accounts/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setErrorMessage(data.error || 'Login failed');
+        return;
+      }
+
+      if (data.success) {
+        setResponseMessage('Success! Logged in.');
+        
+        // Fetch the user info, then notify the parent
+        const me = await fetch('/api/accounts/me', {
+          credentials: 'include'
+        });
+        const userData = await me.json();
+        onSuccess(userData);
+        
+        setTimeout(() => onClose(), 2000);
+      } else {
+        setErrorMessage('Unexpected response');
+      }
+
+    } catch (error) {
+      console.error('Error fetching account:', error);
+      setErrorMessage('Unable to connect to server');
+    }
+  };
+
+  return (
+    <div className="login-modal">
+      <div className="login">
+        <button onClick={onClose} className="close-button">X</button>
+        <h1>Sign In</h1>
+        <form onSubmit={handleSubmit}>
+          <label htmlFor="username">Username:</label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+          <label htmlFor="password">Password:</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <button type="submit">Login</button>
+        </form>
+
+        {responseMessage && (
+          <p style={{ color: 'green', marginTop: '11px', fontSize: '30px', textAlign: 'center' }}>
+            {responseMessage}
+          </p>
+        )}
+
+        {errorMessage && (
+          <p style={{ color: 'red', marginTop: '11px', fontSize: '16px', textAlign: 'center' }}>
+            {errorMessage}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default SignIn;

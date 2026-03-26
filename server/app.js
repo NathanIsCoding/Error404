@@ -3,20 +3,19 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-var mongoose = require('mongoose');
+const fs = require('fs');
 var cors = require('cors');
+
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
-// connect to mongodb
-mongoose.connect(process.env.MONGODB_URI).then(() => {
-  console.log('Connected to MongoDB');
-}).catch((error) => {
-  console.error('An Error Occured', error);
-});
+const connectDB = require('./config/db');
+connectDB();
 
+// routers (Going forward put your routers here)
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-const fs = require('fs');
+var accountsRouter = require('./routes/accounts');
+
 const Job = require('./models/Job');
 const User = require('./models/User');
 const Ticket = require('./models/SupportTicket')
@@ -31,119 +30,15 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-
-app.get('/api/accounts/:lookup', async (req, res) => {
-  try {
-    const requestedLookup = req.params.lookup.trim();
-    const normalizedLookup = requestedLookup.toLowerCase();
-    const isEmailLookup = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(requestedLookup);
-
-    const query = isEmailLookup
-      ? { email: normalizedLookup }
-      : { username: { $regex: new RegExp(`^${normalizedLookup.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') } };
-
-    const matchingAccount = await User.findOne(query);
-
-    if (!matchingAccount) {
-      return res.status(404).json({ error: 'Account not found' });
-    }
-
-    return res.json({
-      account: {
-        username: matchingAccount.username,
-        email: matchingAccount.email,
-        createdAt: matchingAccount.createdAt,
-        isAdmin: Boolean(matchingAccount.isAdmin),
-      },
-    });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: 'Error looking up account' });
-  }
-});
-
-app.post('/api/accounts', async (req, res) => {
-  const getUtcMinus7Timestamp = () => {
-    const now = new Date();
-    const offsetMs = 7 * 60 * 60 * 1000;
-    const adjusted = new Date(now.getTime() - offsetMs);
-    return adjusted.toISOString().replace('Z', '-07:00');
-  };
-
-  const { username, email, password } = req.body;
-
-  // Normalize inputs (from the JSON version)
-  const normalizedUsername = typeof username === 'string' ? username.trim().toLowerCase() : '';
-  const normalizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : '';
-
-  // Validate required fields
-  if (!normalizedUsername || !normalizedEmail) {
-    return res.status(400).json({ error: 'Username and email are required to create an account' });
-  }
-
-  const accountToStore = {
-    username: username.trim(),
-    email: email.trim(),
-    password,
-    createdAt: getUtcMinus7Timestamp(),
-    isAdmin: false, // all new accounts are non-admin by default
-  };
-
-  try {
-    await createAccount(accountToStore, normalizedUsername, normalizedEmail);
-    res.json({
-      status: 'ok',
-      message: 'Account created successfully',
-      account: {
-        username: accountToStore.username,
-        email: accountToStore.email,
-        createdAt: accountToStore.createdAt,
-      },
-    });
-  } catch (err) {
-    if (err.code === 'USERNAME_TAKEN') {
-      return res.status(409).json({ error: 'Your account was not created because this username is already taken' });
-    }
-    if (err.code === 'EMAIL_REGISTERED') {
-      return res.status(409).json({ error: 'Your account was not created because this email is already registered with a different account' });
-    }
-    console.error(err);
-    res.status(500).json({ error: 'Error creating account' });
-  }
-});
-
-async function createAccount(account, normalizedUsername, normalizedEmail) {
-  console.log("Attempting to create account");
-  const users = mongoose.connection.client.db("data").collection("users");
-
-  // Check for duplicate username (case-insensitive)
-  const existingUsername = await users.findOne({
-    username: { $regex: new RegExp(`^${normalizedUsername}$`, 'i') }
-  });
-  if (existingUsername) {
-    const err = new Error('Username already taken');
-    err.code = 'USERNAME_TAKEN';
-    throw err;
-  }
-
-  // Check for duplicate email (case-insensitive)
-  const existingEmail = await users.findOne({
-    email: { $regex: new RegExp(`^${normalizedEmail}$`, 'i') }
-  });
-  if (existingEmail) {
-    const err = new Error('Email already registered');
-    err.code = 'EMAIL_REGISTERED';
-    throw err;
-  }
-
-  const result = await users.insertOne(account);
-  console.log(`A document was inserted with the _id: ${result.insertedId}`);
-}
+app.use('/api/accounts', accountsRouter);
 
 // Jobs Get
 app.get('/api/loadJobs', async (req, res) => {

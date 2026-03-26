@@ -13,9 +13,10 @@ const CreateAccount = ({ onClose }) => {
     // send our own timestamp here; keep the payload as small as possible
     const account = { username, email, password };
     try {
-      const response = await fetch('http://localhost:3000/api/accounts', {
+      const response = await fetch('/api/accounts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(account)
       });
       const data = await response.json();
