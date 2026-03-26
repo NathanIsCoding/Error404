@@ -3,24 +3,18 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-var mongoose = require('mongoose');
-const fs = require('fs');
 var cors = require('cors');
 
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
-
-// connect to mongodb
-mongoose.connect(process.env.MONGODB_URI).then(() => {
-  console.log('Connected to MongoDB');
-}).catch((error) => {
-  console.error('An Error Occured', error);
-});
+const connectDB = require('./config/db');
+connectDB();
 
 // routers (Going forward put your routers here)
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var accountsRouter = require('./routes/accounts');
+var applicationsRouter = require('./routes/applications');
 
 const Job = require('./models/Job');
 const User = require('./models/User');
@@ -45,6 +39,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/api/accounts', accountsRouter);
+app.use('/api/applications', applicationsRouter);
 
 // Jobs Get
 app.get('/api/loadJobs', async (req, res) => {

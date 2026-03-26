@@ -1,0 +1,36 @@
+.applications-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.applications-container h2 {
+    margin-bottom: 20px;
+    color: white;
+    font-size: 2rem;
+}
+
+.application-card {
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.application-card .app-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.application-card .app-info p {
+    margin: 0;
+    text-align: left;
+}
+
+.application-card .app-date {
+    font-size: 0.85rem;
+    opacity: 0.7;
+}
