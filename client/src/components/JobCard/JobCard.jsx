@@ -18,7 +18,7 @@ function JobCard({job, user}) {
             return;
         }
         try {
-            const res = await fetch('http://localhost:3000/api/applications', {
+            const res = await fetch('/api/applications', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
