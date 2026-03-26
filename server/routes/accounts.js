@@ -24,7 +24,7 @@ router.post('/login', async (req, res) => {
     if (!isMatch) return res.status(401).json({ error: 'Password incorrect' });
 
     const token = jwt.sign(
-      { userId: user._id, email: user.email, isAdmin: user.isAdmin },
+      { userId: user._id, username: user.username, email: user.email, isAdmin: user.isAdmin },
       SECRET,
       { expiresIn: '24h' }
     );
@@ -45,7 +45,7 @@ router.post('/login', async (req, res) => {
 });
 
 router.get('/me', requireAuth, (req, res) => {
-  res.json({ userId: req.user.userId, isAdmin: req.user.isAdmin });
+  res.json({ userId: req.user.userId, username: req.user.username, isAdmin: req.user.isAdmin });
 });
 
 router.post('/logout', (req, res) => {

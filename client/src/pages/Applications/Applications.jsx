@@ -35,7 +35,7 @@ export default function Applications({ user, setUser }) {
     <>
       <Navbar user={user} setUser={setUser} />
       <div className="applications-container">
-        <h2>Applications for {username}'s Jobs</h2>
+        <h2>{username}'s Applications</h2>
         {loading && <p>Loading...</p>}
         {error && <p style={{ color: 'red' }}>{error}</p>}
         {!loading && !error && applications.length === 0 && (
@@ -45,7 +45,6 @@ export default function Applications({ user, setUser }) {
           <div key={app._id} className="application-card bg-primary">
             <div className="app-info">
               <p><strong>{app.jobId?.title}</strong> at {app.jobId?.company}</p>
-              <p>Applicant: {app.userId?.username} ({app.userId?.email})</p>
               <p>Location: {app.jobId?.location} &middot; {app.jobId?.jobType}</p>
             </div>
             <span className="app-date">{new Date(app.createdAt).toLocaleDateString()}</span>

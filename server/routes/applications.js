@@ -29,26 +29,19 @@ router.post('/', requireAuth, async (req, res) => {
   }
 });
 
-// GET /api/applications/:username - View all applications sent to jobs owned by :username
+// GET /api/applications/:username - View all applications sent by :username
 router.get('/:username', requireAuth, async (req, res) => {
   try {
     const { username } = req.params;
 
-    // Find the user whose jobs we want to see applications for
-    const owner = await User.findOne({ username }).populate('createdJobs');
-    if (!owner) {
+    // Find the user whose applications we want to see
+    const applicant = await User.findOne({ username });
+    if (!applicant) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Get the ObjectIds of jobs this user created
-    const jobIds = owner.createdJobs.map(j => j._id);
-
-    if (jobIds.length === 0) {
-      return res.json([]);
-    }
-
-    // Find all applications targeting those jobs, populate applicant + job details
-    const applications = await JobApplication.find({ jobId: { $in: jobIds } })
+    // Find all applications submitted by this user, populate job details
+    const applications = await JobApplication.find({ userId: applicant._id })
       .populate('jobId', 'title company salary location jobType')
       .populate('userId', 'username email')
       .sort({ createdAt: -1 });
