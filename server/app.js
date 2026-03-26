@@ -3,19 +3,13 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-var mongoose = require('mongoose');
 const fs = require('fs');
 var cors = require('cors');
 
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
-
-// connect to mongodb
-mongoose.connect(process.env.MONGODB_URI).then(() => {
-  console.log('Connected to MongoDB');
-}).catch((error) => {
-  console.error('An Error Occured', error);
-});
+const connectDB = require('./config/db');
+connectDB();
 
 // routers (Going forward put your routers here)
 var indexRouter = require('./routes/index');
