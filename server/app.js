@@ -14,6 +14,7 @@ connectDB();
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var accountsRouter = require('./routes/accounts');
+var applicationsRouter = require('./routes/applications');
 
 const Job = require('./models/Job');
 const User = require('./models/User');
@@ -38,6 +39,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/api/accounts', accountsRouter);
+app.use('/api/applications', applicationsRouter);
 
 // Jobs Get
 app.get('/api/loadJobs', async (req, res) => {
