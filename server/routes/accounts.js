@@ -137,4 +137,28 @@ async function createAccount(account, normalizedUsername, normalizedEmail) {
   console.log(`A document was inserted with the _id: ${result._id}`);
 }
 
+// User Disable/Enable Toggle
+router.patch('/toggleUser/:userId', requireAuth, async (req, res) => {
+    try {
+        if (!req.user.isAdmin) {
+            return res.status(403).json({ message: 'Admin access required' });
+        }
+
+        const userId = req.params.userId;
+        const user = await User.findOne({ userId: userId });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        user.isDisabled = !user.isDisabled;
+        await user.save();
+
+        res.status(200).json({ message: `User ${user.isDisabled ? 'disabled' : 'enabled'} successfully`, isDisabled: user.isDisabled });
+    } catch (error) {
+        console.error('Error toggling user:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
 module.exports = router;
