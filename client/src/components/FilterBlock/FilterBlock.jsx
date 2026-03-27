@@ -85,7 +85,7 @@ function FilterBlock(props) {
               />
             </div>
 
-            <div className="justify-end">
+            <div className="filter-submit-wrap">
               <button onClick={handleSubmit}>
                 Submit
               </button>

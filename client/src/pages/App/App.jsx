@@ -47,6 +47,8 @@ function MainApp({user, setUser}) {
   const [showCreateAccount, setShowCreateAccount] = useState(false)
   const [showSignIn, setShowSignIn] = useState(false)
 
+  const [appliedJobIds, setAppliedJobIds] = useState(new Set())
+
   // Pagination Sate Variables
   const [jobMatrix, setJobMatrix] = useState([])
   const [currentPage, setCurrentPage] = useState(0)
@@ -75,6 +77,39 @@ function MainApp({user, setUser}) {
 
       fetchJobs()
     }, [])
+
+  useEffect(() => {
+    if (!user) {
+      setAppliedJobIds(new Set())
+      return
+    }
+
+    const fetchMyApplications = async () => {
+      try {
+        const response = await fetch(`/api/applications/${encodeURIComponent(user.username)}`, {
+          credentials: 'include'
+        })
+
+        if (!response.ok) {
+          console.error('Failed to fetch user applications:', response.status)
+          setAppliedJobIds(new Set())
+          return
+        }
+
+        const data = await response.json()
+        const ids = new Set(data.map((app) => {
+          if (app.jobId && typeof app.jobId === 'object') return app.jobId._id || app.jobId
+          return app.jobId
+        }))
+        setAppliedJobIds(ids)
+      } catch (error) {
+        console.error('Failed to fetch user applications:', error)
+        setAppliedJobIds(new Set())
+      }
+    }
+
+    fetchMyApplications()
+  }, [user])
 
   return (
     <>
@@ -108,7 +143,14 @@ function MainApp({user, setUser}) {
               
               <div className='overflow-auto flex-1 scroll-box rounded-lg'>
                   {jobMatrix[currentPage]?.map((job, index) => (
-                      <JobCard className="border-b-1 border-tertiary" key={index} job={job} user={user} />
+                      <JobCard
+                        className="border-b-1 border-tertiary"
+                        key={index}
+                        job={job}
+                        user={user}
+                        isApplied={appliedJobIds.has(job._id)}
+                        onApplied={(jobId) => setAppliedJobIds((prev) => new Set(prev).add(jobId))}
+                      />
                   ))}
               </div>
                 
