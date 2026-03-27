@@ -47,7 +47,7 @@ export default function Navbar({user, setUser, onSignIn, onCreateAccount}) {
             )}
             {user ? (
               <>
-                <div className="user-info">
+                <button className="user-info" onClick={() => alert('You have clicked on your profile!')}>
                   <img
                     src={`/api/accounts/${user.userId}/photo`}
                     alt=""
@@ -55,7 +55,7 @@ export default function Navbar({user, setUser, onSignIn, onCreateAccount}) {
                     onError={(e) => { e.target.style.display = 'none'; }}
                   />
                   <span className="nav-username">{user.username}</span>
-                </div>
+                </button>
                 <a href="#" onClick={handleSignOut} className='text-black link'>Sign Out</a>
               </>
             ) : (
