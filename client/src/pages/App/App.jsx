@@ -67,7 +67,7 @@ function MainApp({user, setUser}) {
           if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
           const data = await response.json()
           //Change this to modify how many jobs are being displayed per page.
-          setJobMatrix(chunkJobs(data, 6))
+          setJobMatrix(chunkJobs(data, 8))
         } catch (error) {
           console.error('Failed to fetch jobs:', error)
         }
