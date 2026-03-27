@@ -88,6 +88,8 @@ app.post('/api/jobs', requireAuth, async (req, res) => {
             salary: parsedSalary,
             location: String(location).trim(),
             description: String(description).trim(),
+            createdByUserId: String(req.user.userId),
+            createdByUsername: req.user.username,
             isActive: typeof isActive === 'boolean' ? isActive : true,
         });
 
@@ -95,6 +97,17 @@ app.post('/api/jobs', requireAuth, async (req, res) => {
     } catch (error) {
         console.error('Error creating job listing:', error);
         return res.status(500).json({ error: 'Failed to create job listing' });
+    }
+});
+
+// Jobs created by current user
+app.get('/api/my-jobs', requireAuth, async (req, res) => {
+    try {
+        const myJobs = await Job.find({ createdByUserId: String(req.user.userId) }).sort({ createdAt: -1 });
+        return res.json(myJobs);
+    } catch (error) {
+        console.error('Error fetching my jobs:', error);
+        return res.status(500).json({ error: 'Failed to fetch your job listings' });
     }
 });
 

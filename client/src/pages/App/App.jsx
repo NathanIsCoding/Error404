@@ -13,6 +13,7 @@ import Paginator from '../../components/Paginator/Paginator.jsx';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Admin from '../Admin/Admin.jsx';
 import Applications from '../Applications/Applications.jsx';
+import MyJobs from '../MyJobs/MyJobs.jsx';
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -35,6 +36,7 @@ export default function App() {
        <Route path="/" element={<MainApp user={user} setUser={setUser} />} />
         <Route path="/admin" element={user?.isAdmin ? <Admin user={user} setUser={setUser} /> : <Navigate to="/" />} />
         <Route path="/application/:username" element={<Applications user={user} setUser={setUser} />} />
+        <Route path="/my-jobs" element={user ? <MyJobs user={user} setUser={setUser} /> : <Navigate to="/" />} />
       </Routes>
     </BrowserRouter>
   );
@@ -48,7 +50,6 @@ function MainApp({user, setUser}) {
   const [showCreateAccount, setShowCreateAccount] = useState(false)
   const [showSignIn, setShowSignIn] = useState(false)
   const [showCreateJobListing, setShowCreateJobListing] = useState(false)
-  const [jobBeingEdited, setJobBeingEdited] = useState(null)
 
   const [appliedJobIds, setAppliedJobIds] = useState(new Set())
 
@@ -69,13 +70,6 @@ function MainApp({user, setUser}) {
     const allJobs = jobMatrix.flat()
     setJobMatrix(chunkJobs([newJob, ...allJobs], 8))
     setCurrentPage(0)
-  }
-
-  const applyEditedJob = (updatedJob) => {
-    const allJobs = jobMatrix.flat().map((job) => (
-      job.jobId === updatedJob.jobId ? updatedJob : job
-    ))
-    setJobMatrix(chunkJobs(allJobs, 8))
   }
 
   useEffect(() => {
@@ -169,7 +163,6 @@ function MainApp({user, setUser}) {
                         user={user}
                         isApplied={appliedJobIds.has(job._id)}
                         onApplied={(jobId) => setAppliedJobIds((prev) => new Set(prev).add(jobId))}
-                        onEdit={(targetJob) => setJobBeingEdited(targetJob)}
                       />
                   ))}
               </div>
@@ -201,14 +194,6 @@ function MainApp({user, setUser}) {
         <CreateJobListing
           onClose={() => setShowCreateJobListing(false)}
           onCreated={appendCreatedJob}
-        />
-      )}
-
-      {jobBeingEdited && (
-        <CreateJobListing
-          initialJob={jobBeingEdited}
-          onClose={() => setJobBeingEdited(null)}
-          onUpdated={applyEditedJob}
         />
       )}
     </>
