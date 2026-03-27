@@ -1,12 +1,16 @@
 import './JobCard.css';
 import reactLogo from '../../assets/react.svg'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-function JobCard({job, user}) {
+function JobCard({ job, user, isApplied = false, onApplied }) {
 
     const [isExpanded, setIsExpanded] = useState(false);
-    const [applied, setApplied] = useState(false);
+    const [applied, setApplied] = useState(isApplied);
     const [applyError, setApplyError] = useState('');
+
+    useEffect(() => {
+        setApplied(isApplied);
+    }, [isApplied]);
 
     function clicked(){ 
         setIsExpanded(!isExpanded);
@@ -17,6 +21,12 @@ function JobCard({job, user}) {
             setApplyError('Sign in to apply');
             return;
         }
+
+        if (applied) {
+            setApplyError('');
+            return;
+        }
+
         try {
             const res = await fetch('/api/applications', {
                 method: 'POST',
@@ -25,11 +35,15 @@ function JobCard({job, user}) {
                 body: JSON.stringify({ jobId: job._id })
             });
             if (res.status === 409) {
-                setApplyError('Already applied');
+                setApplied(true);
+                setApplyError('');
+                if (typeof onApplied === 'function') onApplied(job._id);
                 return;
             }
             if (!res.ok) throw new Error('Failed to apply');
             setApplied(true);
+            setApplyError('');
+            if (typeof onApplied === 'function') onApplied(job._id);
         } catch (err) {
             console.error(err);
             setApplyError('Failed to apply');
@@ -37,26 +51,71 @@ function JobCard({job, user}) {
     }
     
     return(
-        <div className='flex flex-col bg-primary card'>
-            <div className='flex flex-row'>
-                <img src={reactLogo} className='cardImg'></img>
-                <div className='textRow'>
-                    <p className=''>{job.company} - {job.title}</p>
-                    <p className=''>{job.salary}</p>
+        <div className='flex flex-col bg-black text-white card border-b-1 border-gray-400'>
+
+            <div className='flex flex-row justify-between'>
+                <div className='flex flex-row items-center'>
+                    <img src={reactLogo} className='cardImg rounded-sm'></img>
+                    <div className='textRow'>
+                        <p className='text-lg'>{job.company} - {job.title}</p>
+                        <p className='text-gray-400'>{
+                            new Intl.NumberFormat("en-IN", { style: "currency", currency: "CAD" }).format( job.salary)
+                        }</p>
+                    </div>
                 </div>
-                <button onClick={clicked} className='expandButton'>Expand</button>
-                <button onClick={handleApply} disabled={applied}>
-                    {applied ? 'Applied' : 'Apply'}
-                </button>
+               
+
+                <div className='flex flex-col'>
+                    {!isExpanded ? (
+                            <button onClick={clicked} className='expandButton flex justify-center items-center !bg-black'>
+                                <span className="material-symbols-outlined">keyboard_arrow_down</span>
+                            </button>
+                        ) : (
+                            <button onClick={clicked} className='expandButton flex justify-center items-center !bg-black'>
+                                <span className="material-symbols-outlined">keyboard_arrow_up</span>
+                            </button>
+                        )
+                    }
+
+                    {!isExpanded && (
+                        applied ? (
+                            <button className='applyButton flex justify-center items-center  !bg-red-600' onClick={handleApply}>
+                                <span className="material-symbols-outlined">close</span>
+                            </button>
+                        ) : (
+                            <button className='applyButton !bg-green-600 flex justify-center items-center !px-0' onClick={handleApply}>
+                                <span className="material-symbols-outlined">add</span>
+                            </button>
+                        )
+                    )}
+
+
+                </div>
+
             </div>
             {applyError && <p style={{color: 'red', fontSize: '0.85rem', marginTop: '4px'}}>{applyError}</p>}
             {isExpanded && (
-                <div className='description bg-tertiary'>
+                <div className='description text-black bg-tertiary'>
                     <p>
                         {job.description}
                     </p>
                 </div>
             )}
+
+            <div className='flex justify-end'>
+                {isExpanded && (
+                    applied ? (
+                        <button className='applyButton !bg-red-600 flex justify-center items-center mt-1' onClick={handleApply}>
+                            <span className="material-symbols-outlined">close</span>
+                        </button>
+                    ) : (
+                        <button className='applyButton !bg-green-600 flex justify-center items-center !px-0 mt-1' onClick={handleApply}>
+                            <span className="material-symbols-outlined">add</span>
+                        </button>
+                    )
+                )}
+            </div>
+
         </div>
     );
 

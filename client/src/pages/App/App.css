@@ -19,8 +19,12 @@
   margin: 0 auto;
 }
 
+main {
+  height: calc(95vh - 72px);
+}
+
 .job-listings-container {
     display: flex;
     flex-direction: column;
-    height: 75vh;
+    height: 100%;
 }

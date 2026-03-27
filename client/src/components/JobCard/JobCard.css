@@ -1,8 +1,6 @@
 .card { 
-    padding: 20px;
-    margin-bottom: 15px;
-    min-width: 800px;
-    border-radius: 15px;
+    padding: 10px;
+    min-width: 600px;
 }
 
 .description { 
@@ -14,7 +12,8 @@
 }
 
 .cardImg { 
-    display: inline;
+    width: 4em;
+    height: 4em;
     margin-right: 10px;
 }
 
@@ -25,6 +24,13 @@
 
 .expandButton {
     margin-left: auto;  
+    width: 3em;
+    height: 3em;
+}
+
+.applyButton {
+    width: 3em;
+    height: 3em;
 }
 
 p { 

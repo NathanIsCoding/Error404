@@ -6,6 +6,7 @@ import FilterBlock from '../../components/FilterBlock/FilterBlock.jsx'
 import JobCard from '../../components/JobCard/JobCard.jsx'
 import SignIn from '../../components/SignIn/SignIn.jsx'
 import CreateAccount from '../../components/CreateAccount/CreateAccount.jsx'
+import Paginator from '../../components/Paginator/Paginator.jsx';
 
 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
@@ -45,6 +46,10 @@ function MainApp({user, setUser}) {
   const [salary, setSalary] = useState(0)
   const [showCreateAccount, setShowCreateAccount] = useState(false)
   const [showSignIn, setShowSignIn] = useState(false)
+
+  const [appliedJobIds, setAppliedJobIds] = useState(new Set())
+
+  // Pagination Sate Variables
   const [jobMatrix, setJobMatrix] = useState([])
   const [currentPage, setCurrentPage] = useState(0)
 
@@ -64,7 +69,7 @@ function MainApp({user, setUser}) {
           if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
           const data = await response.json()
           //Change this to modify how many jobs are being displayed per page.
-          setJobMatrix(chunkJobs(data, 6))
+          setJobMatrix(chunkJobs(data, 8))
         } catch (error) {
           console.error('Failed to fetch jobs:', error)
         }
@@ -72,6 +77,39 @@ function MainApp({user, setUser}) {
 
       fetchJobs()
     }, [])
+
+  useEffect(() => {
+    if (!user) {
+      setAppliedJobIds(new Set())
+      return
+    }
+
+    const fetchMyApplications = async () => {
+      try {
+        const response = await fetch(`/api/applications/${encodeURIComponent(user.username)}`, {
+          credentials: 'include'
+        })
+
+        if (!response.ok) {
+          console.error('Failed to fetch user applications:', response.status)
+          setAppliedJobIds(new Set())
+          return
+        }
+
+        const data = await response.json()
+        const ids = new Set(data.map((app) => {
+          if (app.jobId && typeof app.jobId === 'object') return app.jobId._id || app.jobId
+          return app.jobId
+        }))
+        setAppliedJobIds(ids)
+      } catch (error) {
+        console.error('Failed to fetch user applications:', error)
+        setAppliedJobIds(new Set())
+      }
+    }
+
+    fetchMyApplications()
+  }, [user])
 
   return (
     <>
@@ -82,8 +120,8 @@ function MainApp({user, setUser}) {
         onCreateAccount={() => setShowCreateAccount(true)}
       />
       <main>
-        <div className='flex justify-center'>
-          <div className='ml-5 grow-1'>
+        <div className='flex justify-center h-full'>
+          <div className='ml-5 w-[50vh] h-full'>
             <FilterBlock 
               searchTerm={searchTerm}
               onSearchChange={(e) => setSearchTerm(e.target.value)}
@@ -101,19 +139,26 @@ function MainApp({user, setUser}) {
             />
           </div>
         
-          <div className="job-listings-container mx-5 grow-2">
+          <div className="job-listings-container bg-primary mx-5 grow-2 p-3 rounded-lg">
               
-              <div className='overflow-auto h-[80vh] scroll-box'>
+              <div className='overflow-auto flex-1 scroll-box rounded-lg'>
                   {jobMatrix[currentPage]?.map((job, index) => (
-                      <JobCard key={index} job={job} user={user} />
+                      <JobCard
+                        className="border-b-1 border-tertiary"
+                        key={index}
+                        job={job}
+                        user={user}
+                        isApplied={appliedJobIds.has(job._id)}
+                        onApplied={(jobId) => setAppliedJobIds((prev) => new Set(prev).add(jobId))}
+                      />
                   ))}
               </div>
-
-              {/* Paginator */}
-              <div>
-                  <button onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 0}>Prev</button>
-                  <button onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === jobMatrix.length - 1}>Next</button>
-              </div>
+                
+              <Paginator
+                  currentPage={currentPage}
+                  totalPages={jobMatrix.length}
+                  onPageChange={setCurrentPage}
+              />
 
           </div>
 

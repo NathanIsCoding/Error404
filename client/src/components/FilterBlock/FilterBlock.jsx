@@ -33,11 +33,11 @@ function FilterBlock(props) {
   };
   
   return (
-    <div className="bg-primary filter-block">
+    <div className="bg-primary flex flex-col filter-block">
       <form>
-         <div className="search-bar">
+         <div className="search-bar flex">
             <input 
-              className='rounded-full w-100 pl-5 p-3'
+              className='rounded-full grow pl-5 p-3'
               type="text"
               placeholder="Search..."
               value={searchTerm}
@@ -45,10 +45,10 @@ function FilterBlock(props) {
             />
           </div>
         <br />
-        <div>
-           <div>
-              <label>Job Type: </label>
-              <select className="bg-black text-white" value={props.jobType} onChange={(e) => props.onJobTypeChange(e)}>
+        <div className="p-2">
+           <div className="flex flex-col">
+              <label className="font-bold text-xl">Job Type</label>
+              <select name="JobTypeFilter" className="bg-black text-white p-2 mt-1 rounded-sm" value={props.jobType} onChange={(e) => props.onJobTypeChange(e)}>
                 <option value="">All</option>
                 <option value="full-time">Full-time</option>
                 <option value="part-time">Part-time</option>
@@ -59,10 +59,10 @@ function FilterBlock(props) {
 
             <br />
 
-            <div>
-              <label>Industry: </label>
-              <select className="bg-black text-white" value={props.industry} onChange={(e) => props.onIndustryChange(e)}>
-                <option value="">All</option>
+            <div className="flex flex-col">
+              <label className="font-bold text-xl">Industry</label>
+              <select name="industryFilter" className="bg-black text-white p-2 mt-1 rounded-sm" value={props.industry} onChange={(e) => props.onIndustryChange(e)}>
+                <option className="bg-black " value="">All</option>
                 <option value="tech">Technology</option>
                 <option value="finance">Finance</option>
                 <option value="healthcare">Healthcare</option>
@@ -73,9 +73,9 @@ function FilterBlock(props) {
             <br />
 
             <div>
-              <label>Minimum Salary: ${props.salary ? props.salary : 0}</label>
+              <label className="font-bold text-xl">Minimum Salary: ${props.salary ? props.salary : 0}</label>
               <br />
-              <input 
+              <input className="accent-secondary"
                 type="range" 
                 min="0" 
                 max="200000" 
@@ -84,7 +84,8 @@ function FilterBlock(props) {
                 onChange={(e) => props.onSalaryChange(e)} 
               />
             </div>
-            <div>
+
+            <div className="filter-submit-wrap">
               <button onClick={handleSubmit}>
                 Submit
               </button>

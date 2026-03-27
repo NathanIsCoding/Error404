@@ -1,11 +1,18 @@
 .filter-block { 
     border-radius: 15px;
     padding: 10px;
-    max-width: 450px;
+    height: 100%;
+    position: relative;
+}
+
+.filter-submit-wrap {
+    position: absolute;
+    right: 16px;
+    bottom: 16px;
 }
 
 /* Colours will need be be fixed here but I feel this PR has gotten out of scope */
 option { 
-    background-color: black;
+    background-color: #242424;
     color: white;
 }

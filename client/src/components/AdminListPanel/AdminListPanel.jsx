@@ -47,7 +47,7 @@ function AdminListPanel({title, items, CardComponent, filterFn, activeTab, onTab
                 />
             </div>
 
-            <div className='flex-1 overflow-auto'>
+            <div className='flex-1 overflow-auto rounded-lg'>
                 {displayMatrix[currentPage]?.map((item, index) => (
                     <CardComponent key={index} data={item} onDelete={onDelete} onUpdate={onUpdate} />
                 ))}
