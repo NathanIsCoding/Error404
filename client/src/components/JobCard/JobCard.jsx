@@ -37,26 +37,71 @@ function JobCard({job, user}) {
     }
     
     return(
-        <div className='flex flex-col bg-primary card'>
-            <div className='flex flex-row'>
-                <img src={reactLogo} className='cardImg'></img>
-                <div className='textRow'>
-                    <p className=''>{job.company} - {job.title}</p>
-                    <p className=''>{job.salary}</p>
+        <div className='flex flex-col bg-black text-white card border-b-1 border-gray-400'>
+
+            <div className='flex flex-row justify-between'>
+                <div className='flex flex-row items-center'>
+                    <img src={reactLogo} className='cardImg rounded-sm'></img>
+                    <div className='textRow'>
+                        <p className='text-lg'>{job.company} - {job.title}</p>
+                        <p className='text-gray-400'>{
+                            new Intl.NumberFormat("en-IN", { style: "currency", currency: "CAD" }).format( job.salary)
+                        }</p>
+                    </div>
                 </div>
-                <button onClick={clicked} className='expandButton'>Expand</button>
-                <button onClick={handleApply} disabled={applied}>
-                    {applied ? 'Applied' : 'Apply'}
-                </button>
+               
+
+                <div className='flex flex-col'>
+                    {!isExpanded ? (
+                            <button onClick={clicked} className='expandButton flex !bg-black justify-center'>
+                                <span className="material-symbols-outlined">keyboard_arrow_down</span>
+                            </button>
+                        ) : (
+                            <button onClick={clicked} className='expandButton flex !bg-black justify-center'>
+                                <span className="material-symbols-outlined">keyboard_arrow_up</span>
+                            </button>
+                        )
+                    }
+
+                    {!isExpanded && (
+                        applied ? (
+                            <button className='applyButton !bg-red-600' onClick={handleApply}>
+                                <span className="material-symbols-outlined">close</span>
+                            </button>
+                        ) : (
+                            <button className='applyButton !bg-green-600 !px-0' onClick={handleApply}>
+                                <span className="material-symbols-outlined">add</span>
+                            </button>
+                        )
+                    )}
+
+
+                </div>
+
             </div>
             {applyError && <p style={{color: 'red', fontSize: '0.85rem', marginTop: '4px'}}>{applyError}</p>}
             {isExpanded && (
-                <div className='description bg-tertiary'>
+                <div className='description text-black bg-tertiary'>
                     <p>
                         {job.description}
                     </p>
                 </div>
             )}
+
+            <div className='flex justify-end'>
+                {isExpanded && (
+                    applied ? (
+                        <button className='applyButton !bg-red-600 mt-1' onClick={handleApply}>
+                            <span className="material-symbols-outlined">close</span>
+                        </button>
+                    ) : (
+                        <button className='applyButton !bg-green-600 !px-0 mt-1' onClick={handleApply}>
+                            <span className="material-symbols-outlined">add</span>
+                        </button>
+                    )
+                )}
+            </div>
+
         </div>
     );
 

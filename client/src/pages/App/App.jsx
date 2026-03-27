@@ -6,6 +6,7 @@ import FilterBlock from '../../components/FilterBlock/FilterBlock.jsx'
 import JobCard from '../../components/JobCard/JobCard.jsx'
 import SignIn from '../../components/SignIn/SignIn.jsx'
 import CreateAccount from '../../components/CreateAccount/CreateAccount.jsx'
+import Paginator from '../../components/Paginator/Paginator.jsx';
 
 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
@@ -45,6 +46,8 @@ function MainApp({user, setUser}) {
   const [salary, setSalary] = useState(0)
   const [showCreateAccount, setShowCreateAccount] = useState(false)
   const [showSignIn, setShowSignIn] = useState(false)
+
+  // Pagination Sate Variables
   const [jobMatrix, setJobMatrix] = useState([])
   const [currentPage, setCurrentPage] = useState(0)
 
@@ -82,8 +85,8 @@ function MainApp({user, setUser}) {
         onCreateAccount={() => setShowCreateAccount(true)}
       />
       <main>
-        <div className='flex justify-center'>
-          <div className='ml-5 grow-1'>
+        <div className='flex justify-center h-full'>
+          <div className='ml-5 w-[50vh] h-full'>
             <FilterBlock 
               searchTerm={searchTerm}
               onSearchChange={(e) => setSearchTerm(e.target.value)}
@@ -101,19 +104,19 @@ function MainApp({user, setUser}) {
             />
           </div>
         
-          <div className="job-listings-container mx-5 grow-2">
+          <div className="job-listings-container bg-primary mx-5 grow-2 p-3 rounded-lg">
               
-              <div className='overflow-auto h-[80vh] scroll-box'>
+              <div className='overflow-auto flex-1 scroll-box rounded-lg'>
                   {jobMatrix[currentPage]?.map((job, index) => (
-                      <JobCard key={index} job={job} user={user} />
+                      <JobCard className="border-b-1 border-tertiary" key={index} job={job} user={user} />
                   ))}
               </div>
-
-              {/* Paginator */}
-              <div>
-                  <button onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 0}>Prev</button>
-                  <button onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === jobMatrix.length - 1}>Next</button>
-              </div>
+                
+              <Paginator
+                  currentPage={currentPage}
+                  totalPages={jobMatrix.length}
+                  onPageChange={setCurrentPage}
+              />
 
           </div>
 
