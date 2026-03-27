@@ -129,6 +129,21 @@ router.post('/', upload.single('profilePhoto'), async (req, res) => {
   }
 });
 
+// Serve profile photo by user ID
+router.get('/:id/photo', async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user || !user.profilePhoto || !user.profilePhoto.data) {
+      return res.status(404).json({ error: 'No photo found' });
+    }
+    res.set('Content-Type', user.profilePhoto.contentType);
+    res.send(user.profilePhoto.data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error fetching photo' });
+  }
+});
+
 function generateUserId() {
   return crypto.randomBytes(16).toString('hex');
 }
