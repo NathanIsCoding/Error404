@@ -38,7 +38,7 @@
   color: red;
 }
 
-.create-login h1 {
+.login h1 {
   text-align: center;
   color: #065f46;
   font-weight: 800;
@@ -48,18 +48,18 @@
   padding-right: 30px;
 }
 
-.create-login form {
+.login form {
   display: flex;
   flex-direction: column;
 }
 
-.create-login label {
+.login label {
   margin-bottom: 5px;
   font-weight: 700;
   color: #065f46;
 }
 
-.create-login input {
+.login input {
   margin-bottom: 15px;
   padding: 10px;
   border: 1px solid #4ade80;
@@ -69,12 +69,12 @@
   font-size: 16px;
 }
 
-.create-login input:focus {
+.login input:focus {
   outline: none;
   border-color: #065f46;
 }
 
-.create-login button {
+.login button {
   padding: 10px;
   background-color: #065f46;
   color: white;
@@ -85,6 +85,6 @@
   font-size: 18px;
 }
 
-.create-login button:hover {
+.login button:hover {
   background-color: #022c1e;
 }
