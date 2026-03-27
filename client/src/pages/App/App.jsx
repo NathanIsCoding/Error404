@@ -11,6 +11,7 @@ import CreateAccount from '../../components/CreateAccount/CreateAccount.jsx'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Admin from '../Admin/Admin.jsx';
 import Applications from '../Applications/Applications.jsx';
+import UserProfile from '../UserProfile/UserProfile.jsx';
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -33,6 +34,7 @@ export default function App() {
        <Route path="/" element={<MainApp user={user} setUser={setUser} />} />
         <Route path="/admin" element={user?.isAdmin ? <Admin user={user} setUser={setUser} /> : <Navigate to="/" />} />
         <Route path="/application/:username" element={<Applications user={user} setUser={setUser} />} />
+        <Route path="/user/:username" element={<UserProfile user={user} setUser={setUser} />} />
       </Routes>
     </BrowserRouter>
   );

@@ -47,7 +47,7 @@ export default function Navbar({user, setUser, onSignIn, onCreateAccount}) {
             )}
             {user ? (
               <>
-                <button className="user-info" onClick={() => alert('You have clicked on your profile!')}>
+                <button className="user-info" onClick={() => navigate(`/user/${user.username}`)}>
                   <img
                     src={`/api/accounts/${user.userId}/photo`}
                     alt=""

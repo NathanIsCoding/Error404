@@ -144,6 +144,24 @@ router.get('/:id/photo', async (req, res) => {
   }
 });
 
+// Get public profile by username
+router.get('/profile/:username', async (req, res) => {
+  try {
+    const user = await User.findOne({
+      username: { $regex: new RegExp(`^${req.params.username.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') }
+    });
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    res.json({
+      userId: user._id,
+      username: user.username,
+      createdAt: user.createdAt
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error fetching profile' });
+  }
+});
+
 function generateUserId() {
   return crypto.randomBytes(16).toString('hex');
 }
