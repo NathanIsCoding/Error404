@@ -1,15 +1,17 @@
 import { useState } from 'react'
 import './CreateJobListing.css'
 
-function CreateJobListing({ onClose, onCreated }) {
-  const [title, setTitle] = useState('')
-  const [company, setCompany] = useState('')
-  const [jobType, setJobType] = useState('full-time')
-  const [industryInput, setIndustryInput] = useState('')
-  const [salary, setSalary] = useState('')
-  const [location, setLocation] = useState('')
-  const [description, setDescription] = useState('')
-  const [isActive, setIsActive] = useState(true)
+function CreateJobListing({ onClose, onCreated, onUpdated, initialJob = null }) {
+  const isEditMode = Boolean(initialJob)
+
+  const [title, setTitle] = useState(initialJob?.title ?? '')
+  const [company, setCompany] = useState(initialJob?.company ?? '')
+  const [jobType, setJobType] = useState(initialJob?.jobType ?? 'full-time')
+  const [industryInput, setIndustryInput] = useState(Array.isArray(initialJob?.industry) ? initialJob.industry.join(', ') : '')
+  const [salary, setSalary] = useState(initialJob?.salary ?? '')
+  const [location, setLocation] = useState(initialJob?.location ?? '')
+  const [description, setDescription] = useState(initialJob?.description ?? '')
+  const [isActive, setIsActive] = useState(initialJob?.isActive ?? true)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
 
@@ -41,8 +43,11 @@ function CreateJobListing({ onClose, onCreated }) {
     }
 
     try {
-      const response = await fetch('/api/jobs', {
-        method: 'POST',
+      const endpoint = isEditMode ? `/api/updateJob/${initialJob.jobId}` : '/api/jobs'
+      const method = isEditMode ? 'PUT' : 'POST'
+
+      const response = await fetch(endpoint, {
+        method,
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -54,7 +59,9 @@ function CreateJobListing({ onClose, onCreated }) {
         throw new Error(data.error || 'Failed to create job listing')
       }
 
-      if (onCreated) {
+      if (isEditMode) {
+        if (onUpdated) onUpdated(data)
+      } else if (onCreated) {
         onCreated(data)
       }
 
@@ -70,7 +77,7 @@ function CreateJobListing({ onClose, onCreated }) {
     <div className='create-job-modal' onClick={onClose}>
       <div className='create-job-panel' onClick={(event) => event.stopPropagation()}>
         <button type='button' className='close-button' onClick={onClose}>X</button>
-        <h1>Create Job Listing</h1>
+        <h1>{isEditMode ? 'Edit Job Listing' : 'Create Job Listing'}</h1>
 
         <form className='create-job-form' onSubmit={handleSubmit}>
           <label htmlFor='create-title'>Title</label>
@@ -126,7 +133,7 @@ function CreateJobListing({ onClose, onCreated }) {
           {error && <p className='form-error'>{error}</p>}
 
           <button type='submit' className='submit-job-btn' disabled={submitting}>
-            {submitting ? 'Creating...' : 'Create Job'}
+            {submitting ? (isEditMode ? 'Saving...' : 'Creating...') : (isEditMode ? 'Save Changes' : 'Create Job')}
           </button>
         </form>
       </div>
