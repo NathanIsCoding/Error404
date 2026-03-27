@@ -1,10 +1,8 @@
 import React from 'react';
 import '../Navbar/Navbar.css'
 import { useNavigate } from 'react-router-dom';
-import SignIn from '../SignIn/SignIn';
-import CreateAccount from '../CreateAccount/CreateAccount';
 
-export default function Navbar({user, setUser, onSignIn, onCreateAccount}) {
+export default function Navbar({user, setUser, onSignIn, onCreateAccount, onCreateJobListing}) {
 
   const navigate = useNavigate();
 
@@ -16,6 +14,11 @@ export default function Navbar({user, setUser, onSignIn, onCreateAccount}) {
   const handleSignIn = (e) => {
     e.preventDefault();
     if(onSignIn) onSignIn();
+  };
+
+  const handleCreateJobListing = (e) => {
+    e.preventDefault();
+    if (onCreateJobListing) onCreateJobListing();
   };
 
   const handleSignOut = async (e) => {
@@ -39,6 +42,12 @@ export default function Navbar({user, setUser, onSignIn, onCreateAccount}) {
         </div>
         <div className='right'>
             <a href="#" onClick={(e) => { e.preventDefault(); navigate('/'); }} className='text-black link'>Job Board</a>
+            {user && (
+              <a href="#" onClick={handleCreateJobListing} className='text-black link'>Create Job Listing</a>
+            )}
+            {user && (
+              <a href="#" onClick={(e) => { e.preventDefault(); navigate('/my-jobs'); }} className='text-black link'>My Job Listings</a>
+            )}
             {user && (
               <a href="#" onClick={(e) => { e.preventDefault(); navigate(`/application/${user.username}`); }} className='text-black link'>My Applications</a>
             )}

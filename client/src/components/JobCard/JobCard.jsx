@@ -2,7 +2,7 @@ import './JobCard.css';
 import reactLogo from '../../assets/react.svg'
 import { useState, useEffect } from 'react';
 
-function JobCard({ job, user, isApplied = false, onApplied }) {
+function JobCard({ job, user, isApplied = false, onApplied, showApply = true, showEdit = false, onEdit }) {
 
     const [isExpanded, setIsExpanded] = useState(false);
     const [applied, setApplied] = useState(isApplied);
@@ -49,7 +49,13 @@ function JobCard({ job, user, isApplied = false, onApplied }) {
             setApplyError('Failed to apply');
         }
     }
-    
+
+    function handleEdit() {
+        if (!showEdit || typeof onEdit !== 'function') return;
+        onEdit(job);
+    }
+
+
     return(
         <div className='flex flex-col bg-black text-white card border-b-1 border-gray-400'>
 
@@ -78,15 +84,22 @@ function JobCard({ job, user, isApplied = false, onApplied }) {
                     }
 
                     {!isExpanded && (
-                        applied ? (
-                            <button className='applyButton flex justify-center items-center  !bg-red-600' onClick={handleApply}>
-                                <span className="material-symbols-outlined">close</span>
-                            </button>
-                        ) : (
-                            <button className='applyButton !bg-green-600 flex justify-center items-center !px-0' onClick={handleApply}>
-                                <span className="material-symbols-outlined">add</span>
-                            </button>
-                        )
+                        <div className='flex flex-col gap-1'>
+                            {showEdit && (
+                                <button className='applyButton !bg-blue-500 flex justify-center items-center' onClick={handleEdit}>
+                                    <span className="material-symbols-outlined">edit</span>
+                                </button>
+                            )}
+                            {showApply && (applied ? (
+                                <button className='applyButton flex justify-center items-center  !bg-red-600' onClick={handleApply}>
+                                    <span className="material-symbols-outlined">close</span>
+                                </button>
+                            ) : (
+                                <button className='applyButton !bg-green-600 flex justify-center items-center !px-0' onClick={handleApply}>
+                                    <span className="material-symbols-outlined">add</span>
+                                </button>
+                            ))}
+                        </div>
                     )}
 
 
@@ -104,15 +117,22 @@ function JobCard({ job, user, isApplied = false, onApplied }) {
 
             <div className='flex justify-end'>
                 {isExpanded && (
-                    applied ? (
-                        <button className='applyButton !bg-red-600 flex justify-center items-center mt-1' onClick={handleApply}>
-                            <span className="material-symbols-outlined">close</span>
-                        </button>
-                    ) : (
-                        <button className='applyButton !bg-green-600 flex justify-center items-center !px-0 mt-1' onClick={handleApply}>
-                            <span className="material-symbols-outlined">add</span>
-                        </button>
-                    )
+                    <div className='flex gap-1'>
+                        {showEdit && (
+                            <button className='applyButton !bg-blue-500 flex justify-center items-center mt-1' onClick={handleEdit}>
+                                <span className="material-symbols-outlined">edit</span>
+                            </button>
+                        )}
+                        {showApply && (applied ? (
+                            <button className='applyButton !bg-red-600 flex justify-center items-center mt-1' onClick={handleApply}>
+                                <span className="material-symbols-outlined">close</span>
+                            </button>
+                        ) : (
+                            <button className='applyButton !bg-green-600 flex justify-center items-center !px-0 mt-1' onClick={handleApply}>
+                                <span className="material-symbols-outlined">add</span>
+                            </button>
+                        ))}
+                    </div>
                 )}
             </div>
 
