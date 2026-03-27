@@ -5,6 +5,7 @@ import UserCard from '../../components/UserCard/UserCard.jsx'
 import AdminJobCard from '../../components/AdminJobCard/AdminJobCard.jsx'
 import AdminListPanel from '../../components/AdminListPanel/AdminListPanel.jsx'
 import AdminSupportTicketPanel from '../../components/AdminSupportTicketPanel/AdminSupportTicketPanel.jsx'
+import CreateJobListing from '../../components/CreateJobListing/CreateJobListing.jsx'
 
 function Admin({ user, setUser }) { 
 
@@ -13,6 +14,7 @@ function Admin({ user, setUser }) {
     const [allJobs, setAllJobs] = useState([]);
 
     const [activeTab, setActiveTab] = useState('users')
+    const [showCreateJobListing, setShowCreateJobListing] = useState(false)
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -111,6 +113,11 @@ function Admin({ user, setUser }) {
         }
     }
 
+    const handleCreateJob = (newJob) => {
+        setAllJobs(prev => [newJob, ...prev])
+        setActiveTab('jobs')
+    }
+
     return(
         <main className="h-screen flex flex-col">
             <Navbar user={user} setUser={setUser} />
@@ -149,6 +156,7 @@ function Admin({ user, setUser }) {
                         onTabChange={setActiveTab}
                         onDelete={activeTab === 'users' ? handleDeleteUser : handleDeleteJob}
                         onUpdate={activeTab === 'jobs' ? handleUpdateJob : undefined}
+                        onCreateJob={() => setShowCreateJobListing(true)}
                     />
 
                 </div>
@@ -159,6 +167,13 @@ function Admin({ user, setUser }) {
                     onDelete={handleDeleteTicket}
                 />
             </div>
+
+            {showCreateJobListing && (
+                <CreateJobListing
+                    onClose={() => setShowCreateJobListing(false)}
+                    onCreated={handleCreateJob}
+                />
+            )}
         </main>
     )
 }
