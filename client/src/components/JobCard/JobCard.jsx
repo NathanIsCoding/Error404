@@ -86,11 +86,6 @@ function JobCard({ job, user, isApplied = false, onApplied, onEdit }) {
 
                     {!isExpanded && (
                         <div className='flex flex-col gap-1'>
-                            {user && (
-                                <button className='applyButton !bg-blue-500 flex justify-center items-center' onClick={handleEdit}>
-                                    <span className="material-symbols-outlined">edit</span>
-                                </button>
-                            )}
                             {applied ? (
                                 <button className='applyButton flex justify-center items-center  !bg-red-600' onClick={handleApply}>
                                     <span className="material-symbols-outlined">close</span>

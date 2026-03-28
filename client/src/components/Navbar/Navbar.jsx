@@ -46,6 +46,9 @@ export default function Navbar({user, setUser, onSignIn, onCreateAccount, onCrea
               <a href="#" onClick={handleCreateJobListing} className='text-black link'>Create Job Listing</a>
             )}
             {user && (
+              <a href="#" onClick={(e) => { e.preventDefault(); navigate('/my-jobs'); }} className='text-black link'>My Job Listings</a>
+            )}
+            {user && (
               <a href="#" onClick={(e) => { e.preventDefault(); navigate(`/application/${user.username}`); }} className='text-black link'>My Applications</a>
             )}
             {user?.isAdmin && (
