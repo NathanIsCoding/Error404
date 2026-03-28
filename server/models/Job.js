@@ -35,6 +35,11 @@ const jobSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  postedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
+  },
   isActive: {
     type: Boolean,
     default: true
