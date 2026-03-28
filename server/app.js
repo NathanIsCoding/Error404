@@ -15,6 +15,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var accountsRouter = require('./routes/accounts');
 var applicationsRouter = require('./routes/applications');
+var userJobsRouter = require('./routes/userJobs');
 
 const Job = require('./models/Job');
 const User = require('./models/User');
@@ -40,6 +41,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/api/accounts', accountsRouter);
 app.use('/api/applications', applicationsRouter);
+app.use('/api/users', userJobsRouter);
 
 // Jobs Get
 app.get('/api/loadJobs', async (req, res) => {
