@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Navbar from '../../components/Navbar/Navbar.jsx';
 import './UserJobs.css';
+import PostJobForm from './PostJobForm.jsx';
 
 export default function UserJobs({ user, setUser }) {
   const { username } = useParams();
@@ -23,12 +24,21 @@ export default function UserJobs({ user, setUser }) {
       }
     };
     fetchJobs();
+    // Expose for refresh after posting
+    UserJobs.fetchJobs = fetchJobs;
   }, [username]);
+
+  const handleJobPosted = () => {
+    if (typeof UserJobs.fetchJobs === 'function') UserJobs.fetchJobs();
+  };
 
   return (
     <>
       <Navbar user={user} setUser={setUser} />
       <div className="user-jobs-container">
+        {user && user.username === username && (
+          <PostJobForm username={username} onJobPosted={handleJobPosted} />
+        )}
         <h2>Jobs posted by {username}</h2>
         {loading && <p>Loading...</p>}
         {error && <p style={{ color: 'red' }}>{error}</p>}
