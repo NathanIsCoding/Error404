@@ -5,19 +5,34 @@ const CreateAccount = ({ onClose }) => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [profilePhoto, setProfilePhoto] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState(null);
   const [responseMessage, setResponseMessage] = useState('');
+
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setProfilePhoto(file);
+      setPhotoPreview(URL.createObjectURL(file));
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     // server will stamp the creation time in UTC−07:00, so we don't
     // send our own timestamp here; keep the payload as small as possible
-    const account = { username, email, password };
+    const formData = new FormData();
+    formData.append('username', username);
+    formData.append('email', email);
+    formData.append('password', password);
+    if (profilePhoto) {
+      formData.append('profilePhoto', profilePhoto);
+    }
     try {
       const response = await fetch('/api/accounts', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify(account)
+        body: formData
       });
       const data = await response.json();
       if (response.ok) {
@@ -66,6 +81,20 @@ const CreateAccount = ({ onClose }) => {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+          <br />
+          <label htmlFor="profilePhoto">Profile Photo (optional):</label>
+          <div className="photo-upload-area">
+            {photoPreview && (
+              <img src={photoPreview} alt="Preview" className="photo-preview" />
+            )}
+            <input
+              type="file"
+              id="profilePhoto"
+              name="profilePhoto"
+              accept="image/png, image/jpeg, image/webp"
+              onChange={handlePhotoChange}
+            />
+          </div>
           <br />
           <button type="submit">Create Account</button>
         </form>

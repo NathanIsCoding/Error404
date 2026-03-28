@@ -25,6 +25,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  profilePhoto: {
+    data: Buffer,
+    contentType: String
+  },
   resumeId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Resume',
