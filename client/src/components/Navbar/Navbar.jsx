@@ -56,6 +56,15 @@ export default function Navbar({user, setUser, onSignIn, onCreateAccount, onCrea
             )}
             {user ? (
               <>
+                <button className="user-info" onClick={() => navigate(`/user/${user.username}`)}>
+                  <img
+                    src={`/api/accounts/${user.userId}/photo`}
+                    alt=""
+                    className="nav-profile-photo"
+                    onError={(e) => { e.target.style.display = 'none'; }}
+                  />
+                  <span className="nav-username">{user.username}</span>
+                </button>
                 <a href="#" onClick={handleSignOut} className='text-black link'>Sign Out</a>
               </>
             ) : (

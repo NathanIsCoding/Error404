@@ -3,6 +3,7 @@ var router = express.Router();
 const User = require('../models/User');
 const crypto = require('crypto');
 const bcrypt = require('bcrypt');
+const multer = require('multer');
 const { requireAuth } = require('../middleware/auth');
 
 // jwt stuff
@@ -53,8 +54,21 @@ router.post('/logout', (req, res) => {
   res.json({ success: true });
 });
 
+// Multer config — store in memory for writing to MongoDB
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB max
+  fileFilter: (req, file, cb) => {
+    if (['image/jpeg', 'image/png', 'image/webp'].includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only JPEG, PNG, and WebP images are allowed'));
+    }
+  }
+});
+
 // Create account endpoint
-router.post('/', async (req, res) => {
+router.post('/', upload.single('profilePhoto'), async (req, res) => {
   const getUtcMinus7Timestamp = () => {
     const now = new Date();
     const offsetMs = 7 * 60 * 60 * 1000;
@@ -81,8 +95,15 @@ router.post('/', async (req, res) => {
     email: email.trim(),
     password: hashedPassword,
     createdAt: getUtcMinus7Timestamp(),
-    isAdmin: false, // all new accounts are non-admin by default
+    isAdmin: false,
   };
+
+  if (req.file) {
+    accountToStore.profilePhoto = {
+      data: req.file.buffer,
+      contentType: req.file.mimetype
+    };
+  }
 
   try {
     await createAccount(accountToStore, normalizedUsername, normalizedEmail);
@@ -105,6 +126,39 @@ router.post('/', async (req, res) => {
     }
     console.error(err);
     res.status(500).json({ error: 'Error creating account' });
+  }
+});
+
+// Serve profile photo by user ID
+router.get('/:id/photo', async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user || !user.profilePhoto || !user.profilePhoto.data) {
+      return res.status(404).json({ error: 'No photo found' });
+    }
+    res.set('Content-Type', user.profilePhoto.contentType);
+    res.send(user.profilePhoto.data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error fetching photo' });
+  }
+});
+
+// Get public profile by username
+router.get('/profile/:username', async (req, res) => {
+  try {
+    const user = await User.findOne({
+      username: { $regex: new RegExp(`^${req.params.username.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') }
+    });
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    res.json({
+      userId: user._id,
+      username: user.username,
+      createdAt: user.createdAt
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error fetching profile' });
   }
 });
 
