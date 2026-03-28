@@ -45,6 +45,9 @@ export default function Navbar({user, setUser, onSignIn, onCreateAccount}) {
             {user?.isAdmin && (
               <a href="#" onClick={(e) => { e.preventDefault(); navigate('/admin'); }} className='text-black link'>Admin Dashboard</a>
             )}
+            {user && (
+              <a href="#" onClick={(e) => { e.preventDefault(); navigate(`/users/${user.username}/jobs`); }} className='text-black link'>Post a Job</a>
+            )}
             {user ? (
               <>
                 <a href="#" onClick={handleSignOut} className='text-black link'>Sign Out</a>
