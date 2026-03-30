@@ -154,11 +154,30 @@ router.get('/profile/:username', async (req, res) => {
     res.json({
       userId: user._id,
       username: user.username,
-      createdAt: user.createdAt
+      createdAt: user.createdAt,
+      resumeText: user.resumeText || ''
     });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Error fetching profile' });
+  }
+});
+
+// Update resume text (owner only)
+router.put('/profile/resume', requireAuth, async (req, res) => {
+  try {
+    const { resumeText } = req.body;
+    if (typeof resumeText !== 'string') {
+      return res.status(400).json({ error: 'resumeText must be a string' });
+    }
+    const user = await User.findById(req.user.userId);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    user.resumeText = resumeText;
+    await user.save();
+    res.json({ success: true, resumeText: user.resumeText });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error updating resume' });
   }
 });
 
