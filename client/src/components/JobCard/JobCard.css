@@ -39,8 +39,19 @@ p {
 }
 
 .Tags table th p{
-    background-color: brown;
     padding: 0 1em 0 1em;
     margin-right: 1em;
     border-radius: 3em;
+}
+
+#industry{
+    background-color: rgb(81, 202, 202);
+}
+
+#type{
+    background-color: rgb(203, 203, 116);
+}
+
+#salary{
+    background-color: darkgreen;
 }
