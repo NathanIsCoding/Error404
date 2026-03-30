@@ -71,7 +71,7 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted }) {
                 <div className='flex flex-row items-center'>
                     <img src={reactLogo} className='cardImg rounded-sm'></img>
                     <div className='textRow'>
-                        <p className='text-lg'>{job.company} - {job.title}</p>
+                        <p className='text-lg'>{job.company} - {job.title}  {job.industry} {job.jobType} {job.salary}</p>
                         <p className='text-gray-400'>{
                             new Intl.NumberFormat("en-IN", { style: "currency", currency: "CAD" }).format( job.salary)
                         }</p>
