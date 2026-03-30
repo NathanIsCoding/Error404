@@ -152,6 +152,11 @@ function MainApp({user, setUser}) {
                         user={user}
                         isApplied={appliedJobIds.has(job._id)}
                         onApplied={(jobId) => setAppliedJobIds((prev) => new Set(prev).add(jobId))}
+                        onRetracted={(jobId) => setAppliedJobIds((prev) => {
+                          const next = new Set(prev)
+                          next.delete(jobId)
+                          return next
+                        })}
                       />
                   ))}
               </div>

@@ -2,7 +2,7 @@ import './JobCard.css';
 import reactLogo from '../../assets/react.svg'
 import { useState, useEffect } from 'react';
 
-function JobCard({ job, user, isApplied = false, onApplied }) {
+function JobCard({ job, user, isApplied = false, onApplied, onRetracted }) {
 
     const [isExpanded, setIsExpanded] = useState(false);
     const [applied, setApplied] = useState(isApplied);
@@ -23,7 +23,21 @@ function JobCard({ job, user, isApplied = false, onApplied }) {
         }
 
         if (applied) {
-            setApplyError('');
+            try {
+                const res = await fetch(`/api/applications/${job._id}`, {
+                    method: 'DELETE',
+                    credentials: 'include'
+                });
+
+                if (!res.ok) throw new Error('Failed to retract application');
+
+                setApplied(false);
+                setApplyError('');
+                if (typeof onRetracted === 'function') onRetracted(job._id);
+            } catch (err) {
+                console.error(err);
+                setApplyError('Failed to retract');
+            }
             return;
         }
 
