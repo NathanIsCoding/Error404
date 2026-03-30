@@ -38,7 +38,7 @@ p {
     text-align: left;
 }
 
-.Tags table th p{
+.Tags span{
     padding: 0 1em 0 1em;
     margin-right: 1em;
     border-radius: 3em;
@@ -52,8 +52,3 @@ p {
 #type{
     background-color: rgb(203, 203, 116);
 }
-
-/*
-#salary{
-    background-color: darkgreen;
-} */

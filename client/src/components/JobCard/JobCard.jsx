@@ -73,11 +73,12 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted }) {
                     <div className='textRow'>
                         <p className='text-lg'>
                             {job.company} - {job.title}  
-                            <div className="Tags"><table>
-                                <th><p id='industry'>{job.industry}</p></th> 
-                                <th><p id='type'>{job.jobType}</p></th> 
-                                <th><p style={{backgroundColor: job.salary < 40000 ? "red" : job.salary < 70000 ? "orange" : "green"}}>{job.salary} </p>
-                                </th></table>
+                            <div className="Tags">
+                                <span id='industry'>{job.industry}</span> 
+                                <span id='type'>{job.jobType}</span> 
+                                <span style={{backgroundColor: job.salary < 40000 ? "red" : job.salary < 70000 ? "orange" : "green"}}>
+                                    {job.salary}
+                                </span>
                             </div>
                         </p>
                         <p className='text-gray-400'>{
