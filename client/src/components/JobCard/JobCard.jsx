@@ -74,8 +74,8 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted }) {
                         <p className='text-lg'>
                             {job.company} - {job.title}  
                             <div className="Tags">
-                                <span id='industry'>{job.industry}</span> 
-                                <span id='type'>{job.jobType}</span> 
+                                <span style={{backgroundColor: job.industry == "tech" ? "red" : job.industry == "software" ? "orange"  : job.industry == "data-science" ? "purple" :job.industry == "design" ? "blue" :"green"}}>{job.industry}</span> 
+                                <span style={{backgroundColor: job.jobType == "full-time" ? "green" : job.jobType == "part-time" ? "yellow" : job.jobType == "contract" ? "orange" :job.jobType == "internship" ? "purple" :"red"}}>{job.jobType}</span> 
                                 <span style={{backgroundColor: job.salary < 40000 ? "red" : job.salary < 70000 ? "orange" : "green"}}>
                                     {job.salary}
                                 </span>
