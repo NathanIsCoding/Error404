@@ -73,7 +73,7 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted }) {
                     <div className='textRow'>
                         <p className='text-lg'>{job.company} - {job.title}</p>
                         <p className='text-gray-400'>{
-                            new Intl.NumberFormat("en-IN", { style: "currency", currency: "CAD" }).format( job.salary)
+                            new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD" }).format( job.salary)
                         }</p>
                     </div>
                 </div>
