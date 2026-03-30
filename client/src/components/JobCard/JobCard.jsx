@@ -71,7 +71,15 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted }) {
                 <div className='flex flex-row items-center'>
                     <img src={reactLogo} className='cardImg rounded-sm'></img>
                     <div className='textRow'>
-                        <p className='text-lg'>{job.company} - {job.title}  <div className="Tags"><table><th><p id='industry'>{job.industry}</p></th> <th><p id='type'>{job.jobType}</p></th> <th><p id='salary'>{job.salary} </p></th></table></div></p>
+                        <p className='text-lg'>
+                            {job.company} - {job.title}  
+                            <div className="Tags"><table>
+                                <th><p id='industry'>{job.industry}</p></th> 
+                                <th><p id='type'>{job.jobType}</p></th> 
+                                <th><p style={{backgroundColor: job.salary < 40000 ? "red" : job.salary < 70000 ? "orange" : "green"}}>{job.salary} </p>
+                                </th></table>
+                            </div>
+                        </p>
                         <p className='text-gray-400'>{
                             new Intl.NumberFormat("en-IN", { style: "currency", currency: "CAD" }).format( job.salary)
                         }</p>
