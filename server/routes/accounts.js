@@ -21,6 +21,8 @@ router.post('/login', async (req, res) => {
 
     if (!user) return res.status(404).json({ error: 'Account not found' });
 
+    if (user.isDisabled) return res.status(403).json({ error: 'Your account has been disabled' });
+
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ error: 'Password incorrect' });
 
@@ -154,11 +156,30 @@ router.get('/profile/:username', async (req, res) => {
     res.json({
       userId: user._id,
       username: user.username,
-      createdAt: user.createdAt
+      createdAt: user.createdAt,
+      resumeText: user.resumeText || ''
     });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Error fetching profile' });
+  }
+});
+
+// Update resume text (owner only)
+router.put('/profile/resume', requireAuth, async (req, res) => {
+  try {
+    const { resumeText } = req.body;
+    if (typeof resumeText !== 'string') {
+      return res.status(400).json({ error: 'resumeText must be a string' });
+    }
+    const user = await User.findById(req.user.userId);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    user.resumeText = resumeText;
+    await user.save();
+    res.json({ success: true, resumeText: user.resumeText });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error updating resume' });
   }
 });
 
@@ -188,5 +209,29 @@ async function createAccount(account, normalizedUsername, normalizedEmail) {
   const result = await User.create(account);
   console.log(`A document was inserted with the _id: ${result._id}`);
 }
+
+// User Disable/Enable Toggle
+router.patch('/toggleUser/:userId', requireAuth, async (req, res) => {
+    try {
+        if (!req.user.isAdmin) {
+            return res.status(403).json({ message: 'Admin access required' });
+        }
+
+        const userId = req.params.userId;
+        const user = await User.findOne({ userId: userId });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        user.isDisabled = !user.isDisabled;
+        await user.save();
+
+        res.status(200).json({ message: `User ${user.isDisabled ? 'disabled' : 'enabled'} successfully`, isDisabled: user.isDisabled });
+    } catch (error) {
+        console.error('Error toggling user:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
 
 module.exports = router;

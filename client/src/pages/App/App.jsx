@@ -174,6 +174,11 @@ function MainApp({user, setUser}) {
                         isApplied={appliedJobIds.has(job._id)}
                         onApplied={(jobId) => setAppliedJobIds((prev) => new Set(prev).add(jobId))}
                         onEdit={(targetJob) => setJobBeingEdited(targetJob)}
+                        onRetracted={(jobId) => setAppliedJobIds((prev) => {
+                          const next = new Set(prev)
+                          next.delete(jobId)
+                          return next
+                        })}
                       />
                   ))}
               </div>

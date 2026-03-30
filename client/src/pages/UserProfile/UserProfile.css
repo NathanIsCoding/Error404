@@ -47,3 +47,126 @@
     font-size: 16px;
     color: #999;
 }
+
+.profile-resume-section {
+    margin-top: 24px;
+    text-align: left;
+    width: 100%;
+}
+
+.profile-resume-heading {
+    font-size: 18px;
+    font-weight: 700;
+    color: #6ee7b7;
+    margin-bottom: 8px;
+}
+
+.profile-resume-text {
+    font-size: 14px;
+    color: #ccc;
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-height: 1.6;
+}
+
+.resume-btn {
+    margin-top: 20px;
+    padding: 10px 24px;
+    background-color: #6ee7b7;
+    color: #111;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.resume-btn:hover {
+    background-color: #5fd4a8;
+}
+
+.resume-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.resume-modal {
+    background: #1a1a1a;
+    border: 1px solid #2b2b2b;
+    border-radius: 12px;
+    padding: 28px;
+    width: 90%;
+    max-width: 600px;
+}
+
+.resume-modal-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 16px;
+}
+
+.resume-textarea {
+    width: 100%;
+    background: #111;
+    color: #eee;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+    box-sizing: border-box;
+}
+
+.resume-textarea:focus {
+    outline: none;
+    border-color: #6ee7b7;
+}
+
+.resume-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.resume-cancel-btn {
+    padding: 8px 20px;
+    background: transparent;
+    color: #999;
+    border: 1px solid #333;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.resume-cancel-btn:hover {
+    color: white;
+    border-color: #555;
+}
+
+.resume-save-btn {
+    padding: 8px 20px;
+    background-color: #6ee7b7;
+    color: #111;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.resume-save-btn:hover {
+    background-color: #5fd4a8;
+}
+
+.resume-save-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

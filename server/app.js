@@ -33,8 +33,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(cors({
-  origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
-  credentials: true
+    origin: process.env.CLIENT_ORIGIN,
+    credentials: true
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 

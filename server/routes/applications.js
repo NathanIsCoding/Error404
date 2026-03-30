@@ -29,6 +29,27 @@ router.post('/', requireAuth, async (req, res) => {
   }
 });
 
+// DELETE /api/applications/:jobId - Withdraw a job application (authenticated)
+router.delete('/:jobId', requireAuth, async (req, res) => {
+  try {
+    const { jobId } = req.params;
+
+    const application = await JobApplication.findOneAndDelete({
+      userId: req.user.userId,
+      jobId
+    });
+
+    if (!application) {
+      return res.status(404).json({ error: 'Application not found' });
+    } else {
+      return res.json({ message: 'Application withdrawn successfully' });
+    }
+  } catch (err) {
+    console.error('Error deleting application:', err);
+    res.status(500).json({ error: 'Failed to delete application' });
+  }
+});
+
 // GET /api/applications/:username - View all applications sent by :username
 router.get('/:username', requireAuth, async (req, res) => {
   try {
