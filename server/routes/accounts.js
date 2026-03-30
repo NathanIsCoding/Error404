@@ -21,6 +21,8 @@ router.post('/login', async (req, res) => {
 
     if (!user) return res.status(404).json({ error: 'Account not found' });
 
+    if (user.isDisabled) return res.status(403).json({ error: 'Your account has been disabled' });
+
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ error: 'Password incorrect' });
 
@@ -207,5 +209,29 @@ async function createAccount(account, normalizedUsername, normalizedEmail) {
   const result = await User.create(account);
   console.log(`A document was inserted with the _id: ${result._id}`);
 }
+
+// User Disable/Enable Toggle
+router.patch('/toggleUser/:userId', requireAuth, async (req, res) => {
+    try {
+        if (!req.user.isAdmin) {
+            return res.status(403).json({ message: 'Admin access required' });
+        }
+
+        const userId = req.params.userId;
+        const user = await User.findOne({ userId: userId });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        user.isDisabled = !user.isDisabled;
+        await user.save();
+
+        res.status(200).json({ message: `User ${user.isDisabled ? 'disabled' : 'enabled'} successfully`, isDisabled: user.isDisabled });
+    } catch (error) {
+        console.error('Error toggling user:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
 
 module.exports = router;
