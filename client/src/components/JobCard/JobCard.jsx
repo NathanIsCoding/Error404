@@ -74,9 +74,9 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted }) {
                         <p className='text-lg'>
                             {job.company} - {job.title}  
                             <div className="Tags">
-                                <span style={{backgroundColor: job.industry == "tech" ? "red" : job.industry == "software" ? "orange"  : job.industry == "data-science" ? "purple" :job.industry == "design" ? "blue" :"green"}}>{job.industry}</span> 
-                                <span style={{backgroundColor: job.jobType == "full-time" ? "green" : job.jobType == "part-time" ? "yellow" : job.jobType == "contract" ? "orange" :job.jobType == "internship" ? "purple" :"red"}}>{job.jobType}</span> 
-                                <span style={{backgroundColor: job.salary < 40000 ? "red" : job.salary < 70000 ? "orange" : "green"}}>
+                                <span style={{backgroundColor: job.industry == "tech" ? "#cc2d4d" : job.industry == "software" ? "#d99d59"  : job.industry == "data-science" ? "#8c2dcc" :job.industry == "design" ? "#5366d4" :"#53d4ab"}}>{job.industry}</span> 
+                                <span style={{backgroundColor: job.jobType == "full-time" ? "#45a35e" : job.jobType == "part-time" ? "#c9b938" : job.jobType == "contract" ? "#e0933a" :job.jobType == "internship" ? "#cf3ae0" :"#e02f35"}}>{job.jobType}</span> 
+                                <span style={{backgroundColor: job.salary < 20000 ? "#a3220f" : job.salary < 40000 ? "#eb8109" : job.salary < 60000 ? "#dcd61c" : job.salary < 80000 ? "#0aa335": "#0a9ba3"}}>
                                     {job.salary}
                                 </span>
                             </div>
