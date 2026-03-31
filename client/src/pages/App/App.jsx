@@ -164,33 +164,39 @@ function MainApp({user, setUser}) {
         
           <div className="job-listings-container bg-primary mx-5 grow-2 p-3 rounded-lg">
               
-              <div className='overflow-auto flex-1 scroll-box rounded-lg'>
-                  {jobMatrix[currentPage]?.map((job, index) => (
-                      <JobCard
-                        className="border-b-1 border-tertiary"
-                        key={index}
-                        job={job}
-                        user={user}
-                        isApplied={appliedJobIds.has(job._id)}
-                        onApplied={(jobId) => setAppliedJobIds((prev) => new Set(prev).add(jobId))}
-                        onEdit={(targetJob) => setJobBeingEdited(targetJob)}
-                        onRetracted={(jobId) => setAppliedJobIds((prev) => {
-                          const next = new Set(prev)
-                          next.delete(jobId)
-                          return next
-                        })}
-                      />
-                  ))}
-              </div>
-                
+            <div className='overflow-auto flex-1 scroll-box rounded-lg'>
+                {jobMatrix[currentPage]?.map((job, index) => (
+                    <JobCard
+                      className="border-b-1 border-tertiary"
+                      key={index}
+                      job={job}
+                      user={user}
+                      isApplied={appliedJobIds.has(job._id)}
+                      onApplied={(jobId) => setAppliedJobIds((prev) => new Set(prev).add(jobId))}
+                      onEdit={(targetJob) => setJobBeingEdited(targetJob)}
+                      onRetracted={(jobId) => setAppliedJobIds((prev) => {
+                        const next = new Set(prev)
+                        next.delete(jobId)
+                        return next
+                      })}
+                    />
+                ))}
+            </div>
+              
+            <div className='relative flex justify-center items-center'>
               <Paginator
-                  currentPage={currentPage}
-                  totalPages={jobMatrix.length}
-                  onPageChange={setCurrentPage}
+                currentPage={currentPage}
+                totalPages={jobMatrix.length}
+                onPageChange={setCurrentPage}
               />
+              {user && (
+                <button onClick={() => setShowCreateJobListing(true)} className='absolute right-0'>
+                  Create Listing
+                </button>
+              )}
+            </div>
 
           </div>
-
         </div>
         
 

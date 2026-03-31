@@ -39,7 +39,6 @@
     height: 36px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid #4ade80;
 }
 
 .nav-username {
@@ -47,3 +46,24 @@
     font-weight: 700;
     color: white;
 }
+
+.user-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-menu {
+  position: absolute;
+  right: 0;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  min-width: 100%;
+  padding: 6px
+}
+
+.trigger-btn:hover,
+.trigger-btn:focus {
+  background: none;
+  cursor: pointer;
+  outline: none;
+}
+
