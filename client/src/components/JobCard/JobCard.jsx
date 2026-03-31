@@ -100,13 +100,18 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
                     }
 
                     {!isExpanded && (
-                        <div className='flex flex-col gap-1'>
+                        <div className='flex gap-1'>
+                            {user && (
+                                <button className='applyButton !bg-blue-500 flex justify-center items-center mt-1' onClick={handleEdit}>
+                                    <span className="material-symbols-outlined">edit</span>
+                                </button>
+                            )}
                             {applied ? (
-                                <button className='applyButton flex justify-center items-center  !bg-red-600' onClick={handleApply}>
+                                <button className='applyButton !bg-red-600 flex justify-center items-center mt-1' onClick={handleApply}>
                                     <span className="material-symbols-outlined">close</span>
                                 </button>
                             ) : (
-                                <button className='applyButton !bg-green-600 flex justify-center items-center !px-0' onClick={handleApply}>
+                                <button className='applyButton !bg-green-600 flex justify-center items-center !px-0 mt-1' onClick={handleApply}>
                                     <span className="material-symbols-outlined">add</span>
                                 </button>
                             )}
