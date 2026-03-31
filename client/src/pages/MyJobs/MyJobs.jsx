@@ -47,7 +47,7 @@ function MyJobs({ user, setUser }) {
             <div className="job-info">
               <p><strong>{job.title}</strong> at {job.company}</p>
               <p>Location: {job.location} &middot; {job.jobType}</p>
-              <p>Salary: {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'CAD' }).format(job.salary)}</p>
+              <p>Salary: {new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD' }).format(job.salary)}</p>
             </div>
             <div className="job-actions">
               <span className="job-date">{new Date(job.createdAt).toLocaleDateString()}</span>
