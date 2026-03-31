@@ -4,6 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors');
+const crypto = require('crypto');
 
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
@@ -15,6 +16,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var accountsRouter = require('./routes/accounts');
 var applicationsRouter = require('./routes/applications');
+const { requireAuth } = require('./middleware/auth');
 
 const Job = require('./models/Job');
 const User = require('./models/User');
@@ -50,6 +52,63 @@ app.get('/api/loadJobs', async (req, res) => {
     console.error('Error fetching jobs:', error);
     res.status(500).json({ error: 'Failed to fetch jobs' });
   }
+});
+
+// Jobs created by current user
+app.get('/api/my-jobs', requireAuth, async (req, res) => {
+    try {
+        const myJobs = await Job.find({ createdByUserId: String(req.user.userId) }).sort({ createdAt: -1 });
+        return res.json(myJobs);
+    } catch (error) {
+        console.error('Error fetching my jobs:', error);
+        return res.status(500).json({ error: 'Failed to fetch your job listings' });
+    }
+});
+
+// Jobs Create
+app.post('/api/jobs', requireAuth, async (req, res) => {
+    try {
+        const { title, company, jobType, industry, salary, location, description, isActive } = req.body;
+
+        if (!title || !company || !jobType || !industry || salary === undefined || !location || !description) {
+            return res.status(400).json({ error: 'Missing required fields' });
+        }
+
+        const industryList = Array.isArray(industry)
+            ? industry.map((item) => String(item).trim()).filter(Boolean)
+            : String(industry)
+                    .split(',')
+                    .map((item) => item.trim())
+                    .filter(Boolean);
+
+        if (industryList.length === 0) {
+            return res.status(400).json({ error: 'At least one industry is required' });
+        }
+
+        const parsedSalary = Number(salary);
+        if (!Number.isFinite(parsedSalary) || parsedSalary <= 0) {
+            return res.status(400).json({ error: 'Salary must be a positive number' });
+        }
+
+        const newJob = await Job.create({
+            jobId: crypto.randomBytes(16).toString('hex'),
+            title: String(title).trim(),
+            company: String(company).trim(),
+            jobType: String(jobType).trim(),
+            industry: industryList,
+            salary: parsedSalary,
+            location: String(location).trim(),
+            description: String(description).trim(),
+            createdByUserId: String(req.user.userId),
+            createdByUsername: req.user.username,
+            isActive: typeof isActive === 'boolean' ? isActive : true,
+        });
+
+        return res.status(201).json(newJob);
+    } catch (error) {
+        console.error('Error creating job listing:', error);
+        return res.status(500).json({ error: 'Failed to create job listing' });
+    }
 });
 
 // Jobs delete
