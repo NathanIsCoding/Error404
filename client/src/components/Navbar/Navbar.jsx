@@ -1,16 +1,13 @@
 import {useState} from 'react';
 import '../Navbar/Navbar.css'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-export default function Navbar({user, setUser, onSignIn, onCreateAccount, onCreateJobListing}) {
+export default function Navbar({user, setUser, onSignIn}) {
 
   const navigate = useNavigate();
+  const location = useLocation();
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  const handleCreateAccount = (e) => {
-    e.preventDefault();
-    if(onCreateAccount) onCreateAccount();
-  };
 
   const handleSignIn = (e) => {
     e.preventDefault();
@@ -37,23 +34,29 @@ export default function Navbar({user, setUser, onSignIn, onCreateAccount, onCrea
         <span className='logo'>JobSite</span>
       </div>
       <div className='right'>
-        <a href="#" onClick={(e) => { e.preventDefault(); navigate('/'); }} className='text-black link'>Job Board</a>
-
-        {/* {user && (
-          <a href="#" onClick={(e) => { e.preventDefault(); navigate('/my-jobs'); }} className='text-black link'>My Job Listings</a>
-        )}
-        {user && (
-          <a href="#" onClick={(e) => { e.preventDefault(); navigate(`/application/${user.username}`); }} className='text-black link'>My Applications</a>
-        )} */}
+        <button className={`nav-button ${location.pathname === '/' ? 'active' : 'deactivated'}`}  onClick={(e) => { e.preventDefault(); navigate('/'); }}>
+          <div className='flex'>
+            <span class="material-symbols-outlined mr-1">home</span>
+            Job Board
+          </div>
+        </button>
         {user?.isAdmin && (
-          <a href="#" onClick={(e) => { e.preventDefault(); navigate('/admin'); }} className='text-black link'>Admin Dashboard</a>
+          <button className={`${location.pathname === '/admin' ? 'active' : 'deactivated'}`}  onClick={(e) => { e.preventDefault(); navigate('/admin'); }}>
+            <div className='flex'>
+              <span class="material-symbols-outlined mr-1">admin_panel_settings</span>
+              Dashboard
+            </div>
+          </button>
         )}
         {!user && (
-          <button onClick={handleSignIn}>Sign In</button>
+          <button className='nav-button !bg-black flex' onClick={handleSignIn}>
+              <span class="material-symbols-outlined mr-1">login</span>
+              Sign In
+          </button>
         )}
         {user && (
-          <div className='user-dropdown  ' onMouseEnter={() => setDropdownOpen(true)} onMouseLeave={() => setDropdownOpen(false)}>
-            <button className={`flex trigger-btn !bg-black ${dropdownOpen ? '!rounded-b-none' : ''}`}>
+          <div className='user-dropdown' onMouseEnter={() => setDropdownOpen(true)} onMouseLeave={() => setDropdownOpen(false)}>
+            <button className={`flex trigger-btn ${dropdownOpen ? '!rounded-b-none !bg-black' : '!bg-primary !text-black'}`}>
               <img
                 src={`/api/accounts/${user.userId}/photo`}
                 alt=""
@@ -64,14 +67,23 @@ export default function Navbar({user, setUser, onSignIn, onCreateAccount, onCrea
             </button>
 
             {dropdownOpen && (
-              <div className="flex flex-col bg-black rounded-b-lg dropdown-menu">
-                <button className='!bg-none' onClick={() => navigate(`/user/${user.username}`)}>
+              <div className="flex flex-col rounded-b-lg dropdown-menu">
+                <button className='dropdown-button' onClick={() => navigate(`/user/${user.username}`)}>
                   View Profile
                 </button>
 
-                <button onClick={handleSignOut}>
+                <button className='dropdown-button' onClick={(e) => { e.preventDefault(); navigate('/my-jobs'); }}>
+                  My Jobs
+                </button>
+
+                <button className='dropdown-button' onClick={(e) => { e.preventDefault(); navigate(`/application/${user.username}`); }}>
+                  My Applications
+                </button>
+
+                <button className='dropdown-button !rounded-b-lg' onClick={handleSignOut}>
                   Sign Out
                 </button>
+
               </div>
             )}
           </div>

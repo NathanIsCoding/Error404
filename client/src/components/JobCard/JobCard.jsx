@@ -124,7 +124,7 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
             </div>
             {applyError && <p style={{color: 'red', fontSize: '0.85rem', marginTop: '4px'}}>{applyError}</p>}
             {isExpanded && (
-                <div className='description text-black bg-tertiary'>
+                <div className='description text-tertiary bg-gray-800'>
                     <p>
                         {job.description}
                     </p>

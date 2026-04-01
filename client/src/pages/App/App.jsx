@@ -137,10 +137,6 @@ function MainApp({user, setUser}) {
         user={user}
         setUser={setUser}
         onSignIn={() => setShowSignIn(true)}
-        onCreateAccount={() => setShowCreateAccount(true)}
-        onCreateJobListing={() => {
-          if (user) setShowCreateJobListing(true)
-        }}
       />
       <main>
         <div className='flex justify-center h-full'>
@@ -190,7 +186,7 @@ function MainApp({user, setUser}) {
                 onPageChange={setCurrentPage}
               />
               {user && (
-                <button onClick={() => setShowCreateJobListing(true)} className='absolute right-0'>
+                <button onClick={() => setShowCreateJobListing(true)} className='!bg-black absolute right-0'>
                   Create Listing
                 </button>
               )}
@@ -207,6 +203,10 @@ function MainApp({user, setUser}) {
           onSuccess={(userData) => {
             setUser(userData);
             setShowSignIn(false);
+          }}
+          onCreateAccount={() => {
+            setShowSignIn(false);
+            setShowCreateAccount(true);
           }}
         />
       )}

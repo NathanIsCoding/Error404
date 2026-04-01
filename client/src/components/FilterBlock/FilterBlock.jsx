@@ -86,7 +86,7 @@ function FilterBlock(props) {
             </div>
 
             <div className="filter-submit-wrap">
-              <button onClick={handleSubmit}>
+              <button className="!bg-black" onClick={handleSubmit}>
                 Submit
               </button>
             </div>
