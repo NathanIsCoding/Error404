@@ -2,6 +2,7 @@
     display: flex;
     justify-content: space-between;
     width: auto;
+    height: 5em;
     align-items: center;
     padding: 18px 28px;
 }
@@ -20,11 +21,6 @@
 .active:hover {
   border-color: white;
 }
-.active:focus,
-.active:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
 
 .deactivated {
     background-color: #6ee7b7;
@@ -34,11 +30,6 @@
 .deactivated:hover {
   border-color: #242424;
 }
-.deactivated:focus,
-.deactivated:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
 
 .nav-profile-photo {
     width: 36px;
@@ -54,9 +45,6 @@
     color: white;
 }
 
-.nav-button { 
-    height: 100%;
-}
 
 .user-dropdown {
   position: relative;
@@ -69,16 +57,15 @@
   min-width: 100%;
 }
 
-.trigger-btn:hover,
-.trigger-btn:focus {
-  background: none;
-  cursor: pointer;
-  outline: none;
-}
-
 .dropdown-button { 
     background-color: #242424;
     border-radius: 0;
+    border: 2px solid #2a2a2a;
+    border-top: 0;
+}
+
+.top-button {
+    border: 2px solid #2a2a2a;
 }
 
 

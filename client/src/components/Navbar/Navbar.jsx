@@ -34,7 +34,7 @@ export default function Navbar({user, setUser, onSignIn}) {
         <span className='logo'>JobSite</span>
       </div>
       <div className='right'>
-        <button className={`nav-button ${location.pathname === '/' ? 'active' : 'deactivated'}`}  onClick={(e) => { e.preventDefault(); navigate('/'); }}>
+        <button className={`${location.pathname === '/' ? 'active' : 'deactivated'}`}  onClick={(e) => { e.preventDefault(); navigate('/'); }}>
           <div className='flex'>
             <span class="material-symbols-outlined mr-1">home</span>
             Job Board
@@ -49,14 +49,15 @@ export default function Navbar({user, setUser, onSignIn}) {
           </button>
         )}
         {!user && (
-          <button className='nav-button !bg-black flex' onClick={handleSignIn}>
+          <button className='!bg-black flex' onClick={handleSignIn}>
               <span class="material-symbols-outlined mr-1">login</span>
               Sign In
           </button>
         )}
         {user && (
+          // Profile card
           <div className='user-dropdown' onMouseEnter={() => setDropdownOpen(true)} onMouseLeave={() => setDropdownOpen(false)}>
-            <button className={`flex trigger-btn ${dropdownOpen ? '!rounded-b-none !bg-black' : '!bg-primary !text-black'}`}>
+            <button className={`flex ${dropdownOpen ? '!rounded-b-none !bg-black top-button' : '!bg-primary !text-black'}`}>
               <img
                 src={`/api/accounts/${user.userId}/photo`}
                 alt=""
@@ -65,8 +66,9 @@ export default function Navbar({user, setUser, onSignIn}) {
               />
               <span className='ml-1 content-center'>{user.username}</span>
             </button>
-
+      
             {dropdownOpen && (
+              // Dropdown
               <div className="flex flex-col rounded-b-lg dropdown-menu">
                 <button className='dropdown-button' onClick={() => navigate(`/user/${user.username}`)}>
                   View Profile
