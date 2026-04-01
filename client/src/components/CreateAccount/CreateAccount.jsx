@@ -37,6 +37,7 @@ const CreateAccount = ({ onClose }) => {
       const data = await response.json();
       if (response.ok) {
         setResponseMessage(`Success: ${data.message}`);
+        onClose();
       } else {
         setResponseMessage(`Error: ${data.error}`);
       }
@@ -49,7 +50,7 @@ const CreateAccount = ({ onClose }) => {
   return (
     <div className="create-account-modal">
       <div className="create-account">
-        <button onClick={onClose} className="close-button">X</button>
+        <button onClick={onClose} className="close-button click-button">X</button>
         <h1>Create Account</h1>
         <form onSubmit={handleSubmit}>
           <label htmlFor="username">Username:</label>

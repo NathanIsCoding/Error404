@@ -43,19 +43,24 @@ input {
 
 /* Removes scroll bar for all platforms */
 .scroll-box {
-    overflow-y: auto;
-    scrollbar-width: none;    
-    -ms-overflow-style: none;
+  overflow-y: auto;
+  scrollbar-width: none;    
+  -ms-overflow-style: none;
 }
 
 .scroll-box::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
 
 .logo {
-    font-weight: 800;
-    font-size: 22px;
-    color: black;
-    letter-spacing: 0.5px;
-    padding: 10px;
+  font-weight: 800;
+  font-size: 22px;
+  color: black;
+  letter-spacing: 0.5px;
+  padding: 10px;
+}
+
+.click-button {
+  width: 2.5em;
+  height: 2.5em;
 }

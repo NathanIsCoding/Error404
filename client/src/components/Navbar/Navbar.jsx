@@ -1,24 +1,17 @@
-import React from 'react';
+import {useState} from 'react';
 import '../Navbar/Navbar.css'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-export default function Navbar({user, setUser, onSignIn, onCreateAccount, onCreateJobListing}) {
+export default function Navbar({user, setUser, onSignIn}) {
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  const handleCreateAccount = (e) => {
-    e.preventDefault();
-    if(onCreateAccount) onCreateAccount();
-  };
 
   const handleSignIn = (e) => {
     e.preventDefault();
     if(onSignIn) onSignIn();
-  };
-
-  const handleCreateJobListing = (e) => {
-    e.preventDefault();
-    if (onCreateJobListing) onCreateJobListing();
   };
 
   const handleSignOut = async (e) => {
@@ -37,43 +30,66 @@ export default function Navbar({user, setUser, onSignIn, onCreateAccount, onCrea
 
   return (
     <nav className='bg-primary mb-3 navbar'>
-        <div>
-            <span className='logo'>JobSite</span>
-        </div>
-        <div className='right'>
-            <a href="#" onClick={(e) => { e.preventDefault(); navigate('/'); }} className='text-black link'>Job Board</a>
-            {user && (
-              <a href="#" onClick={handleCreateJobListing} className='text-black link'>Create Job Listing</a>
-            )}
-            {user && (
-              <a href="#" onClick={(e) => { e.preventDefault(); navigate('/my-jobs'); }} className='text-black link'>My Job Listings</a>
-            )}
-            {user && (
-              <a href="#" onClick={(e) => { e.preventDefault(); navigate(`/application/${user.username}`); }} className='text-black link'>My Applications</a>
-            )}
-            {user?.isAdmin && (
-              <a href="#" onClick={(e) => { e.preventDefault(); navigate('/admin'); }} className='text-black link'>Admin Dashboard</a>
-            )}
-            {user ? (
-              <>
-                <button className="user-info" onClick={() => navigate(`/user/${user.username}`)}>
-                  <img
-                    src={`/api/accounts/${user.userId}/photo`}
-                    alt=""
-                    className="nav-profile-photo"
-                    onError={(e) => { e.target.style.display = 'none'; }}
-                  />
-                  <span className="nav-username">{user.username}</span>
+      <div>
+        <span className='logo'>JobSite</span>
+      </div>
+      <div className='right'>
+        <button className={`${location.pathname === '/' ? 'active' : 'deactivated'}`}  onClick={(e) => { e.preventDefault(); navigate('/'); }}>
+          <div className='flex'>
+            <span className="material-symbols-outlined mr-1">home</span>
+            Job Board
+          </div>
+        </button>
+        {user?.isAdmin && (
+          <button className={`${location.pathname === '/admin' ? 'active' : 'deactivated'}`}  onClick={(e) => { e.preventDefault(); navigate('/admin'); }}>
+            <div className='flex'>
+              <span className="material-symbols-outlined mr-1">admin_panel_settings</span>
+              Dashboard
+            </div>
+          </button>
+        )}
+        {!user && (
+          <button className='!bg-black flex' onClick={handleSignIn}>
+              <span className="material-symbols-outlined mr-1">login</span>
+              Sign In
+          </button>
+        )}
+        {user && (
+          // Profile card
+          <div className='user-dropdown' onMouseEnter={() => setDropdownOpen(true)} onMouseLeave={() => setDropdownOpen(false)}>
+            <button className={`flex nav-button ${dropdownOpen ? '!rounded-b-none !bg-black top-button' : '!bg-primary !text-black'}`}>
+              <img
+                src={`/api/accounts/${user.userId}/photo`}
+                alt=""
+                className='nav-profile-photo'
+                onError={(e) => { e.target.style.display = 'none'; }}
+              />
+              <span className='ml-1 content-center'>{user.username}</span>
+            </button>
+      
+            {dropdownOpen && (
+              // Dropdown
+              <div className="flex flex-col rounded-b-lg dropdown-menu">
+                <button className='dropdown-button' onClick={() => navigate(`/user/${user.username}`)}>
+                  View Profile
                 </button>
-                <a href="#" onClick={handleSignOut} className='text-black link'>Sign Out</a>
-              </>
-            ) : (
-              <>
-                <a href="#" onClick={(e) => { e.preventDefault(); handleSignIn(e); }} className='text-black link'>Sign In</a>
-                <a href="#" onClick={(e) => { e.preventDefault(); handleCreateAccount(e); }} className='text-black link'>Create Account</a>
-              </>
+
+                <button className='dropdown-button' onClick={(e) => { e.preventDefault(); navigate('/my-jobs'); }}>
+                  My Jobs
+                </button>
+
+                <button className='dropdown-button' onClick={(e) => { e.preventDefault(); navigate(`/application/${user.username}`); }}>
+                  My Applications
+                </button>
+
+                <button className='dropdown-button !rounded-b-lg' onClick={handleSignOut}>
+                  Sign Out
+                </button>
+
+              </div>
             )}
-            
+          </div>
+        )}
       </div>
     </nav>
   );
