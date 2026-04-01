@@ -57,7 +57,7 @@ export default function Navbar({user, setUser, onSignIn}) {
         {user && (
           // Profile card
           <div className='user-dropdown' onMouseEnter={() => setDropdownOpen(true)} onMouseLeave={() => setDropdownOpen(false)}>
-            <button className={`flex ${dropdownOpen ? '!rounded-b-none !bg-black top-button' : '!bg-primary !text-black'}`}>
+            <button className={`flex nav-button ${dropdownOpen ? '!rounded-b-none !bg-black top-button' : '!bg-primary !text-black'}`}>
               <img
                 src={`/api/accounts/${user.userId}/photo`}
                 alt=""
