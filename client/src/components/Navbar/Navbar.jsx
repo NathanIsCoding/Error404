@@ -36,21 +36,21 @@ export default function Navbar({user, setUser, onSignIn}) {
       <div className='right'>
         <button className={`${location.pathname === '/' ? 'active' : 'deactivated'}`}  onClick={(e) => { e.preventDefault(); navigate('/'); }}>
           <div className='flex'>
-            <span class="material-symbols-outlined mr-1">home</span>
+            <span className="material-symbols-outlined mr-1">home</span>
             Job Board
           </div>
         </button>
         {user?.isAdmin && (
           <button className={`${location.pathname === '/admin' ? 'active' : 'deactivated'}`}  onClick={(e) => { e.preventDefault(); navigate('/admin'); }}>
             <div className='flex'>
-              <span class="material-symbols-outlined mr-1">admin_panel_settings</span>
+              <span className="material-symbols-outlined mr-1">admin_panel_settings</span>
               Dashboard
             </div>
           </button>
         )}
         {!user && (
           <button className='!bg-black flex' onClick={handleSignIn}>
-              <span class="material-symbols-outlined mr-1">login</span>
+              <span className="material-symbols-outlined mr-1">login</span>
               Sign In
           </button>
         )}

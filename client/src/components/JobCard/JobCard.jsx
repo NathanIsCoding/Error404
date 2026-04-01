@@ -101,7 +101,7 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
 
                     {!isExpanded && (
                         <div className='flex gap-1'>
-                            {user && (
+                            {user?.isAdmin && (
                                 <button className='applyButton !bg-blue-500 flex justify-center items-center mt-1' onClick={handleEdit}>
                                     <span className="material-symbols-outlined">edit</span>
                                 </button>
@@ -134,7 +134,7 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
             <div className='flex justify-end'>
                 {isExpanded && (
                     <div className='flex gap-1'>
-                        {user && (
+                        {user?.isAdmin && (
                             <button className='applyButton !bg-blue-500 flex justify-center items-center mt-1' onClick={handleEdit}>
                                 <span className="material-symbols-outlined">edit</span>
                             </button>

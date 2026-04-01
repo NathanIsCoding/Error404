@@ -62,10 +62,14 @@
     border: 2px solid #2a2a2a;
     border-top: 0;
 }
+.dropdown-button:hover { 
+    border: 2px solid white;
+}
 
 .top-button {
     border: 2px solid #2a2a2a;
 }
+
 
 .nav-button { 
     min-width: 10em;
