@@ -7,7 +7,7 @@ function CreateJobListing({ onClose, onCreated, onUpdated, initialJob = null }) 
   const [title, setTitle] = useState(initialJob?.title ?? '')
   const [company, setCompany] = useState(initialJob?.company ?? '')
   const [jobType, setJobType] = useState(initialJob?.jobType ?? 'full-time')
-  const [industryInput, setIndustryInput] = useState(Array.isArray(initialJob?.industry) ? initialJob.industry.join(', ') : '')
+  const [industryInput, setIndustryInput] = useState(Array.isArray(initialJob?.industry) ? initialJob.industry[0] ?? '' : (initialJob?.industry ?? ''))
   const [salary, setSalary] = useState(initialJob?.salary ?? '')
   const [location, setLocation] = useState(initialJob?.location ?? '')
   const [description, setDescription] = useState(initialJob?.description ?? '')
@@ -20,13 +20,10 @@ function CreateJobListing({ onClose, onCreated, onUpdated, initialJob = null }) 
     setError('')
     setSubmitting(true)
 
-    const industry = industryInput
-      .split(',')
-      .map((item) => item.trim())
-      .filter(Boolean)
+    const industry = industryInput ? [industryInput] : []
 
     if (industry.length === 0) {
-      setError('Please enter at least one industry')
+      setError('Please select an industry')
       setSubmitting(false)
       return
     }
@@ -94,14 +91,35 @@ function CreateJobListing({ onClose, onCreated, onUpdated, initialJob = null }) 
             <option value='internship'>Internship</option>
           </select>
 
-          <label htmlFor='create-industry'>Industries (comma-separated)</label>
-          <input
+          <label htmlFor='create-industry'>Industry</label>
+          <select
             id='create-industry'
             value={industryInput}
             onChange={(event) => setIndustryInput(event.target.value)}
-            placeholder='tech, software'
             required
-          />
+          >
+            <option value=''>-- Select an industry --</option>
+            <option value='Information Technology'>Information Technology</option>
+            <option value='Healthcare'>Healthcare</option>
+            <option value='Education'>Education</option>
+            <option value='Finance'>Finance</option>
+            <option value='Retail'>Retail</option>
+            <option value='Manufacturing'>Manufacturing</option>
+            <option value='Construction'>Construction</option>
+            <option value='Hospitality'>Hospitality</option>
+            <option value='Transportation and Logistics'>Transportation and Logistics</option>
+            <option value='Sales'>Sales</option>
+            <option value='Marketing and Advertising'>Marketing and Advertising</option>
+            <option value='Customer Service'>Customer Service</option>
+            <option value='Government and Public Administration'>Government and Public Administration</option>
+            <option value='Engineering'>Engineering</option>
+            <option value='Real Estate'>Real Estate</option>
+            <option value='Media and Entertainment'>Media and Entertainment</option>
+            <option value='Telecommunications'>Telecommunications</option>
+            <option value='Agriculture'>Agriculture</option>
+            <option value='Energy and Utilities'>Energy and Utilities</option>
+            <option value='Legal Services'>Legal Services</option>
+          </select>
 
           <label htmlFor='create-salary'>Salary</label>
           <input
