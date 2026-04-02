@@ -70,7 +70,10 @@ router.post('/api/jobs', requireAuth, async (req, res) => {
     }
 });
 
-router.delete('/api/deleteJob/:jobId', async (req, res) => {
+router.delete('/api/deleteJob/:jobId', requireAuth, async (req, res) => {
+    if (!req.user.isAdmin) {
+        return res.status(403).json({ message: 'Admin access required' });
+    }
     try {
         const jobId = req.params.jobId;
 
@@ -121,10 +124,19 @@ router.get('/api/search', async (req, res) => {
     }
 });
 
-router.put('/api/updateJob/:jobId', async (req, res) => {
+router.put('/api/updateJob/:jobId', requireAuth, async (req, res) => {
     try {
         const jobId = req.params.jobId;
         const updates = req.body;
+
+        const job = await Job.findOne({ jobId });
+        if (!job) {
+            return res.status(404).json({ message: 'Job not found' });
+        }
+
+        if (!req.user.isAdmin && String(job.createdByUserId) !== String(req.user.userId)) {
+            return res.status(403).json({ message: 'Not authorized to edit this job' });
+        }
 
         const updatedJob = await Job.findOneAndUpdate(
             { jobId: jobId },
