@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './CreateAccount.css';
 
-const CreateAccount = ({ onClose }) => {
+const CreateAccount = ({ onClose, onSuccess }) => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -46,6 +46,11 @@ const CreateAccount = ({ onClose }) => {
       const data = await response.json();
       if (response.ok) {
         setResponseMessage(`Success: ${data.message}`);
+        if (onSuccess) {
+          const me = await fetch('/api/accounts/me', { credentials: 'include' });
+          const userData = await me.json();
+          onSuccess(userData);
+        }
         onClose();
       } else {
         setResponseMessage(`Error: ${data.error}`);
