@@ -211,7 +211,15 @@ function MainApp({user, setUser}) {
         />
       )}
 
-      {showCreateAccount && <CreateAccount onClose={() => setShowCreateAccount(false)} />}
+      {showCreateAccount && (
+        <CreateAccount
+          onClose={() => setShowCreateAccount(false)}
+          onSuccess={(userData) => {
+            setUser(userData);
+            setShowCreateAccount(false);
+          }}
+        />
+      )}
       {showCreateJobListing && (
         <CreateJobListing
           onClose={() => setShowCreateJobListing(false)}
