@@ -5,23 +5,31 @@ const crypto = require('crypto');
 const Job = require('../models/Job');
 const { requireAuth } = require('../middleware/auth');
 
+const sendSuccess = (res, data, message = 'OK', status = 200) => {
+    return res.status(status).json({ success: true, data, message });
+};
+
+const sendError = (res, message = 'Request failed', status = 500, data = null) => {
+    return res.status(status).json({ success: false, data, message });
+};
+
 router.get('/api/loadJobs', async (req, res) => {
   try {
     const jobs = await Job.find();
-    res.json(jobs);
+    return sendSuccess(res, jobs, 'Jobs fetched successfully');
   } catch (error) {
     console.error('Error fetching jobs:', error);
-    res.status(500).json({ error: 'Failed to fetch jobs' });
+    return sendError(res, 'Failed to fetch jobs');
   }
 });
 
 router.get('/api/my-jobs', requireAuth, async (req, res) => {
     try {
         const myJobs = await Job.find({ createdByUserId: String(req.user.userId) }).sort({ createdAt: -1 });
-        return res.json(myJobs);
+        return sendSuccess(res, myJobs, 'Jobs fetched successfully');
     } catch (error) {
         console.error('Error fetching my jobs:', error);
-        return res.status(500).json({ error: 'Failed to fetch your job listings' });
+        return sendError(res, 'Failed to fetch your job listings');
     }
 });
 
@@ -30,7 +38,7 @@ router.post('/api/jobs', requireAuth, async (req, res) => {
         const { title, company, jobType, industry, salary, location, description, isActive } = req.body;
 
         if (!title || !company || !jobType || !industry || salary === undefined || !location || !description) {
-            return res.status(400).json({ error: 'Missing required fields' });
+            return sendError(res, 'Missing required fields', 400);
         }
 
         const industryList = Array.isArray(industry)
@@ -41,12 +49,12 @@ router.post('/api/jobs', requireAuth, async (req, res) => {
                     .filter(Boolean);
 
         if (industryList.length === 0) {
-            return res.status(400).json({ error: 'At least one industry is required' });
+            return sendError(res, 'At least one industry is required', 400);
         }
 
         const parsedSalary = Number(salary);
         if (!Number.isFinite(parsedSalary) || parsedSalary <= 0) {
-            return res.status(400).json({ error: 'Salary must be a positive number' });
+            return sendError(res, 'Salary must be a positive number', 400);
         }
 
         const newJob = await Job.create({
@@ -63,10 +71,10 @@ router.post('/api/jobs', requireAuth, async (req, res) => {
             isActive: typeof isActive === 'boolean' ? isActive : true,
         });
 
-        return res.status(201).json(newJob);
+        return sendSuccess(res, newJob, 'Job created successfully', 201);
     } catch (error) {
         console.error('Error creating job listing:', error);
-        return res.status(500).json({ error: 'Failed to create job listing' });
+        return sendError(res, 'Failed to create job listing');
     }
 });
 
@@ -77,13 +85,13 @@ router.delete('/api/deleteJob/:jobId', async (req, res) => {
         const deletedJob = await Job.findOneAndDelete({ jobId: jobId });
 
         if (!deletedJob) {
-            return res.status(404).json({ message: 'Job not found' });
+            return sendError(res, 'Job not found', 404);
         }
 
-        res.status(200).json({ message: 'Job deleted successfully' });
+        return sendSuccess(res, deletedJob, 'Job deleted successfully');
     } catch (error) {
         console.error('Error deleting job:', error);
-        res.status(500).json({ message: 'Internal server error' });
+        return sendError(res, 'Internal server error');
     }
 });
 
@@ -114,10 +122,10 @@ router.get('/api/search', async (req, res) => {
         }
 
         const results = await Job.find(filter);
-        res.json(results);
+        return sendSuccess(res, results, 'Search completed successfully');
     } catch (error) {
         console.error('Search error:', error);
-        res.status(500).json({ error: 'Search failed' });
+        return sendError(res, 'Search failed');
     }
 });
 
@@ -133,13 +141,13 @@ router.put('/api/updateJob/:jobId', async (req, res) => {
         );
 
         if (!updatedJob) {
-            return res.status(404).json({ message: 'Job not found' });
+            return sendError(res, 'Job not found', 404);
         }
 
-        res.status(200).json(updatedJob);
+        return sendSuccess(res, updatedJob, 'Job updated successfully');
     } catch (error) {
         console.error('Error updating job:', error);
-        res.status(500).json({ message: 'Internal server error' });
+        return sendError(res, 'Internal server error');
     }
 });
 

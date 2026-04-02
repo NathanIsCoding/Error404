@@ -10,6 +10,14 @@ const { requireAuth } = require('../middleware/auth');
 const jwt = require('jsonwebtoken');
 const SECRET = process.env.JWT_SECRET;
 
+const sendSuccess = (res, data, message = 'OK', status = 200) => {
+  return res.status(status).json({ success: true, data, message });
+};
+
+const sendError = (res, message = 'Request failed', status = 500, data = null) => {
+  return res.status(status).json({ success: false, data, message });
+};
+
 // Login endpoint
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
@@ -19,12 +27,12 @@ router.post('/login', async (req, res) => {
       username: { $regex: new RegExp(`^${username}$`, 'i') }
     });
 
-    if (!user) return res.status(404).json({ error: 'Account not found' });
+    if (!user) return sendError(res, 'Account not found', 404);
 
-    if (user.isDisabled) return res.status(403).json({ error: 'Your account has been disabled' });
+    if (user.isDisabled) return sendError(res, 'Your account has been disabled', 403);
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(401).json({ error: 'Password incorrect' });
+    if (!isMatch) return sendError(res, 'Password incorrect', 401);
 
     const token = jwt.sign(
       { userId: user._id, username: user.username, email: user.email, isAdmin: user.isAdmin },
@@ -39,21 +47,21 @@ router.post('/login', async (req, res) => {
       path: '/',
     });
 
-    res.json({ success: true });
+    return sendSuccess(res, null, 'Login successful');
 
   } catch (err) {
     console.error('Database error:', err);
-    return res.status(500).json({ error: 'Internal server error' });
+    return sendError(res, 'Internal server error');
   }
 });
 
 router.get('/me', requireAuth, (req, res) => {
-  res.json({ userId: req.user.userId, username: req.user.username, isAdmin: req.user.isAdmin });
+  return sendSuccess(res, { userId: req.user.userId, username: req.user.username, isAdmin: req.user.isAdmin }, 'Fetched user successfully');
 });
 
 router.post('/logout', (req, res) => {
   res.clearCookie('session_token');
-  res.json({ success: true });
+  return sendSuccess(res, null, 'Logged out successfully');
 });
 
 // Multer config — store in memory for writing to MongoDB
@@ -86,7 +94,7 @@ router.post('/', upload.single('profilePhoto'), async (req, res) => {
 
   // Validate required fields
   if (!normalizedUsername || !normalizedEmail) {
-    return res.status(400).json({ error: 'Username and email are required to create an account' });
+    return sendError(res, 'Username and email are required to create an account', 400);
   }
 
   const hashedPassword = await bcrypt.hash(password, 12);
@@ -109,25 +117,21 @@ router.post('/', upload.single('profilePhoto'), async (req, res) => {
 
   try {
     await createAccount(accountToStore, normalizedUsername, normalizedEmail);
-    res.json({
-      status: 'ok',
-      message: 'Account created successfully',
-      account: {
+    return sendSuccess(res, {
         userId: accountToStore.userId,
         username: accountToStore.username,
         email: accountToStore.email,
         createdAt: accountToStore.createdAt,
-      },
-    });
+      }, 'Account created successfully', 201);
   } catch (err) {
     if (err.code === 'USERNAME_TAKEN') {
-      return res.status(409).json({ error: 'Your account was not created because this username is already taken' });
+      return sendError(res, 'Your account was not created because this username is already taken', 409);
     }
     if (err.code === 'EMAIL_REGISTERED') {
-      return res.status(409).json({ error: 'Your account was not created because this email is already registered with a different account' });
+      return sendError(res, 'Your account was not created because this email is already registered with a different account', 409);
     }
     console.error(err);
-    res.status(500).json({ error: 'Error creating account' });
+    return sendError(res, 'Error creating account');
   }
 });
 
@@ -136,13 +140,13 @@ router.get('/:id/photo', async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (!user || !user.profilePhoto || !user.profilePhoto.data) {
-      return res.status(404).json({ error: 'No photo found' });
+      return sendError(res, 'No photo found', 404);
     }
     res.set('Content-Type', user.profilePhoto.contentType);
     res.send(user.profilePhoto.data);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Error fetching photo' });
+    return sendError(res, 'Error fetching photo');
   }
 });
 
@@ -152,16 +156,16 @@ router.get('/profile/:username', async (req, res) => {
     const user = await User.findOne({
       username: { $regex: new RegExp(`^${req.params.username.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') }
     });
-    if (!user) return res.status(404).json({ error: 'User not found' });
-    res.json({
+    if (!user) return sendError(res, 'User not found', 404);
+    return sendSuccess(res, {
       userId: user._id,
       username: user.username,
       createdAt: user.createdAt,
       resumeText: user.resumeText || ''
-    });
+    }, 'Profile fetched successfully');
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Error fetching profile' });
+    return sendError(res, 'Error fetching profile');
   }
 });
 
@@ -170,16 +174,16 @@ router.put('/profile/resume', requireAuth, async (req, res) => {
   try {
     const { resumeText } = req.body;
     if (typeof resumeText !== 'string') {
-      return res.status(400).json({ error: 'resumeText must be a string' });
+      return sendError(res, 'resumeText must be a string', 400);
     }
     const user = await User.findById(req.user.userId);
-    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (!user) return sendError(res, 'User not found', 404);
     user.resumeText = resumeText;
     await user.save();
-    res.json({ success: true, resumeText: user.resumeText });
+    return sendSuccess(res, { resumeText: user.resumeText }, 'Resume updated successfully');
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Error updating resume' });
+    return sendError(res, 'Error updating resume');
   }
 });
 
@@ -214,24 +218,24 @@ async function createAccount(account, normalizedUsername, normalizedEmail) {
 router.patch('/toggleUser/:userId', requireAuth, async (req, res) => {
     try {
         if (!req.user.isAdmin) {
-            return res.status(403).json({ message: 'Admin access required' });
-        }
+              return sendError(res, 'Admin access required', 403);
+          }
 
-        const userId = req.params.userId;
-        const user = await User.findOne({ userId: userId });
+          const userId = req.params.userId;
+          const user = await User.findOne({ userId: userId });
 
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
+          if (!user) {
+              return sendError(res, 'User not found', 404);
+          }
 
-        user.isDisabled = !user.isDisabled;
-        await user.save();
+          user.isDisabled = !user.isDisabled;
+          await user.save();
 
-        res.status(200).json({ message: `User ${user.isDisabled ? 'disabled' : 'enabled'} successfully`, isDisabled: user.isDisabled });
-    } catch (error) {
-        console.error('Error toggling user:', error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
+          return sendSuccess(res, { isDisabled: user.isDisabled }, `User ${user.isDisabled ? 'disabled' : 'enabled'} successfully`);
+      } catch (error) {
+          console.error('Error toggling user:', error);
+          return sendError(res, 'Internal server error');
+      }
 });
 
 module.exports = router;
