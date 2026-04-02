@@ -1,6 +1,6 @@
 import '../UserCard/UserCard.css'
 
-function UserCard({data: user, onDelete, onToggle}){ 
+function UserCard({data: user, onDelete, onToggle, onToggleAdmin}){
 
     const formatCreatedAt = (createdAt) => {
         if (!createdAt) {
@@ -23,7 +23,7 @@ function UserCard({data: user, onDelete, onToggle}){
             <span className='ml-2'>{user.email}</span>
             <span className='ml-2'>{user.rating}</span>
             <label className='flex gap-1 ml-2'>
-                <input type='checkbox' checked={user.isAdmin} readOnly />
+                <input type='checkbox' checked={user.isAdmin} onChange={() => onToggleAdmin(user.userId)} />
                 Admin
             </label>
             <button onClick={() => onToggle(user.userId)} className={`!p-1 flex justify-center ${user.isDisabled ? '!bg-green-600' : '!bg-yellow-600'}`}>
