@@ -4,7 +4,28 @@ const crypto = require('crypto');
 const Job = require('../models/Job');
 
 const locations = ['San Francisco, CA', 'New York, NY', 'Los Angeles, CA', 'Austin, TX', 'Seattle, WA', 'Boston, MA', 'Denver, CO', 'Portland, OR', 'Chicago, IL', 'Remote'];
-const industries = ['tech', 'software', 'data-science', 'design'];
+const industries = [
+  'Information Technology',
+  'Healthcare',
+  'Education',
+  'Finance',
+  'Retail',
+  'Manufacturing',
+  'Construction',
+  'Hospitality',
+  'Transportation and Logistics',
+  'Sales',
+  'Marketing and Advertising',
+  'Customer Service',
+  'Government and Public Administration',
+  'Engineering',
+  'Real Estate',
+  'Media and Entertainment',
+  'Telecommunications',
+  'Agriculture',
+  'Energy and Utilities',
+  'Legal Services'
+];
 const jobTypes = ['full-time', 'part-time', 'contract', 'internship'];
 const jobTitles = ['Software Engineer', 'Data Scientist', 'UX/UI Designer', 'DevOps Engineer', 'Product Manager', 'Backend Engineer', 'Frontend Engineer', 'Full Stack Developer', 'Machine Learning Engineer', 'Solutions Architect'];
 const companies = ['TechCorp', 'InnovateX', 'DataWorks', 'DesignHub', 'CloudNet', 'AI Solutions', 'Webify', 'AppMasters', 'CyberTech', 'NextGen Software'];
@@ -23,8 +44,7 @@ function getRandomElements(arr, count) {
 }
 
 function getRandomIndustries() {
-  const count = Math.floor(Math.random() * 2)+ 1;
-  return getRandomElements(industries, count);
+  return [getRandomElement(industries)];
 }
 function getRandomCompany() {
   return getRandomElement(companies);
