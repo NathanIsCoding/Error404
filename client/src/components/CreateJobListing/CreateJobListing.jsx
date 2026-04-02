@@ -7,7 +7,7 @@ function CreateJobListing({ onClose, onCreated, onUpdated, initialJob = null }) 
   const [title, setTitle] = useState(initialJob?.title ?? '')
   const [company, setCompany] = useState(initialJob?.company ?? '')
   const [jobType, setJobType] = useState(initialJob?.jobType ?? 'full-time')
-  const [industryInput, setIndustryInput] = useState(Array.isArray(initialJob?.industry) ? initialJob.industry[0] ?? '' : (initialJob?.industry ?? ''))
+  const [industryInput, setIndustryInput] = useState(initialJob?.industry ?? '')
   const [salary, setSalary] = useState(initialJob?.salary ?? '')
   const [location, setLocation] = useState(initialJob?.location ?? '')
   const [description, setDescription] = useState(initialJob?.description ?? '')
@@ -20,9 +20,7 @@ function CreateJobListing({ onClose, onCreated, onUpdated, initialJob = null }) 
     setError('')
     setSubmitting(true)
 
-    const industry = industryInput ? [industryInput] : []
-
-    if (industry.length === 0) {
+    if (!industryInput) {
       setError('Please select an industry')
       setSubmitting(false)
       return
@@ -32,7 +30,7 @@ function CreateJobListing({ onClose, onCreated, onUpdated, initialJob = null }) 
       title: title.trim(),
       company: company.trim(),
       jobType,
-      industry,
+      industry: industryInput,
       salary: Number(salary),
       location: location.trim(),
       description: description.trim(),

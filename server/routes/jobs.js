@@ -33,15 +33,10 @@ router.post('/api/jobs', requireAuth, async (req, res) => {
             return res.status(400).json({ error: 'Missing required fields' });
         }
 
-        const industryList = Array.isArray(industry)
-            ? industry.map((item) => String(item).trim()).filter(Boolean)
-            : String(industry)
-                    .split(',')
-                    .map((item) => item.trim())
-                    .filter(Boolean);
+        const industryValue = String(industry).trim();
 
-        if (industryList.length === 0) {
-            return res.status(400).json({ error: 'At least one industry is required' });
+        if (!industryValue) {
+            return res.status(400).json({ error: 'Industry is required' });
         }
 
         const parsedSalary = Number(salary);
@@ -54,7 +49,7 @@ router.post('/api/jobs', requireAuth, async (req, res) => {
             title: String(title).trim(),
             company: String(company).trim(),
             jobType: String(jobType).trim(),
-            industry: industryList,
+            industry: industryValue,
             salary: parsedSalary,
             location: String(location).trim(),
             description: String(description).trim(),

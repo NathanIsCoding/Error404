@@ -38,13 +38,9 @@ function getRandomElement(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-function getRandomElements(arr, count) {
-  const shuffled = arr.sort(function () { return 0.5 - Math.random();});
-  return shuffled.slice(0, Math.min(count, arr.length));
-}
 
-function getRandomIndustries() {
-  return [getRandomElement(industries)];
+function getRandomIndustry() {
+  return getRandomElement(industries);
 }
 function getRandomCompany() {
   return getRandomElement(companies);
@@ -72,7 +68,7 @@ function generateJobs(count) {
       jobId: generateJobId(),
       title: getRandomElement(jobTitles),
       jobType: getRandomElement(jobTypes),
-      industry: getRandomIndustries(),
+      industry: getRandomIndustry(),
       salary: getRandomSalary(getRandomElement(jobTypes)),
       location: getRandomElement(locations),
       description: generateJobDescription(getRandomElement(jobTitles)),
