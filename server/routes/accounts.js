@@ -234,4 +234,28 @@ router.patch('/toggleUser/:userId', requireAuth, async (req, res) => {
     }
 });
 
+// User Admin Toggle
+router.patch('/toggleAdmin/:userId', requireAuth, async (req, res) => {
+    try {
+        if (!req.user.isAdmin) {
+            return res.status(403).json({ message: 'Admin access required' });
+        }
+
+        const userId = req.params.userId;
+        const user = await User.findOne({ userId: userId });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        user.isAdmin = !user.isAdmin;
+        await user.save();
+
+        res.status(200).json({ message: `User ${user.isAdmin ? 'promoted to' : 'removed from'} admin successfully`, isAdmin: user.isAdmin });
+    } catch (error) {
+        console.error('Error toggling admin:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
 module.exports = router;
