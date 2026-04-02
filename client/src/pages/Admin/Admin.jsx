@@ -92,6 +92,20 @@ function Admin({ user, setUser }) {
         }
     }
 
+    const handleToggleAdmin = async (userId) => {
+        try {
+            const response = await fetch(`/api/accounts/toggleAdmin/${userId}`, {
+                method: 'PATCH',
+                credentials: 'include'
+            })
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
+            const data = await response.json()
+            setAllUsers(prev => prev.map(u => u.userId === userId ? { ...u, isAdmin: data.isAdmin } : u))
+        } catch (error) {
+            console.error('Failed to toggle admin:', error)
+        }
+    }
+
     const handleDeleteJob = async (jobId) => {
         try {
             const response = await fetch(`/api/deleteJob/${jobId}`, { method: 'DELETE'})
@@ -172,6 +186,7 @@ function Admin({ user, setUser }) {
                         onUpdate={activeTab === 'jobs' ? handleUpdateJob : undefined}
                         onCreateJob={() => setShowCreateJobListing(true)}
                         onToggle={activeTab === 'users' ? handleToggleUser : undefined}
+                        onToggleAdmin={activeTab === 'users' ? handleToggleAdmin : undefined}
                     />
 
                 </div>
