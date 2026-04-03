@@ -71,19 +71,21 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted }) {
                 <div className='flex flex-row items-center'>
                     <img src={reactLogo} className='cardImg rounded-sm'></img>
                     <div className='textRow'>
-                        <p className='text-lg'>
-                            {job.company} - {job.title}  
-                            <div className="Tags">
+                        <div className="Tags">
                                 <span style={{backgroundColor: job.industry == "tech" ? "#cc2d4d" : job.industry == "software" ? "#d99d59"  : job.industry == "data-science" ? "#8c2dcc" :job.industry == "design" ? "#5366d4" :"#53d4ab"}}>{job.industry}</span> 
                                 <span style={{backgroundColor: job.jobType == "full-time" ? "#45a35e" : job.jobType == "part-time" ? "#c9b938" : job.jobType == "contract" ? "#e0933a" :job.jobType == "internship" ? "#cf3ae0" :"#e02f35"}}>{job.jobType}</span> 
-                                <span style={{backgroundColor: job.salary < 20000 ? "#a3220f" : job.salary < 40000 ? "#eb8109" : job.salary < 60000 ? "#dcd61c" : job.salary < 80000 ? "#0aa335": "#0a9ba3"}}>
-                                    {job.salary}
-                                </span>
-                            </div>
+                        </div>
+                        <p className='text-lg'>
+                            {job.company} - {job.title}  
+                            
                         </p>
                         <p className='text-gray-400'>{
                             new Intl.NumberFormat("en-IN", { style: "currency", currency: "CAD" }).format( job.salary)
                         }</p>
+                        <div className="Tags">
+                            <span style={{backgroundColor: job.salary < 20000 ? "#a3220f" : job.salary < 40000 ? "#eb8109" : job.salary < 60000 ? "#dcd61c" : job.salary < 80000 ? "#0aa335": "#0a9ba3"}}>
+                            </span>
+                        </div>
                     </div>
                 </div>
                
