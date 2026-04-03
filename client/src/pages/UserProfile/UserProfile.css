@@ -19,6 +19,7 @@
     border-radius: 50%;
     object-fit: cover;
     border: 3px solid #6ee7b7;
+    margin: auto;
     margin-bottom: 20px;
 }
 

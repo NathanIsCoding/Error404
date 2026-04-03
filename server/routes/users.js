@@ -1,8 +1,12 @@
 var express = require('express');
 var router = express.Router();
 const User = require('../models/User');
+const { requireAuth } = require('../middleware/auth');
 
-router.get('/api/loadUsers', async (req, res) => {
+router.get('/api/loadUsers', requireAuth, async (req, res) => {
+  if (!req.user.isAdmin) {
+    return res.status(403).json({ error: 'Admin access required' });
+  }
   try {
     const users = await User.find().select('-password');
     res.json(users);
@@ -12,7 +16,10 @@ router.get('/api/loadUsers', async (req, res) => {
   }
 });
 
-router.delete('/api/deleteUser/:userId', async (req, res) => {
+router.delete('/api/deleteUser/:userId', requireAuth, async (req, res) => {
+    if (!req.user.isAdmin) {
+        return res.status(403).json({ message: 'Admin access required' });
+    }
     try {
         const userId = req.params.userId;
 
