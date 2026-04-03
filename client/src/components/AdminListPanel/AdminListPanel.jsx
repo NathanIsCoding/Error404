@@ -3,7 +3,7 @@ import Paginator from '../Paginator/Paginator';
 import { useState } from 'react';
 
 // eslint-disable-next-line no-unused-vars
-function AdminListPanel({title, items, CardComponent, filterFn, activeTab, onTabChange, onDelete, onUpdate, onToggle, pageSize = 6}) {
+function AdminListPanel({title, items, CardComponent, filterFn, activeTab, onTabChange, onDelete, onUpdate, onToggle, onCreateJob, pageSize = 6}) {
     
     // When data loads, chunk it into pages
     function chunkData(data, size) {
@@ -36,6 +36,11 @@ function AdminListPanel({title, items, CardComponent, filterFn, activeTab, onTab
                     <button className={activeTab === 'jobs' ? 'tab-active' : 'tab'} onClick={() => onTabChange('jobs')}>
                         Jobs
                     </button>
+                    {activeTab === 'jobs' && (
+                        <button className='create-job-btn' onClick={onCreateJob}>
+                            + Create Job
+                        </button>
+                    )}
                 </div>
                 <input
                     name='search'

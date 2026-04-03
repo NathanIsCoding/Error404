@@ -27,3 +27,23 @@
     background-color: black;
     color: white;
 }
+
+.create-job-btn {
+    padding: 0.4rem 1rem;
+    border-radius: 9999px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border: 2px solid black;
+    background-color: black;
+    color: white;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.create-job-btn:hover {
+    opacity: 0.9;
+}
+
+.create-job-btn:active {
+    transform: scale(0.98);
+}
