@@ -108,15 +108,28 @@ router.post('/', upload.single('profilePhoto'), async (req, res) => {
   }
 
   try {
-    await createAccount(accountToStore, normalizedUsername, normalizedEmail);
+    const savedUser = await createAccount(accountToStore, normalizedUsername, normalizedEmail);
+
+    const token = jwt.sign(
+      { userId: savedUser._id, username: savedUser.username, email: savedUser.email, isAdmin: savedUser.isAdmin },
+      SECRET,
+      { expiresIn: '24h' }
+    );
+    res.cookie('session_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+      path: '/',
+    });
+
     res.json({
       status: 'ok',
       message: 'Account created successfully',
       account: {
-        userId: accountToStore.userId,
-        username: accountToStore.username,
-        email: accountToStore.email,
-        createdAt: accountToStore.createdAt,
+        userId: savedUser._id,
+        username: savedUser.username,
+        email: savedUser.email,
+        createdAt: savedUser.createdAt,
       },
     });
   } catch (err) {
@@ -208,6 +221,7 @@ async function createAccount(account, normalizedUsername, normalizedEmail) {
 
   const result = await User.create(account);
   console.log(`A document was inserted with the _id: ${result._id}`);
+  return result;
 }
 
 // User Disable/Enable Toggle
@@ -230,6 +244,30 @@ router.patch('/toggleUser/:userId', requireAuth, async (req, res) => {
         res.status(200).json({ message: `User ${user.isDisabled ? 'disabled' : 'enabled'} successfully`, isDisabled: user.isDisabled });
     } catch (error) {
         console.error('Error toggling user:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+// User Admin Toggle
+router.patch('/toggleAdmin/:userId', requireAuth, async (req, res) => {
+    try {
+        if (!req.user.isAdmin) {
+            return res.status(403).json({ message: 'Admin access required' });
+        }
+
+        const userId = req.params.userId;
+        const user = await User.findOne({ userId: userId });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        user.isAdmin = !user.isAdmin;
+        await user.save();
+
+        res.status(200).json({ message: `User ${user.isAdmin ? 'promoted to' : 'removed from'} admin successfully`, isAdmin: user.isAdmin });
+    } catch (error) {
+        console.error('Error toggling admin:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
