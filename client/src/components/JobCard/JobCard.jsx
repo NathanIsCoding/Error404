@@ -82,8 +82,16 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted }) {
                         <p className='text-gray-400'>{
                             new Intl.NumberFormat("en-IN", { style: "currency", currency: "CAD" }).format( job.salary)
                         }</p>
-                        <div className="Tags">
-                            <span style={{backgroundColor: job.salary < 20000 ? "#a3220f" : job.salary < 40000 ? "#eb8109" : job.salary < 60000 ? "#dcd61c" : job.salary < 80000 ? "#0aa335": "#0a9ba3"}}>
+                        <div className="Tags2">
+                            <span style={{backgroundColor: "#a3220f"}}>
+                            </span>
+                            <span style={{backgroundColor: job.salary > 40000 ? "#eb8109" :""}}>
+                            </span>
+                            <span style={{backgroundColor: job.salary > 60000 ? "#dcd61c" :""}}>
+                            </span>
+                            <span style={{backgroundColor: job.salary > 80000 ? "#0aa335" :""}}>
+                            </span>
+                            <span style={{backgroundColor: job.salary > 100000 ? "#0a9ba3" :""}}>
                             </span>
                         </div>
                     </div>
