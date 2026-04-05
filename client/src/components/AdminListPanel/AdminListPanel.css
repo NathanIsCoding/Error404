@@ -3,6 +3,10 @@
     border-radius: 15px;
 }
 
+.list-scroll-area {
+    min-height: 354px;
+}
+
 .tab,
 .tab-active {
     padding: 0.4rem 1.2rem;
