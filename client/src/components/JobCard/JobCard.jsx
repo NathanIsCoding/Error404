@@ -1,5 +1,4 @@
 import './JobCard.css';
-import reactLogo from '../../assets/react.svg'
 import { useState, useEffect } from 'react';
 
 
@@ -8,10 +7,19 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
     const [isExpanded, setIsExpanded] = useState(false);
     const [applied, setApplied] = useState(isApplied);
     const [applyError, setApplyError] = useState('');
+    const [imageError, setImageError] = useState(false);
+
+    const creatorPhotoUrl = job?.createdByUserId
+        ? `/api/accounts/${encodeURIComponent(job.createdByUserId)}/photo`
+        : null;
 
     useEffect(() => {
         setApplied(isApplied);
     }, [isApplied]);
+
+    useEffect(() => {
+        setImageError(false);
+    }, [job?.createdByUserId, job?.jobId, job?._id]);
 
     function clicked(){ 
         setIsExpanded(!isExpanded);
@@ -77,7 +85,18 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
 
             <div className='flex flex-row justify-between'>
                 <div className='flex flex-row items-center'>
-                    <img src={reactLogo} className='cardImg rounded-sm'></img>
+                    {creatorPhotoUrl && !imageError ? (
+                        <img
+                            src={creatorPhotoUrl}
+                            className='cardImg'
+                            alt={`${job.company} creator`}
+                            onError={() => setImageError(true)}
+                        />
+                    ) : (
+                        <div className='cardImgPlaceholder'>
+                            {(job.company || '?').charAt(0).toUpperCase()}
+                        </div>
+                    )}
                     <div className='textRow'>
                         <p className='text-lg'>{job.company} - {job.title}</p>
                         <p className='text-gray-400'>{
