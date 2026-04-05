@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 const User = require('../models/User');
 const crypto = require('crypto');
+const https = require('https');
 const bcrypt = require('bcrypt');
 const multer = require('multer');
 const { requireAuth } = require('../middleware/auth');
@@ -105,6 +106,8 @@ router.post('/', upload.single('profilePhoto'), async (req, res) => {
       data: req.file.buffer,
       contentType: req.file.mimetype
     };
+  } else {
+    accountToStore.profilePhoto = await generateDefaultProfilePhoto(accountToStore.userId, accountToStore.username);
   }
 
   try {
@@ -148,8 +151,14 @@ router.post('/', upload.single('profilePhoto'), async (req, res) => {
 router.get('/:id/photo', async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
-    if (!user || !user.profilePhoto || !user.profilePhoto.data) {
-      return res.status(404).json({ error: 'No photo found' });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (!user.profilePhoto || !user.profilePhoto.data) {
+      const fallbackPhoto = await generateDefaultProfilePhoto(user.userId || user._id.toString(), user.username);
+      res.set('Content-Type', fallbackPhoto.contentType);
+      return res.send(fallbackPhoto.data);
     }
     res.set('Content-Type', user.profilePhoto.contentType);
     res.send(user.profilePhoto.data);
@@ -198,6 +207,51 @@ router.put('/profile/resume', requireAuth, async (req, res) => {
 
 function generateUserId() {
   return crypto.randomBytes(16).toString('hex');
+}
+
+async function generateDefaultProfilePhoto(seed, username) {
+  const dicebearSeed = encodeURIComponent(username || seed || 'user');
+  const avatarUrl = `https://api.dicebear.com/9.x/glass/svg?seed=${dicebearSeed}`;
+  const response = await fetchBinary(avatarUrl);
+
+  return {
+    data: response.data,
+    contentType: response.contentType,
+  };
+}
+
+async function fetchBinary(url) {
+  if (typeof fetch === 'function') {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch avatar: ${response.status}`);
+    }
+
+    const contentType = response.headers.get('content-type') || 'image/svg+xml';
+    const data = Buffer.from(await response.arrayBuffer());
+    return { data, contentType };
+  }
+
+  return new Promise((resolve, reject) => {
+    https
+      .get(url, (response) => {
+        if (response.statusCode !== 200) {
+          reject(new Error(`Failed to fetch avatar: ${response.statusCode}`));
+          response.resume();
+          return;
+        }
+
+        const chunks = [];
+        response.on('data', (chunk) => chunks.push(chunk));
+        response.on('end', () => {
+          resolve({
+            data: Buffer.concat(chunks),
+            contentType: response.headers['content-type'] || 'image/svg+xml',
+          });
+        });
+      })
+      .on('error', reject);
+  });
 }
 
 async function createAccount(account, normalizedUsername, normalizedEmail) {
