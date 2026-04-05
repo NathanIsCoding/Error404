@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useParams, Navigate } from 'react-router-dom';
+import { useParams, Navigate, useNavigate } from 'react-router-dom';
 import Navbar from '../../components/Navbar/Navbar.jsx';
 import './Applications.css';
 
 export default function Applications({ user, setUser }) {
   const { username } = useParams();
+  const navigate = useNavigate();
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -36,11 +37,37 @@ export default function Applications({ user, setUser }) {
       <Navbar user={user} setUser={setUser} />
       <div className="applications-container">
         <h2>{username}'s Applications</h2>
-        {loading && <p>Loading...</p>}
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        {!loading && !error && applications.length === 0 && (
-          <p>No applications yet.</p>
+
+        {loading && (
+          <div className="application-card bg-primary">
+            <div className="app-info">
+              <p><strong>Loading your applications…</strong></p>
+              <p>Please wait a moment.</p>
+            </div>
+          </div>
         )}
+
+        {error && (
+          <div className="application-card bg-primary">
+            <div className="app-info">
+              <p><strong>Could not load applications</strong></p>
+              <p>{error}</p>
+            </div>
+          </div>
+        )}
+
+        {!loading && !error && applications.length === 0 && (
+          <div className="application-card bg-primary">
+            <div className="app-info">
+              <p><strong>No applications yet</strong></p>
+              <p>Browse listings and apply to track them here.</p>
+            </div>
+            <button className="!bg-black" onClick={() => navigate('/')}>
+              Browse Job Board
+            </button>
+          </div>
+        )}
+
         {applications.map((app) => (
           <div key={app._id} className="application-card bg-primary">
             <div className="app-info">
