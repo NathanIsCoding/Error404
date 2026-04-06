@@ -114,7 +114,7 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
                                 <span className='items-center rounded-full' style={{backgroundColor: JOB_TYPE_COLORS[job.jobType] ?? JOB_TYPE_COLORS.default}}>{job.jobType?.replace(/\b\w/g, c => c.toUpperCase())}</span>
                         </div>
                         <p className='text-lg'>
-                            {job.company} - {job.title}  
+                            {job.company} - {job.title}  {job.industry} {job.jobType} {job.salary}  
                             
                         </p>
                         <p style={{color: getSalaryColor(job.salary)}}>{
