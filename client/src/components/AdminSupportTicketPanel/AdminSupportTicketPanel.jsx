@@ -39,7 +39,7 @@ function AdminSupportTicketPanel({items, filterFn, onDelete, pageSize = 4}) {
                 />
             </div>
             
-                 <div className='flex-1 overflow-auto mt-3 rounded-lg'>
+                 <div className='flex-1 overflow-auto mt-3 bg-black rounded-lg'>
                     {displayMatrix[currentPage]?.map((item, index) => (
                         <SupportTicketCard key={index} data={item} onDelete={onDelete} />
                     ))}

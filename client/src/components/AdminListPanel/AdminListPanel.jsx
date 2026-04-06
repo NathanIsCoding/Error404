@@ -52,7 +52,7 @@ function AdminListPanel({title, items, CardComponent, filterFn, activeTab, onTab
                 />
             </div>
 
-            <div className='flex-1 overflow-auto rounded-lg'>
+            <div className='flex-1 overflow-auto bg-black rounded-lg list-scroll-area'>
                 {displayMatrix[currentPage]?.map((item, index) => (
                     <CardComponent key={index} data={item} onDelete={onDelete} onUpdate={onUpdate} onToggle={onToggle} onToggleAdmin={onToggleAdmin} />
                 ))}
