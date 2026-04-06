@@ -160,7 +160,7 @@ function MainApp({user, setUser}) {
         
           <div className="job-listings-container bg-primary mx-5 grow-2 p-3 rounded-lg">
               
-            <div className='overflow-auto flex-1 scroll-box rounded-lg'>
+            <div className='overflow-auto flex-1 scroll-box rounded-lg bg-black'>
                 {jobMatrix[currentPage]?.map((job, index) => (
                     <JobCard
                       className="border-b-1 border-tertiary"

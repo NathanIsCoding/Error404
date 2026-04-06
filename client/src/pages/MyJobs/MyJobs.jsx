@@ -8,6 +8,7 @@ function MyJobs({ user, setUser }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [jobBeingEdited, setJobBeingEdited] = useState(null)
+  const [showCreateJobListing, setShowCreateJobListing] = useState(false)
 
   useEffect(() => {
     const fetchMyJobs = async () => {
@@ -32,16 +33,46 @@ function MyJobs({ user, setUser }) {
     setJobs((prev) => prev.map((job) => (job.jobId === updatedJob.jobId ? updatedJob : job)))
   }
 
+  const addCreatedJob = (createdJob) => {
+    setJobs((prev) => [createdJob, ...prev])
+  }
+
   return (
     <>
       <Navbar user={user} setUser={setUser} />
       <div className="my-jobs-container">
         <h2>{user?.username}'s Job Listings</h2>
-        {loading && <p>Loading...</p>}
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        {!loading && !error && jobs.length === 0 && (
-          <p>You have not created any job listings yet.</p>
+
+        {loading && (
+          <div className="my-job-card bg-primary">
+            <div className="job-info">
+              <p><strong>Loading your job listings…</strong></p>
+              <p>Please wait a moment.</p>
+            </div>
+          </div>
         )}
+
+        {error && (
+          <div className="my-job-card bg-primary">
+            <div className="job-info">
+              <p><strong>Could not load your listings</strong></p>
+              <p>{error}</p>
+            </div>
+          </div>
+        )}
+
+        {!loading && !error && jobs.length === 0 && (
+          <div className="my-job-card bg-primary">
+            <div className="job-info">
+              <p><strong>No job listings yet</strong></p>
+              <p>Create your first listing to start receiving applications.</p>
+            </div>
+            <button className="edit-btn" onClick={() => setShowCreateJobListing(true)}>
+              Create Your First Listing
+            </button>
+          </div>
+        )}
+
         {jobs.map((job) => (
           <div key={job.jobId} className="my-job-card bg-primary">
             <div className="job-info">
@@ -64,6 +95,13 @@ function MyJobs({ user, setUser }) {
           initialJob={jobBeingEdited}
           onClose={() => setJobBeingEdited(null)}
           onUpdated={applyEditedJob}
+        />
+      )}
+
+      {showCreateJobListing && (
+        <CreateJobListing
+          onClose={() => setShowCreateJobListing(false)}
+          onCreated={addCreatedJob}
         />
       )}
     </>
