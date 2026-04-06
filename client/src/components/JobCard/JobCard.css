@@ -1,6 +1,5 @@
 .card { 
     padding: 10px;
-    min-width: 600px;
 }
 
 .description { 
@@ -15,6 +14,21 @@
     width: 4em;
     height: 4em;
     margin-right: 10px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+.cardImgPlaceholder {
+    width: 4em;
+    height: 4em;
+    margin-right: 10px;
+    border-radius: 6px;
+    background: #1f2937;
+    color: #d1d5db;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
 }
 
 .textRow {
@@ -36,4 +50,9 @@
 p { 
     margin: 0;
     text-align: left;
+}
+
+.Tags span{
+    padding: 0.2em 1em 0.2em 1em;
+    margin-right: 1em;
 }
