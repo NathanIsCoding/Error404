@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import Navbar from "../../components/Navbar/Navbar"
 import './Admin.css'
+import { PieChart, Pie, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 import UserCard from '../../components/UserCard/UserCard.jsx'
 import AdminJobCard from '../../components/AdminJobCard/AdminJobCard.jsx'
 import AdminListPanel from '../../components/AdminListPanel/AdminListPanel.jsx'
@@ -146,6 +147,27 @@ function Admin({ user, setUser }) {
         setActiveTab('jobs')
     }
 
+    const PIE_COLORS = ['#65bacf', '#3335c0', '#ec4899', '#f59e0b', '#10b981']
+
+    const jobTypeData = Object.entries(
+        allJobs.reduce((acc, job) => { acc[job.jobType] = (acc[job.jobType] || 0) + 1; return acc; }, {})
+    ).map(([name, value], i) => ({ name, value, fill: PIE_COLORS[i % PIE_COLORS.length] }))
+
+    const industryData = Object.entries(
+        allJobs.reduce((acc, job) => { acc[job.industry] = (acc[job.industry] || 0) + 1; return acc; }, {})
+    ).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([name, value], i) => ({ name, value, fill: PIE_COLORS[i % PIE_COLORS.length] }))
+
+    const userStatusData = [
+        { name: 'Active', value: allUsers.filter(u => !u.isDisabled && !u.isAdmin).length, fill: PIE_COLORS[0] },
+        { name: 'Admin', value: allUsers.filter(u => u.isAdmin).length, fill: PIE_COLORS[1] },
+        { name: 'Disabled', value: allUsers.filter(u => u.isDisabled).length, fill: PIE_COLORS[2] },
+    ].filter(d => d.value > 0)
+
+    const ticketStatusData = [
+        { name: 'Open', value: allTickets.filter(t => !t.resolved).length, fill: PIE_COLORS[2] },
+        { name: 'Resolved', value: allTickets.filter(t => t.resolved).length, fill: PIE_COLORS[4] },
+    ].filter(d => d.value > 0)
+
     return(
         <main className="h-screen flex flex-col">
             <Navbar user={user} setUser={setUser} />
@@ -153,24 +175,65 @@ function Admin({ user, setUser }) {
                 <div className="mainPanel flex flex-col mr-3">
                     <div className="flex flex-row justify-between mb-5">
 
-                        <div className="statCard bg-primary p-3 mr-3">
-                            <span className="logo">Total Users</span>
-                            <h1 className='statCardValues'>{allUsers.length}</h1>
+                        <div className="statCard bg-primary p-3 mr-3 flex flex-col">
+                            <span className="logo">Jobs by Type</span>
+                            <div className="bg-black rounded-lg flex-1">
+                                {jobTypeData.length === 0 ? <p className="text-center py-10 opacity-50 text-white">No data</p> : (
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <PieChart>
+                                            <Pie data={jobTypeData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={60} />
+                                            <Tooltip contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #444', color: '#fff' }} />
+                                            <Legend iconSize={10} wrapperStyle={{ color: '#fff', fontSize: 11 }} />
+                                        </PieChart>
+                                    </ResponsiveContainer>
+                                )}
+                            </div>
                         </div>
 
-                        <div className="statCard bg-primary p-3 mr-3">
-                            <span className="logo">Total Jobs</span>
-                            <h1 className='statCardValues'>{allJobs.length}</h1>
+                        <div className="statCard bg-primary p-3 mr-3 flex flex-col">
+                            <span className="logo">Top Industries</span>
+                            <div className="bg-black rounded-lg flex-1">
+                                {industryData.length === 0 ? <p className="text-center py-10 opacity-50 text-white">No data</p> : (
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <BarChart data={industryData} layout="vertical" margin={{ left: 10, right: 10 }}>
+                                            <XAxis type="number" hide />
+                                            <YAxis type="category" dataKey="name" width={80} tick={{ fontSize: 10, fill: '#fff' }} axisLine={false} tickLine={false} />
+                                            <Tooltip contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #444', color: '#fff' }} itemStyle={{ color: '#fff' }} labelStyle={{ color: '#fff' }} cursor={{ fill: 'rgba(255,255,255,0.05)' }} />
+                                            <Bar dataKey="value" radius={[0, 4, 4, 0]} shape={(props) => <rect x={props.x} y={props.y} width={props.width} height={props.height} fill={props.fill} rx={4} />} />
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                )}
+                            </div>
                         </div>
 
-                        <div className="statCard bg-primary p-3 mr-3">
-                            <span className="logo">Total Support Tickets</span>
-                            <h1 className='statCardValues'>{allTickets.length}</h1>
+                        <div className="statCard bg-primary p-3 mr-3 flex flex-col">
+                            <span className="logo">User Status</span>
+                            <div className="bg-black rounded-lg flex-1">
+                                {userStatusData.length === 0 ? <p className="text-center py-10 opacity-50 text-white">No data</p> : (
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <PieChart>
+                                            <Pie data={userStatusData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={60} />
+                                            <Tooltip contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #444', color: '#fff' }} />
+                                            <Legend iconSize={10} wrapperStyle={{ color: '#fff', fontSize: 11 }} />
+                                        </PieChart>
+                                    </ResponsiveContainer>
+                                )}
+                            </div>
                         </div>
-                        
-                        <div className="statCard bg-primary p-3">
-                            <span className="logo">card 4</span>
-                            <h1 className='statCardValues'>60</h1>
+
+                        <div className="statCard bg-primary p-3 flex flex-col">
+                            <span className="logo">Ticket Status</span>
+                            <div className="bg-black rounded-lg flex-1">
+                                {ticketStatusData.length === 0 ? <p className="text-center py-10 opacity-50 text-white">No data</p> : (
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <PieChart>
+                                            <Pie data={ticketStatusData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={60} />
+                                            <Tooltip contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #444', color: '#fff' }} />
+                                            <Legend iconSize={10} wrapperStyle={{ color: '#fff', fontSize: 11 }} />
+                                        </PieChart>
+                                    </ResponsiveContainer>
+                                )}
+                            </div>
                         </div>
 
                     </div>
