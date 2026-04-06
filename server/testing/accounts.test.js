@@ -37,76 +37,63 @@ afterEach(async () => await db.clear());
 
 describe('Accounts API', () => {
 
-describe('Accounts photo fallback', () => {
-  // let originalFetch;
+  describe('Accounts photo fallback', () => {
+    it('returns DiceBear glass avatar when user has no profilePhoto', async () => {
+      const user = await User.create({
+        userId: 'user-no-photo-1',
+        username: 'NoPhotoUser',
+        email: 'nophoto@example.com',
+        password: 'hashed-password',
+        isAdmin: false,
+      });
 
-  // beforeAll(async () => await db.connect());
-  // afterAll(async () => await db.disconnect());
-  // afterEach(async () => {
-  //   await db.clear();
-  //   global.fetch = originalFetch;
-  // });
+      const dicebearSvg = '<svg xmlns="http://www.w3.org/2000/svg"><rect/></svg>';
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        headers: {
+          get: (name) => (name === 'content-type' ? 'image/svg+xml' : null),
+        },
+        arrayBuffer: async () => Buffer.from(dicebearSvg),
+      });
 
-  // beforeEach(() => {
-  //   originalFetch = global.fetch;
-  // });
+      const res = await request(app)
+        .get(`/api/accounts/${user._id.toString()}/photo`)
+        .buffer(true)
+        .parse(binaryParser);
 
-  it('returns DiceBear glass avatar when user has no profilePhoto', async () => {
-    const user = await User.create({
-      userId: 'user-no-photo-1',
-      username: 'NoPhotoUser',
-      email: 'nophoto@example.com',
-      password: 'hashed-password',
-      isAdmin: false,
+      expect(res.statusCode).toBe(200);
+      expect(res.headers['content-type']).toContain('image/svg+xml');
+      expect(res.body.toString()).toBe(dicebearSvg);
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+      expect(global.fetch.mock.calls[0][0]).toContain('https://api.dicebear.com/9.x/glass/svg?seed=NoPhotoUser');
     });
 
-    const dicebearSvg = '<svg xmlns="http://www.w3.org/2000/svg"><rect/></svg>';
-    global.fetch = jest.fn().mockResolvedValue({
-      ok: true,
-      headers: {
-        get: (name) => (name === 'content-type' ? 'image/svg+xml' : null),
-      },
-      arrayBuffer: async () => Buffer.from(dicebearSvg),
+    it('returns stored profilePhoto when user already has one', async () => {
+      const user = await User.create({
+        userId: 'user-photo-1',
+        username: 'HasPhotoUser',
+        email: 'hasphoto@example.com',
+        password: 'hashed-password',
+        isAdmin: false,
+        profilePhoto: {
+          data: Buffer.from('PNGDATA'),
+          contentType: 'image/png',
+        },
+      });
+
+      global.fetch = jest.fn();
+
+      const res = await request(app)
+        .get(`/api/accounts/${user._id.toString()}/photo`)
+        .buffer(true)
+        .parse(binaryParser);
+
+      expect(res.statusCode).toBe(200);
+      expect(res.headers['content-type']).toContain('image/png');
+      expect(res.body.equals(Buffer.from('PNGDATA'))).toBe(true);
+      expect(global.fetch).not.toHaveBeenCalled();
     });
-
-    const res = await request(app)
-      .get(`/api/accounts/${user._id.toString()}/photo`)
-      .buffer(true)
-      .parse(binaryParser);
-
-    expect(res.statusCode).toBe(200);
-    expect(res.headers['content-type']).toContain('image/svg+xml');
-    expect(res.body.toString()).toBe(dicebearSvg);
-    expect(global.fetch).toHaveBeenCalledTimes(1);
-    expect(global.fetch.mock.calls[0][0]).toContain('https://api.dicebear.com/9.x/glass/svg?seed=NoPhotoUser');
   });
-
-  it('returns stored profilePhoto when user already has one', async () => {
-    const user = await User.create({
-      userId: 'user-photo-1',
-      username: 'HasPhotoUser',
-      email: 'hasphoto@example.com',
-      password: 'hashed-password',
-      isAdmin: false,
-      profilePhoto: {
-        data: Buffer.from('PNGDATA'),
-        contentType: 'image/png',
-      },
-    });
-
-    global.fetch = jest.fn();
-
-    const res = await request(app)
-      .get(`/api/accounts/${user._id.toString()}/photo`)
-      .buffer(true)
-      .parse(binaryParser);
-
-    expect(res.statusCode).toBe(200);
-    expect(res.headers['content-type']).toContain('image/png');
-    expect(res.body.equals(Buffer.from('PNGDATA'))).toBe(true);
-    expect(global.fetch).not.toHaveBeenCalled();
-  });
-});
 
   describe('POST /api/accounts/login', () => {
     const user = {
@@ -170,6 +157,14 @@ describe('Accounts photo fallback', () => {
   });
 
   describe('POST /api/accounts (create account)', () => {
+    beforeEach(() => {
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        headers: { get: () => 'image/svg+xml' },
+        arrayBuffer: async () => Buffer.from('<svg/>'),
+      });
+    });
+
     it('should create a new account with valid fields', async () => {
       const res = await request(app).post('/api/accounts').send({ username: 'newuser', email: 'new@test.com', password: 'password123' });
 
