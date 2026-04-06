@@ -9,7 +9,8 @@
     "clear:db": "node ./scripts/clear-db.js",
     "populate:db": "node ./scripts/populate-db.js",
     "populateUser:db": "node ./scripts/populate-users-db.js",
-    "populateSupport:db": "node ./scripts/populate-support-db.js"
+    "populateSupport:db": "node ./scripts/populate-support-db.js",
+    "test": "jest"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
@@ -26,5 +27,10 @@
     "morgan": "^1.10.1",
     "multer": "^2.1.1",
     "nodemon": "^3.1.14"
+  },
+  "devDependencies": {
+    "jest": "^30.3.0",
+    "mongodb-memory-server": "^11.0.1",
+    "supertest": "^7.2.2"
   }
 }

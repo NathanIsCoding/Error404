@@ -62,11 +62,27 @@ function FilterBlock(props) {
             <div className="flex flex-col">
               <label className="font-bold text-xl">Industry</label>
               <select name="industryFilter" className="bg-black text-white p-2 mt-1 rounded-sm" value={props.industry} onChange={(e) => props.onIndustryChange(e)}>
-                <option className="bg-black " value="">All</option>
-                <option value="tech">Technology</option>
-                <option value="finance">Finance</option>
-                <option value="healthcare">Healthcare</option>
-                <option value="education">Education</option>
+                <option className="bg-black" value="">All</option>
+                <option value="Information Technology">Information Technology</option>
+                <option value="Healthcare">Healthcare</option>
+                <option value="Education">Education</option>
+                <option value="Finance">Finance</option>
+                <option value="Retail">Retail</option>
+                <option value="Manufacturing">Manufacturing</option>
+                <option value="Construction">Construction</option>
+                <option value="Hospitality">Hospitality</option>
+                <option value="Transportation and Logistics">Transportation and Logistics</option>
+                <option value="Sales">Sales</option>
+                <option value="Marketing and Advertising">Marketing and Advertising</option>
+                <option value="Customer Service">Customer Service</option>
+                <option value="Government and Public Administration">Government and Public Administration</option>
+                <option value="Engineering">Engineering</option>
+                <option value="Real Estate">Real Estate</option>
+                <option value="Media and Entertainment">Media and Entertainment</option>
+                <option value="Telecommunications">Telecommunications</option>
+                <option value="Agriculture">Agriculture</option>
+                <option value="Energy and Utilities">Energy and Utilities</option>
+                <option value="Legal Services">Legal Services</option>
               </select>
             </div>
 
@@ -86,7 +102,7 @@ function FilterBlock(props) {
             </div>
 
             <div className="filter-submit-wrap">
-              <button onClick={handleSubmit}>
+              <button className="!bg-black" onClick={handleSubmit}>
                 Submit
               </button>
             </div>

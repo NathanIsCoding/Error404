@@ -1,5 +1,4 @@
 import './JobCard.css';
-import reactLogo from '../../assets/react.svg'
 import { useState, useEffect } from 'react';
 
 
@@ -8,10 +7,19 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
     const [isExpanded, setIsExpanded] = useState(false);
     const [applied, setApplied] = useState(isApplied);
     const [applyError, setApplyError] = useState('');
+    const [imageError, setImageError] = useState(false);
+
+    const creatorPhotoUrl = job?.createdByUserId
+        ? `/api/accounts/${encodeURIComponent(job.createdByUserId)}/photo`
+        : null;
 
     useEffect(() => {
         setApplied(isApplied);
     }, [isApplied]);
+
+    useEffect(() => {
+        setImageError(false);
+    }, [job?.createdByUserId, job?.jobId, job?._id]);
 
     function clicked(){ 
         setIsExpanded(!isExpanded);
@@ -77,7 +85,18 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
 
             <div className='flex flex-row justify-between'>
                 <div className='flex flex-row items-center'>
-                    <img src={reactLogo} className='cardImg rounded-sm'></img>
+                    {creatorPhotoUrl && !imageError ? (
+                        <img
+                            src={creatorPhotoUrl}
+                            className='cardImg'
+                            alt={`${job.company} creator`}
+                            onError={() => setImageError(true)}
+                        />
+                    ) : (
+                        <div className='cardImgPlaceholder'>
+                            {(job.company || '?').charAt(0).toUpperCase()}
+                        </div>
+                    )}
                     <div className='textRow'>
                         <div className="Tags">
                                 <span style={{backgroundColor: job.industry == "tech" ? "#cc2d4d" : job.industry == "software" ? "#d99d59"  : job.industry == "data-science" ? "#8c2dcc" :job.industry == "design" ? "#5366d4" :"#53d4ab"}}>{job.industry}</span> 
@@ -120,7 +139,7 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
 
                     {!isExpanded && (
                         <div className='flex gap-1'>
-                            {user && (
+                            {user?.isAdmin && (
                                 <button className='applyButton !bg-blue-500 flex justify-center items-center mt-1' onClick={handleEdit}>
                                     <span className="material-symbols-outlined">edit</span>
                                 </button>
@@ -143,7 +162,7 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
             </div>
             {applyError && <p style={{color: 'red', fontSize: '0.85rem', marginTop: '4px'}}>{applyError}</p>}
             {isExpanded && (
-                <div className='description text-black bg-tertiary'>
+                <div className='description text-tertiary bg-gray-800'>
                     <p>
                         {job.description}
                     </p>
@@ -153,7 +172,7 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
             <div className='flex justify-end'>
                 {isExpanded && (
                     <div className='flex gap-1'>
-                        {user && (
+                        {user?.isAdmin && (
                             <button className='applyButton !bg-blue-500 flex justify-center items-center mt-1' onClick={handleEdit}>
                                 <span className="material-symbols-outlined">edit</span>
                             </button>

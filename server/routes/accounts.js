@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 const User = require('../models/User');
 const crypto = require('crypto');
+const https = require('https');
 const bcrypt = require('bcrypt');
 const multer = require('multer');
 const { requireAuth } = require('../middleware/auth');
@@ -105,18 +106,33 @@ router.post('/', upload.single('profilePhoto'), async (req, res) => {
       data: req.file.buffer,
       contentType: req.file.mimetype
     };
+  } else {
+    accountToStore.profilePhoto = await generateDefaultProfilePhoto(accountToStore.userId, accountToStore.username);
   }
 
   try {
-    await createAccount(accountToStore, normalizedUsername, normalizedEmail);
+    const savedUser = await createAccount(accountToStore, normalizedUsername, normalizedEmail);
+
+    const token = jwt.sign(
+      { userId: savedUser._id, username: savedUser.username, email: savedUser.email, isAdmin: savedUser.isAdmin },
+      SECRET,
+      { expiresIn: '24h' }
+    );
+    res.cookie('session_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+      path: '/',
+    });
+
     res.json({
       status: 'ok',
       message: 'Account created successfully',
       account: {
-        userId: accountToStore.userId,
-        username: accountToStore.username,
-        email: accountToStore.email,
-        createdAt: accountToStore.createdAt,
+        userId: savedUser._id,
+        username: savedUser.username,
+        email: savedUser.email,
+        createdAt: savedUser.createdAt,
       },
     });
   } catch (err) {
@@ -135,8 +151,14 @@ router.post('/', upload.single('profilePhoto'), async (req, res) => {
 router.get('/:id/photo', async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
-    if (!user || !user.profilePhoto || !user.profilePhoto.data) {
-      return res.status(404).json({ error: 'No photo found' });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (!user.profilePhoto || !user.profilePhoto.data) {
+      const fallbackPhoto = await generateDefaultProfilePhoto(user.userId || user._id.toString(), user.username);
+      res.set('Content-Type', fallbackPhoto.contentType);
+      return res.send(fallbackPhoto.data);
     }
     res.set('Content-Type', user.profilePhoto.contentType);
     res.send(user.profilePhoto.data);
@@ -187,6 +209,51 @@ function generateUserId() {
   return crypto.randomBytes(16).toString('hex');
 }
 
+async function generateDefaultProfilePhoto(seed, username) {
+  const dicebearSeed = encodeURIComponent(username || seed || 'user');
+  const avatarUrl = `https://api.dicebear.com/9.x/glass/svg?seed=${dicebearSeed}`;
+  const response = await fetchBinary(avatarUrl);
+
+  return {
+    data: response.data,
+    contentType: response.contentType,
+  };
+}
+
+async function fetchBinary(url) {
+  if (typeof fetch === 'function') {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch avatar: ${response.status}`);
+    }
+
+    const contentType = response.headers.get('content-type') || 'image/svg+xml';
+    const data = Buffer.from(await response.arrayBuffer());
+    return { data, contentType };
+  }
+
+  return new Promise((resolve, reject) => {
+    https
+      .get(url, (response) => {
+        if (response.statusCode !== 200) {
+          reject(new Error(`Failed to fetch avatar: ${response.statusCode}`));
+          response.resume();
+          return;
+        }
+
+        const chunks = [];
+        response.on('data', (chunk) => chunks.push(chunk));
+        response.on('end', () => {
+          resolve({
+            data: Buffer.concat(chunks),
+            contentType: response.headers['content-type'] || 'image/svg+xml',
+          });
+        });
+      })
+      .on('error', reject);
+  });
+}
+
 async function createAccount(account, normalizedUsername, normalizedEmail) {
   const existingUsername = await User.findOne({
     username: { $regex: new RegExp(`^${normalizedUsername}$`, 'i') }
@@ -208,6 +275,7 @@ async function createAccount(account, normalizedUsername, normalizedEmail) {
 
   const result = await User.create(account);
   console.log(`A document was inserted with the _id: ${result._id}`);
+  return result;
 }
 
 // User Disable/Enable Toggle
@@ -230,6 +298,30 @@ router.patch('/toggleUser/:userId', requireAuth, async (req, res) => {
         res.status(200).json({ message: `User ${user.isDisabled ? 'disabled' : 'enabled'} successfully`, isDisabled: user.isDisabled });
     } catch (error) {
         console.error('Error toggling user:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+// User Admin Toggle
+router.patch('/toggleAdmin/:userId', requireAuth, async (req, res) => {
+    try {
+        if (!req.user.isAdmin) {
+            return res.status(403).json({ message: 'Admin access required' });
+        }
+
+        const userId = req.params.userId;
+        const user = await User.findOne({ userId: userId });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        user.isAdmin = !user.isAdmin;
+        await user.save();
+
+        res.status(200).json({ message: `User ${user.isAdmin ? 'promoted to' : 'removed from'} admin successfully`, isAdmin: user.isAdmin });
+    } catch (error) {
+        console.error('Error toggling admin:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });

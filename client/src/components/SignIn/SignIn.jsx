@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './SignIn.css';
 
-const SignIn = ({ onClose, onSuccess }) => {
+const SignIn = ({ onClose, onSuccess, onCreateAccount }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -55,7 +55,7 @@ const SignIn = ({ onClose, onSuccess }) => {
   return (
     <div className="login-modal">
       <div className="login">
-        <button onClick={onClose} className="close-button">X</button>
+        <button onClick={onClose} className="close-button click-button">X</button>
         <h1>Sign In</h1>
         <form onSubmit={handleSubmit}>
           <label htmlFor="username">Username:</label>
@@ -76,7 +76,11 @@ const SignIn = ({ onClose, onSuccess }) => {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <button type="submit">Login</button>
+          <div className='flex justify-between'>
+            <button type="button" onClick={onCreateAccount}>Create Account</button>
+            <button type="submit">Login</button>
+          </div>
+         
         </form>
 
         {responseMessage && (
