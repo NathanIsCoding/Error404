@@ -1,6 +1,5 @@
 .card { 
     padding: 10px;
-    min-width: 600px;
 }
 
 .description { 
@@ -57,8 +56,4 @@ p {
     padding: 0 1em 0 1em;
     margin-right: 1em;
     border-radius: 3em;
-}
-
-.Tags2 span{
-    padding: 0 1em 0 0;    
 }

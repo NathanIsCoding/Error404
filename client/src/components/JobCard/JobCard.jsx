@@ -1,6 +1,7 @@
 import './JobCard.css';
 import { useState, useEffect } from 'react';
-
+import INDUSTRY_COLORS from '../../Enums/Industries';
+import JOB_TYPE_COLORS from '../../Enums/JobTypes';
 
 function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit }) {
 
@@ -21,7 +22,15 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
         setImageError(false);
     }, [job?.createdByUserId, job?.jobId, job?._id]);
 
-    function clicked(){ 
+    function getSalaryColor(salary) {
+        if (salary > 100000) return '#0a9ba3';
+        if (salary > 80000)  return '#0aa335';
+        if (salary > 60000)  return '#dcd61c';
+        if (salary > 40000)  return '#eb8109';
+        return '#a3220f';
+    }
+
+    function clicked(){
         setIsExpanded(!isExpanded);
     }
 
@@ -99,27 +108,23 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
                     )}
                     <div className='textRow'>
                         <div className="Tags">
-                                <span style={{backgroundColor: job.industry == "tech" ? "#cc2d4d" : job.industry == "software" ? "#d99d59"  : job.industry == "data-science" ? "#8c2dcc" :job.industry == "design" ? "#5366d4" :"#53d4ab"}}>{job.industry}</span> 
-                                <span style={{backgroundColor: job.jobType == "full-time" ? "#45a35e" : job.jobType == "part-time" ? "#c9b938" : job.jobType == "contract" ? "#e0933a" :job.jobType == "internship" ? "#cf3ae0" :"#e02f35"}}>{job.jobType}</span> 
+                                <span style={{backgroundColor: INDUSTRY_COLORS[job.industry] ?? INDUSTRY_COLORS.default}}>{job.industry}</span>
+                                <span style={{backgroundColor: JOB_TYPE_COLORS[job.jobType] ?? JOB_TYPE_COLORS.default}}>{job.jobType?.replace(/\b\w/g, c => c.toUpperCase())}</span>
                         </div>
                         <p className='text-lg'>
                             {job.company} - {job.title}  
                             
                         </p>
-                        <p className='text-gray-400'>{
-                            new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD" }).format( job.salary)
+                        <p style={{color: getSalaryColor(job.salary)}}>{
+                            new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD" }).format(job.salary)
                         }</p>
-                        <div className="Tags2">
-                            <span style={{backgroundColor: "#a3220f"}}>
-                            </span>
-                            <span style={{backgroundColor: job.salary > 40000 ? "#eb8109" :""}}>
-                            </span>
-                            <span style={{backgroundColor: job.salary > 60000 ? "#dcd61c" :""}}>
-                            </span>
-                            <span style={{backgroundColor: job.salary > 80000 ? "#0aa335" :""}}>
-                            </span>
-                            <span style={{backgroundColor: job.salary > 100000 ? "#0a9ba3" :""}}>
-                            </span>
+                        <div>
+                            <div style={{
+                                height: '4px',
+                                width: '6em',
+                                backgroundImage: 'linear-gradient(to right, #a3220f, #eb8109, #dcd61c, #0aa335, #0a9ba3)',
+                                borderRadius: '2px',
+                            }} />
                         </div>
                     </div>
                 </div>
