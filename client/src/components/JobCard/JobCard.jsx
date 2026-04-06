@@ -1,7 +1,7 @@
 import './JobCard.css';
 import { useState, useEffect } from 'react';
-import INDUSTRY_COLORS from '../../Enums/Industries';
-import JOB_TYPE_COLORS from '../../Enums/JobTypes';
+import INDUSTRY_COLORS from '../../enums/Industries';
+import JOB_TYPE_COLORS from '../../enums/JobTypes';
 
 function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit }) {
 
@@ -23,10 +23,12 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
     }, [job?.createdByUserId, job?.jobId, job?._id]);
 
     function getSalaryColor(salary) {
-        if (salary > 100000) return '#0a9ba3';
-        if (salary > 80000)  return '#0aa335';
+        if (salary > 120000) return '#0a9ba3';
+        if (salary > 100000) return '#0aa335';
+        if (salary > 80000)  return '#5db832';
         if (salary > 60000)  return '#dcd61c';
-        if (salary > 40000)  return '#eb8109';
+        if (salary > 45000)  return '#eb8109';
+        if (salary > 30000)  return '#cc5500';
         return '#a3220f';
     }
 
@@ -108,8 +110,8 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
                     )}
                     <div className='textRow'>
                         <div className="Tags">
-                                <span style={{backgroundColor: INDUSTRY_COLORS[job.industry] ?? INDUSTRY_COLORS.default}}>{job.industry}</span>
-                                <span style={{backgroundColor: JOB_TYPE_COLORS[job.jobType] ?? JOB_TYPE_COLORS.default}}>{job.jobType?.replace(/\b\w/g, c => c.toUpperCase())}</span>
+                                <span className='items-center rounded-sm' style={{backgroundColor: INDUSTRY_COLORS[job.industry] ?? INDUSTRY_COLORS.default}}>{job.industry}</span>
+                                <span className='items-center rounded-full' style={{backgroundColor: JOB_TYPE_COLORS[job.jobType] ?? JOB_TYPE_COLORS.default}}>{job.jobType?.replace(/\b\w/g, c => c.toUpperCase())}</span>
                         </div>
                         <p className='text-lg'>
                             {job.company} - {job.title}  
@@ -121,7 +123,7 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
                         <div>
                             <div style={{
                                 height: '4px',
-                                width: '6em',
+                                width: '5em',
                                 backgroundImage: 'linear-gradient(to right, #a3220f, #eb8109, #dcd61c, #0aa335, #0a9ba3)',
                                 borderRadius: '2px',
                             }} />

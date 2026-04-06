@@ -1,9 +1,9 @@
 const JOB_TYPE_COLORS = {
-    'full-time': '#45a35e',
-    'part-time': '#c9b938',
-    'contract': '#e0933a',
-    'internship': '#cf3ae0',
-    default: '#e02f35',
+    'full-time':  '#34d399',
+    'part-time':  '#a78bfa',
+    'contract':   '#f87171',
+    'internship': '#fbbf24',
+    default:      '#94a3b8',
 };
 
 export default JOB_TYPE_COLORS;
