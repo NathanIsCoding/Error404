@@ -71,7 +71,9 @@ function CreateJobListing({ onClose, onCreated, onUpdated, initialJob = null }) 
   return (
     <div className='create-job-modal' onClick={onClose}>
       <div className='create-job-panel' onClick={(event) => event.stopPropagation()}>
-        <button type='button' className='close-button' onClick={onClose}>X</button>
+        <button className='close-button click-button !bg-secondary flex justify-center items-center' onClick={onClose}>
+            <span className="material-symbols-outlined">close</span>
+        </button>
         <h1>{isEditMode ? 'Edit Job Listing' : 'Create Job Listing'}</h1>
 
         <form className='create-job-form' onSubmit={handleSubmit}>

@@ -15,7 +15,7 @@
 
 
 .active {
-    background-color: #242424;
+    background-color: var(--color-black);
 }
 
 .active:hover {
@@ -23,18 +23,18 @@
 }
 
 .deactivated {
-    background-color: #6ee7b7;
+    background-color: var(--color-primary);
     color: black;
 }
 
 .deactivated:hover {
-  border-color: #242424;
+  border-color: var(--black);
 }
 
 .nav-profile-photo {
     width: 36px;
     height: 36px;
-    border: 2px solid #242424;
+    border: 2px solid var(--color-black);
     border-radius: 50%;
     object-fit: cover;
 }
@@ -56,7 +56,7 @@
 }
 
 .dropdown-button { 
-    background-color: #242424;
+    background-color: var(--color-black);
     border-radius: 0;
     border: 2px solid #2a2a2a;
     border-top: 0;
