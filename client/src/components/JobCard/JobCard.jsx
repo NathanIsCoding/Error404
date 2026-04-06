@@ -1,6 +1,7 @@
 import './JobCard.css';
 import { useState, useEffect } from 'react';
-
+import INDUSTRY_COLORS from '../../enums/Industries';
+import JOB_TYPE_COLORS from '../../enums/JobTypes';
 
 function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit }) {
 
@@ -21,7 +22,17 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
         setImageError(false);
     }, [job?.createdByUserId, job?.jobId, job?._id]);
 
-    function clicked(){ 
+    function getSalaryColor(salary) {
+        if (salary > 120000) return '#0a9ba3';
+        if (salary > 100000) return '#0aa335';
+        if (salary > 80000)  return '#5db832';
+        if (salary > 60000)  return '#dcd61c';
+        if (salary > 45000)  return '#eb8109';
+        if (salary > 30000)  return '#cc5500';
+        return '#a3220f';
+    }
+
+    function clicked(){
         setIsExpanded(!isExpanded);
     }
 
@@ -98,10 +109,25 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
                         </div>
                     )}
                     <div className='textRow'>
-                        <p className='text-lg'>{job.company} - {job.title}</p>
-                        <p className='text-gray-400'>{
-                            new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD" }).format( job.salary)
+                        <div className="Tags">
+                                <span className='items-center rounded-sm' style={{backgroundColor: INDUSTRY_COLORS[job.industry] ?? INDUSTRY_COLORS.default}}>{job.industry}</span>
+                                <span className='items-center rounded-full' style={{backgroundColor: JOB_TYPE_COLORS[job.jobType] ?? JOB_TYPE_COLORS.default}}>{job.jobType?.replace(/\b\w/g, c => c.toUpperCase())}</span>
+                        </div>
+                        <p className='text-lg'>
+                            {job.company} - {job.title}  
+                            
+                        </p>
+                        <p style={{color: getSalaryColor(job.salary)}}>{
+                            new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD" }).format(job.salary)
                         }</p>
+                        <div>
+                            <div style={{
+                                height: '4px',
+                                width: '5em',
+                                backgroundImage: 'linear-gradient(to right, #a3220f, #eb8109, #dcd61c, #0aa335, #0a9ba3)',
+                                borderRadius: '2px',
+                            }} />
+                        </div>
                     </div>
                 </div>
                

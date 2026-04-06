@@ -1,6 +1,5 @@
 .card { 
     padding: 10px;
-    min-width: 600px;
 }
 
 .description { 
@@ -51,4 +50,9 @@
 p { 
     margin: 0;
     text-align: left;
+}
+
+.Tags span{
+    padding: 0.2em 1em 0.2em 1em;
+    margin-right: 1em;
 }
