@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import './CreateJobListing.css'
+import { JOB_TYPES } from '../../enums/JobTypes'
+import { INDUSTRIES } from '../../enums/Industries'
 
 function CreateJobListing({ onClose, onCreated, onUpdated, initialJob = null }) {
   const isEditMode = Boolean(initialJob)
@@ -70,7 +72,7 @@ function CreateJobListing({ onClose, onCreated, onUpdated, initialJob = null }) 
 
   return (
     <div className='create-job-modal' onClick={onClose}>
-      <div className='create-job-panel' onClick={(event) => event.stopPropagation()}>
+      <div className='create-job-panel scroll-box' onClick={(event) => event.stopPropagation()}>
         <button className='close-button click-button !bg-secondary flex justify-center items-center' onClick={onClose}>
             <span className="material-symbols-outlined">close</span>
         </button>
@@ -85,10 +87,9 @@ function CreateJobListing({ onClose, onCreated, onUpdated, initialJob = null }) 
 
           <label htmlFor='create-job-type'>Job Type</label>
           <select id='create-job-type' value={jobType} onChange={(event) => setJobType(event.target.value)}>
-            <option value='full-time'>Full-time</option>
-            <option value='part-time'>Part-time</option>
-            <option value='contract'>Contract</option>
-            <option value='internship'>Internship</option>
+            {JOB_TYPES.map(({ value, label }) => (
+              <option key={value} value={value}>{label}</option>
+            ))}
           </select>
 
           <label htmlFor='create-industry'>Industry</label>
@@ -99,26 +100,9 @@ function CreateJobListing({ onClose, onCreated, onUpdated, initialJob = null }) 
             required
           >
             <option value=''>-- Select an industry --</option>
-            <option value='Information Technology'>Information Technology</option>
-            <option value='Healthcare'>Healthcare</option>
-            <option value='Education'>Education</option>
-            <option value='Finance'>Finance</option>
-            <option value='Retail'>Retail</option>
-            <option value='Manufacturing'>Manufacturing</option>
-            <option value='Construction'>Construction</option>
-            <option value='Hospitality'>Hospitality</option>
-            <option value='Transportation and Logistics'>Transportation and Logistics</option>
-            <option value='Sales'>Sales</option>
-            <option value='Marketing and Advertising'>Marketing and Advertising</option>
-            <option value='Customer Service'>Customer Service</option>
-            <option value='Government and Public Administration'>Government and Public Administration</option>
-            <option value='Engineering'>Engineering</option>
-            <option value='Real Estate'>Real Estate</option>
-            <option value='Media and Entertainment'>Media and Entertainment</option>
-            <option value='Telecommunications'>Telecommunications</option>
-            <option value='Agriculture'>Agriculture</option>
-            <option value='Energy and Utilities'>Energy and Utilities</option>
-            <option value='Legal Services'>Legal Services</option>
+            {INDUSTRIES.map(industry => (
+              <option key={industry} value={industry}>{industry}</option>
+            ))}
           </select>
 
           <label htmlFor='create-salary'>Salary</label>

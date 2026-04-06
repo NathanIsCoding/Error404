@@ -3,7 +3,7 @@ import { useState } from 'react'
 import Paginator from '../Paginator/Paginator'
 import SupportTicketCard from '../SupportTicketCard/SupportTicketCard.jsx'
 
-function AdminSupportTicketPanel({items, filterFn, onDelete, pageSize = 4}) {
+function AdminSupportTicketPanel({items, filterFn, onDelete, pageSize = 8}) {
 
      // When data loads, chunk it into pages
         function chunkData(data, size) {
@@ -39,7 +39,7 @@ function AdminSupportTicketPanel({items, filterFn, onDelete, pageSize = 4}) {
                 />
             </div>
             
-                 <div className='flex-1 overflow-auto mt-3 bg-black rounded-lg'>
+                 <div className='overflow-auto scroll-box mt-3 bg-black rounded-lg h-[725px]'>
                     {displayMatrix[currentPage]?.map((item, index) => (
                         <SupportTicketCard key={index} data={item} onDelete={onDelete} />
                     ))}

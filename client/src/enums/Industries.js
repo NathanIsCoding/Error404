@@ -22,4 +22,6 @@ const INDUSTRY_COLORS = {
     default: '#53d4ab',
 };
 
+export const INDUSTRIES = Object.keys(INDUSTRY_COLORS).filter(k => k !== 'default');
+
 export default INDUSTRY_COLORS

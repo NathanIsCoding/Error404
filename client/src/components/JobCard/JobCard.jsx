@@ -23,13 +23,30 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
     }, [job?.createdByUserId, job?.jobId, job?._id]);
 
     function getSalaryColor(salary) {
-        if (salary > 120000) return '#0a9ba3';
-        if (salary > 100000) return '#0aa335';
-        if (salary > 80000)  return '#5db832';
-        if (salary > 60000)  return '#dcd61c';
-        if (salary > 45000)  return '#eb8109';
-        if (salary > 30000)  return '#cc5500';
-        return '#a3220f';
+        if (salary > 200000) return '#c084fc';
+        if (salary > 160000) return '#818cf8';
+        if (salary > 130000) return '#0a9ba3';
+        if (salary > 110000) return '#0aa335';
+        if (salary > 90000)  return '#5db832';
+        if (salary > 70000)  return '#a3c420';
+        if (salary > 55000)  return '#dcd61c';
+        if (salary > 42000)  return '#eb8109';
+        if (salary > 30000)  return '#e06020';
+        if (salary > 20000)  return '#cc3318';
+        return '#b02010';
+    }
+
+    function getSalaryPosition(salary) {
+        const stops = [0, 20000, 30000, 42000, 55000, 70000, 90000, 110000, 130000, 160000, 200000];
+        if (salary <= 0) return 0;
+        if (salary >= stops[stops.length - 1]) return 100;
+        for (let i = 0; i < stops.length - 1; i++) {
+            if (salary <= stops[i + 1]) {
+                const t = (salary - stops[i]) / (stops[i + 1] - stops[i]);
+                return ((i + t) / (stops.length - 1)) * 100;
+            }
+        }
+        return 100;
     }
 
     function clicked(){
@@ -119,13 +136,9 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
                         <p style={{color: getSalaryColor(job.salary)}}>{
                             new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD" }).format(job.salary)
                         }</p>
-                        <div>
-                            <div style={{
-                                height: '4px',
-                                width: '5em',
-                                backgroundImage: 'linear-gradient(to right, #a3220f, #eb8109, #dcd61c, #0aa335, #0a9ba3)',
-                                borderRadius: '2px',
-                            }} />
+                        <div className='relative w-[5em] mt-1'>
+                            <div className='h-1 rounded-sm' style={{backgroundImage: 'linear-gradient(to right, #6b0f0f, #a3220f, #cc5500, #eb8109, #dcd61c, #a3c420, #5db832, #0aa335, #0a9ba3, #818cf8, #c084fc)',}} />
+                            <div className='absolute -top-[3px] -translate-x-1/2 w-0.5 h-2.5 bg-white rounded-sm' style={{left: `${getSalaryPosition(job.salary)}%`,}} />
                         </div>
                     </div>
                 </div>
