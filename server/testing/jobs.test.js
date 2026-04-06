@@ -12,6 +12,11 @@ const testToken = jwt.sign(
   'test-secret'
 );
 
+const adminToken = jwt.sign(
+  { userId: 'admin-1', username: 'adminuser', isAdmin: true },
+  'test-secret'
+);
+
 const cookieParser = require('cookie-parser');
 
 // Create a minimal Express app and mount the jobs router on it.
@@ -87,7 +92,7 @@ describe('Jobs API', () => {
         // Seed Job
         await Job.create(job);
         
-        const res = await request(app).delete('/api/deleteJob/'+job.jobId);
+        const res = await request(app).delete('/api/deleteJob/'+job.jobId).set('Cookie', `session_token=${adminToken}`);
         expect(res.statusCode).toBe(200);
 
         const res2 = await request(app).get('/api/loadJobs');
@@ -96,7 +101,7 @@ describe('Jobs API', () => {
     });
 
     it('should return 404 if job does not exist', async () => {
-        const res = await request(app).delete('/api/deleteJob/'+job.jobId);
+        const res = await request(app).delete('/api/deleteJob/'+job.jobId).set('Cookie', `session_token=${adminToken}`);
         expect(res.statusCode).toBe(404);
     });
 
@@ -285,12 +290,13 @@ describe('Jobs API', () => {
         salary: 80000,
         location: 'Kelowna',
         description: 'Build cool things.',
+        createdByUserId: 'user-1',
     };
 
     it('should update the title of a specified job', async () => {
         await Job.create(job);
 
-        const res = await request(app).put('/api/updateJob/' + job.jobId).send({ title: 'Senior Engineer' });
+        const res = await request(app).put('/api/updateJob/' + job.jobId).set('Cookie', `session_token=${testToken}`).send({ title: 'Senior Engineer' });
         expect(res.statusCode).toBe(200);
         expect(res.body.title).toBe('Senior Engineer');
     });
@@ -298,7 +304,7 @@ describe('Jobs API', () => {
     it('should persist the update in the database', async () => {
         await Job.create(job);
 
-        await request(app).put('/api/updateJob/' + job.jobId).send({ salary: 100000 });
+        await request(app).put('/api/updateJob/' + job.jobId).set('Cookie', `session_token=${testToken}`).send({ salary: 100000 });
 
         const res = await request(app).get('/api/loadJobs');
         expect(res.statusCode).toBe(200);
@@ -306,7 +312,7 @@ describe('Jobs API', () => {
     });
 
     it('should return 404 if the job does not exist', async () => {
-        const res = await request(app).put('/api/updateJob/nonexistent-id').send({ title: 'Ghost Job' });
+        const res = await request(app).put('/api/updateJob/nonexistent-id').set('Cookie', `session_token=${testToken}`).send({ title: 'Ghost Job' });
         expect(res.statusCode).toBe(404);
     });
 
