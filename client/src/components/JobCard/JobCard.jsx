@@ -94,7 +94,7 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
     return(
         <div className='flex flex-col bg-black text-white card border-b-1 border-gray-400'>
 
-            <div className='flex flex-row justify-between'>
+            <div className='flex flex-col md:flex-row md:justify-between'>
                 <div className='flex flex-row items-center'>
                     {creatorPhotoUrl && !imageError ? (
                         <img
@@ -114,8 +114,7 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
                                 <span className='items-center rounded-full' style={{backgroundColor: JOB_TYPE_COLORS[job.jobType] ?? JOB_TYPE_COLORS.default}}>{job.jobType?.replace(/\b\w/g, c => c.toUpperCase())}</span>
                         </div>
                         <p className='text-lg'>
-                            {job.company} - {job.title}  
-                            
+                            {job.company} - {job.title}
                         </p>
                         <p style={{color: getSalaryColor(job.salary)}}>{
                             new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD" }).format(job.salary)
@@ -130,40 +129,27 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
                         </div>
                     </div>
                 </div>
-               
 
-                <div className='flex flex-col'>
-                    {!isExpanded ? (
-                            <button onClick={clicked} className='expandButton flex justify-center items-center !bg-black'>
-                                <span className="material-symbols-outlined">keyboard_arrow_down</span>
+                <div className='flex flex-row md:flex-col justify-end items-center md:items-end gap-1 mt-2 md:mt-0'>
+                    <div className='flex gap-1'>
+                        {user?.isAdmin && (
+                            <button className='applyButton !bg-blue-500 flex justify-center items-center' onClick={handleEdit}>
+                                <span className="material-symbols-outlined">edit</span>
+                            </button>
+                        )}
+                        {applied ? (
+                            <button className='applyButton !bg-red-600 flex justify-center items-center' onClick={handleApply}>
+                                <span className="material-symbols-outlined">close</span>
                             </button>
                         ) : (
-                            <button onClick={clicked} className='expandButton flex justify-center items-center !bg-black'>
-                                <span className="material-symbols-outlined">keyboard_arrow_up</span>
+                            <button className='applyButton !bg-green-600 flex justify-center items-center !px-0' onClick={handleApply}>
+                                <span className="material-symbols-outlined">add</span>
                             </button>
-                        )
-                    }
-
-                    {!isExpanded && (
-                        <div className='flex gap-1'>
-                            {user?.isAdmin && (
-                                <button className='applyButton !bg-blue-500 flex justify-center items-center mt-1' onClick={handleEdit}>
-                                    <span className="material-symbols-outlined">edit</span>
-                                </button>
-                            )}
-                            {applied ? (
-                                <button className='applyButton !bg-red-600 flex justify-center items-center mt-1' onClick={handleApply}>
-                                    <span className="material-symbols-outlined">close</span>
-                                </button>
-                            ) : (
-                                <button className='applyButton !bg-green-600 flex justify-center items-center !px-0 mt-1' onClick={handleApply}>
-                                    <span className="material-symbols-outlined">add</span>
-                                </button>
-                            )}
-                        </div>
-                    )}
-
-
+                        )}
+                    </div>
+                    <button onClick={clicked} className='expandButton flex justify-center items-center !bg-black'>
+                        <span className="material-symbols-outlined">{isExpanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}</span>
+                    </button>
                 </div>
 
             </div>
@@ -176,26 +162,6 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
                 </div>
             )}
 
-            <div className='flex justify-end'>
-                {isExpanded && (
-                    <div className='flex gap-1'>
-                        {user?.isAdmin && (
-                            <button className='applyButton !bg-blue-500 flex justify-center items-center mt-1' onClick={handleEdit}>
-                                <span className="material-symbols-outlined">edit</span>
-                            </button>
-                        )}
-                        {applied ? (
-                            <button className='applyButton !bg-red-600 flex justify-center items-center mt-1' onClick={handleApply}>
-                                <span className="material-symbols-outlined">close</span>
-                            </button>
-                        ) : (
-                            <button className='applyButton !bg-green-600 flex justify-center items-center !px-0 mt-1' onClick={handleApply}>
-                                <span className="material-symbols-outlined">add</span>
-                            </button>
-                        )}
-                    </div>
-                )}
-            </div>
 
         </div>
     );

@@ -53,6 +53,7 @@ function MainApp({user, setUser}) {
   const [showSignIn, setShowSignIn] = useState(false)
   const [showCreateJobListing, setShowCreateJobListing] = useState(false)
   const [jobBeingEdited, setJobBeingEdited] = useState(null)
+  const [showFilters, setShowFilters] = useState(false)
 
   const [appliedJobIds, setAppliedJobIds] = useState(new Set())
 
@@ -140,8 +141,9 @@ function MainApp({user, setUser}) {
       />
       <main>
         <div className='flex justify-center h-full'>
-          <div className='ml-5 w-[50vh] h-full'>
-            <FilterBlock 
+          {/* Desktop sidebar */}
+          <div className='hidden md:block ml-5 w-[50vh] h-full'>
+            <FilterBlock
               searchTerm={searchTerm}
               onSearchChange={(e) => setSearchTerm(e.target.value)}
               jobType={jobType}
@@ -157,8 +159,34 @@ function MainApp({user, setUser}) {
               }}
             />
           </div>
-        
+
           <div className="job-listings-container bg-primary mx-5 grow-2 p-3 rounded-lg">
+
+            {/* Mobile filter toggle */}
+            <div className='md:hidden mb-2'>
+              <button className='!bg-black w-full' onClick={() => setShowFilters(f => !f)}>
+                <span className='material-symbols-outlined align-middle mr-1'>tune</span>
+                {showFilters ? 'Hide Filters' : 'Show Filters'}
+              </button>
+              {showFilters && (
+                <FilterBlock
+                  searchTerm={searchTerm}
+                  onSearchChange={(e) => setSearchTerm(e.target.value)}
+                  jobType={jobType}
+                  onJobTypeChange={(e) => setJobType(e.target.value)}
+                  industry={industry}
+                  onIndustryChange={(e) => setIndustry(e.target.value)}
+                  salary={salary}
+                  onSalaryChange={(e) => setSalary(e.target.value)}
+                  onDataReceived={(data) => {
+                      const newData = Array.isArray(data) ? data : []
+                      setJobMatrix(chunkJobs(newData, 6))
+                      setCurrentPage(0)
+                      setShowFilters(false)
+                  }}
+                />
+              )}
+            </div>
               
             <div className='overflow-auto flex-1 scroll-box rounded-lg bg-black'>
                 {jobMatrix[currentPage]?.map((job, index) => (
@@ -179,14 +207,14 @@ function MainApp({user, setUser}) {
                 ))}
             </div>
               
-            <div className='relative flex justify-center items-center'>
+            <div className='flex flex-col md:relative md:flex-row justify-center items-center gap-2 mt-2'>
               <Paginator
                 currentPage={currentPage}
                 totalPages={jobMatrix.length}
                 onPageChange={setCurrentPage}
               />
               {user && (
-                <button onClick={() => setShowCreateJobListing(true)} className='!bg-black absolute right-0'>
+                <button onClick={() => setShowCreateJobListing(true)} className='!bg-black md:absolute md:right-0 w-full md:w-auto'>
                   Create Listing
                 </button>
               )}
