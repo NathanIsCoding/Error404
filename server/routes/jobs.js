@@ -88,6 +88,7 @@ router.delete('/api/deleteJob/:jobId', requireAuth, async (req, res) => {
 router.get('/api/search', async (req, res) => {
     try {
           const { q, jobType, industry, salary, sort } = req.query;
+          const filter = {};
         if (q) {
             const regex = new RegExp(q, 'i');
             filter.$or = [
