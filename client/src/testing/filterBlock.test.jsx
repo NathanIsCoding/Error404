@@ -5,9 +5,11 @@ const defaultProps = {
     jobType: '',
     industry: '',
     salary: 0,
+    sort: 'date-desc',
     onJobTypeChange: jest.fn(),
     onIndustryChange: jest.fn(),
     onSalaryChange: jest.fn(),
+    onSortChange: jest.fn(),
     onDataReceived: jest.fn(),
 };
 
@@ -58,11 +60,19 @@ describe('FilterBlock', () => {
 
     describe('interactions', () => {
 
+        it('should call onSortChange when sort is changed', () => {
+            const onSortChange = jest.fn();
+            render(<FilterBlock {...defaultProps} onSortChange={onSortChange} />);
+            const selects = screen.getAllByRole('combobox');
+            fireEvent.change(selects[0], { target: { value: 'title-asc' } });
+            expect(onSortChange).toHaveBeenCalled();
+        });
+
         it('should call onJobTypeChange when job type is changed', () => {
             const onJobTypeChange = jest.fn();
             render(<FilterBlock {...defaultProps} onJobTypeChange={onJobTypeChange} />);
             const selects = screen.getAllByRole('combobox');
-            fireEvent.change(selects[0], { target: { value: 'full-time' } });
+            fireEvent.change(selects[1], { target: { value: 'full-time' } });
             expect(onJobTypeChange).toHaveBeenCalled();
         });
 
@@ -70,7 +80,7 @@ describe('FilterBlock', () => {
             const onIndustryChange = jest.fn();
             render(<FilterBlock {...defaultProps} onIndustryChange={onIndustryChange} />);
             const selects = screen.getAllByRole('combobox');
-            fireEvent.change(selects[1], { target: { value: 'Engineering' } });
+            fireEvent.change(selects[2], { target: { value: 'Engineering' } });
             expect(onIndustryChange).toHaveBeenCalled();
         });
 
