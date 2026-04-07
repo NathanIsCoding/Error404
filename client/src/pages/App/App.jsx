@@ -49,6 +49,7 @@ function MainApp({user, setUser}) {
   const [jobType, setJobType] = useState('')
   const [industry, setIndustry] = useState('')
   const [salary, setSalary] = useState(0)
+  const [sort, setSort] = useState('date-desc')
   const [showCreateAccount, setShowCreateAccount] = useState(false)
   const [showSignIn, setShowSignIn] = useState(false)
   const [showCreateJobListing, setShowCreateJobListing] = useState(false)
@@ -150,6 +151,8 @@ function MainApp({user, setUser}) {
               onIndustryChange={(e) => setIndustry(e.target.value)}
               salary={salary}
               onSalaryChange={(e) => setSalary(e.target.value)}
+              sort={sort}
+              onSortChange={(e) => setSort(e.target.value)}
               onDataReceived={(data) => {
                   const newData = Array.isArray(data) ? data : []
                   setJobMatrix(chunkJobs(newData, 6))

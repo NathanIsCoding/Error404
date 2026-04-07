@@ -14,6 +14,7 @@ function FilterBlock(props) {
       if (props.jobType) params.append('jobType', props.jobType);
       if (props.industry) params.append('industry', props.industry);
       if (props.salary && Number(props.salary) > 0) params.append('salary', props.salary);
+      if (props.sort) params.append('sort', props.sort);
 
       const response = await fetch(`/api/search?${params.toString()}`, {
         method: 'GET',
@@ -46,6 +47,20 @@ function FilterBlock(props) {
           </div>
         <br />
         <div className="p-2">
+           <div className="flex flex-col">
+              <label className="font-bold text-xl">Sort By</label>
+              <select name="sortFilter" className="bg-black text-white p-2 mt-1 rounded-sm" value={props.sort} onChange={(e) => props.onSortChange(e)}>
+                <option value="date-desc">Date (Newest First)</option>
+                <option value="date-asc">Date (Oldest First)</option>
+                <option value="title-asc">Title (A-Z)</option>
+                <option value="title-desc">Title (Z-A)</option>
+                <option value="industry-asc">Industry (A-Z)</option>
+                <option value="industry-desc">Industry (Z-A)</option>
+              </select>
+            </div>
+
+            <br />
+
            <div className="flex flex-col">
               <label className="font-bold text-xl">Job Type</label>
               <select name="JobTypeFilter" className="bg-black text-white p-2 mt-1 rounded-sm" value={props.jobType} onChange={(e) => props.onJobTypeChange(e)}>
