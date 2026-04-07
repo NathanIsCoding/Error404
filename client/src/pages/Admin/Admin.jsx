@@ -169,13 +169,13 @@ function Admin({ user, setUser }) {
     ].filter(d => d.value > 0)
 
     return(
-        <main className="h-screen flex flex-col">
+        <main className="min-h-screen lg:h-screen lg:overflow-hidden flex flex-col">
             <Navbar user={user} setUser={setUser} />
-            <div className="flex flex-row justify-between items-end px-5 flex-1">
-                <div className="mainPanel flex flex-col mr-3">
-                    <div className="flex flex-row justify-between mb-5">
+            <div className="flex flex-col lg:flex-row justify-between items-center lg:items-stretch px-5 py-2 overflow-y-auto lg:overflow-hidden flex-1">
+                <div className="mainPanel flex flex-col lg:mr-3 w-full lg:overflow-y-auto">
+                    <div className="flex flex-row flex-wrap justify-center lg:justify-between mb-5 gap-3">
 
-                        <div className="statCard bg-primary p-3 mr-3 flex flex-col">
+                        <div className="statCard bg-primary p-3 flex flex-col">
                             <span className="logo">Jobs by Type</span>
                             <div className="bg-black rounded-lg flex-1">
                                 {jobTypeData.length === 0 ? <p className="text-center py-10 opacity-50 text-white">No data</p> : (
@@ -190,7 +190,7 @@ function Admin({ user, setUser }) {
                             </div>
                         </div>
 
-                        <div className="statCard bg-primary p-3 mr-3 flex flex-col">
+                        <div className="statCard bg-primary p-3 flex flex-col">
                             <span className="logo">Top Industries</span>
                             <div className="bg-black rounded-lg flex-1">
                                 {industryData.length === 0 ? <p className="text-center py-10 opacity-50 text-white">No data</p> : (
@@ -206,7 +206,7 @@ function Admin({ user, setUser }) {
                             </div>
                         </div>
 
-                        <div className="statCard bg-primary p-3 mr-3 flex flex-col">
+                        <div className="statCard bg-primary p-3 flex flex-col">
                             <span className="logo">User Status</span>
                             <div className="bg-black rounded-lg flex-1">
                                 {userStatusData.length === 0 ? <p className="text-center py-10 opacity-50 text-white">No data</p> : (
@@ -254,11 +254,13 @@ function Admin({ user, setUser }) {
 
                 </div>
 
-                <AdminSupportTicketPanel
-                    items={allTickets}
-                    filterFn={ticketFilterFn}
-                    onDelete={handleDeleteTicket}
-                />
+                <div className='mt-3 lg:mt-0 w-full lg:w-auto lg:h-full'>
+                    <AdminSupportTicketPanel
+                        items={allTickets}
+                        filterFn={ticketFilterFn}
+                        onDelete={handleDeleteTicket}
+                    />
+                </div>
             </div>
 
             {showCreateJobListing && (

@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import '../Navbar/Navbar.css'
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -8,6 +8,10 @@ export default function Navbar({user, setUser, onSignIn}) {
   const location = useLocation();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
+
+  useEffect(() => {
+    setDropdownOpen(false);
+  }, [user]);
 
   const handleSignIn = (e) => {
     e.preventDefault();
@@ -75,16 +79,20 @@ export default function Navbar({user, setUser, onSignIn}) {
 
               {dropdownOpen && (
                 <div className="flex flex-col rounded-b-lg dropdown-menu">
-                  <button className='dropdown-button' onClick={() => navigate(`/user/${user.username}`)}>
+                  <button className='dropdown-button flex items-center gap-2' onClick={() => navigate(`/user/${user.username}`)}>
+                    <span className='material-symbols-outlined text-[18px]'>person</span>
                     View Profile
                   </button>
-                  <button className='dropdown-button' onClick={(e) => { e.preventDefault(); navigate('/my-jobs'); }}>
+                  <button className='dropdown-button flex items-center gap-2' onClick={(e) => { e.preventDefault(); navigate('/my-jobs'); }}>
+                    <span className='material-symbols-outlined text-[18px]'>work</span>
                     My Jobs
                   </button>
-                  <button className='dropdown-button' onClick={(e) => { e.preventDefault(); navigate(`/application/${user.username}`); }}>
+                  <button className='dropdown-button flex items-center gap-2 whitespace-nowrap' onClick={(e) => { e.preventDefault(); navigate(`/application/${user.username}`); }}>
+                    <span className='material-symbols-outlined text-[18px]'>assignment</span>
                     My Applications
                   </button>
-                  <button className='dropdown-button !rounded-b-lg' onClick={handleSignOut}>
+                  <button className='dropdown-button !rounded-b-lg flex items-center gap-2' onClick={handleSignOut}>
+                    <span className='material-symbols-outlined text-[18px]'>logout</span>
                     Sign Out
                   </button>
                 </div>

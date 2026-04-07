@@ -55,13 +55,13 @@
   min-width: 100%;
 }
 
-.dropdown-button { 
+.dropdown-button {
     background-color: var(--color-black);
     border-radius: 0;
     border: 2px solid #2a2a2a;
     border-top: 0;
 }
-.dropdown-button:hover { 
+.dropdown-button:hover {
     border: 2px solid white;
 }
 
@@ -70,8 +70,8 @@
 }
 
 
-.nav-button { 
-    min-width: 10em;
+.nav-button {
+    min-width: 12em;
 }
 
 

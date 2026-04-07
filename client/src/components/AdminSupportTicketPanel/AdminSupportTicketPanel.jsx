@@ -27,11 +27,11 @@ function AdminSupportTicketPanel({items, filterFn, onDelete, pageSize = 8}) {
 
     return(
         <div className="sidePanel bg-primary p-3 flex flex-col">
-            <div className='flex justify-between'>
-                <span className="logo">Support Tickets</span>
+            <div className='flex flex-col lg:flex-row gap-2 items-center'>
+                <span className="logo lg:mr-auto">Support Tickets</span>
                 <input
                     name='search'
-                    className='rounded-full pl-5'
+                    className='rounded-full px-5 py-2 w-full lg:w-auto'
                     type="text"
                     placeholder={`Search Tickets...`}
                     value={searchTerm}
@@ -39,7 +39,7 @@ function AdminSupportTicketPanel({items, filterFn, onDelete, pageSize = 8}) {
                 />
             </div>
             
-                 <div className='overflow-auto scroll-box mt-3 bg-black rounded-lg h-[725px]'>
+                 <div className='overflow-auto scroll-box mt-3 bg-black rounded-lg h-[725px] lg:h-auto lg:flex-1'>
                     {displayMatrix[currentPage]?.map((item, index) => (
                         <SupportTicketCard key={index} data={item} onDelete={onDelete} />
                     ))}

@@ -126,7 +126,7 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
                         </div>
                     )}
                     <div className='textRow'>
-                        <div className="Tags">
+                        <div className="Tags flex flex-wrap gap-y-1">
                                 <span className='items-center rounded-sm' style={{backgroundColor: INDUSTRY_COLORS[job.industry] ?? INDUSTRY_COLORS.default}}>{job.industry}</span>
                                 <span className='items-center rounded-full' style={{backgroundColor: JOB_TYPE_COLORS[job.jobType] ?? JOB_TYPE_COLORS.default}}>{job.jobType?.replace(/\b\w/g, c => c.toUpperCase())}</span>
                         </div>
