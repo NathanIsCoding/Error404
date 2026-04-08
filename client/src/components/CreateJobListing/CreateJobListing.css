@@ -15,9 +15,9 @@
   width: clamp(400px, 80vw, 800px);
   margin: 0 auto;
   padding: 40px 20px 20px 20px;
-  border: 1px solid #4ade80;
+  border: 1px solid #216138;
   border-radius: 10px;
-  background-color: #6ee7b7;
+  background-color: var(--color-primary);
   color: #065f46;
   position: relative;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
@@ -39,11 +39,9 @@
   position: absolute;
   top: 10px;
   right: 10px;
-  background: none;
-  border: none;
   font-size: 24px;
   cursor: pointer;
-  color: #065f46;
+  color: white;
 }
 
 .close-button:hover {
@@ -66,7 +64,7 @@
 .create-job-form textarea {
   margin-bottom: 15px;
   padding: 10px;
-  border: 1px solid #4ade80;
+  border: 1px solid #216138;
   border-radius: 10px;
   background-color: #ecfdf5;
   color: #065f46;

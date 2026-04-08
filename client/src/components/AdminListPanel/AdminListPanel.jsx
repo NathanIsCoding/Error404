@@ -27,8 +27,8 @@ function AdminListPanel({title, items, CardComponent, filterFn, activeTab, onTab
 
     return(
         <div className="userList bg-primary p-3 flex flex-col">
-            <div className='flex justify-between mb-3'>
-                <div className="flex items-center gap-3">
+            <div className='flex flex-col sm:flex-row sm:justify-between mb-3 gap-2 items-center'>
+                <div className="flex items-center gap-3 justify-center sm:justify-start">
                     <p className="logo">{title}</p>
                     <button className={activeTab === 'users' ? 'tab-active' : 'tab'}onClick={() => onTabChange('users')}>
                         Users
@@ -44,7 +44,7 @@ function AdminListPanel({title, items, CardComponent, filterFn, activeTab, onTab
                 </div>
                 <input
                     name='search'
-                    className='rounded-full pl-5 w-100'
+                    className='rounded-full px-5 py-2 w-full sm:w-auto'
                     type="text"
                     placeholder={`Search ${title.toLowerCase()}...`}
                     value={searchTerm}

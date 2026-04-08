@@ -36,10 +36,10 @@ describe('SignIn', () => {
 
     describe('interactions', () => {
 
-        it('should call onClose when the X button is clicked', () => {
+        it('should call onClose when the close button is clicked', () => {
             const onClose = jest.fn();
             render(<SignIn {...defaultProps} onClose={onClose} />);
-            fireEvent.click(screen.getByRole('button', { name: /x/i }));
+            fireEvent.click(screen.getByRole('button', { name: /close/i }));
             expect(onClose).toHaveBeenCalled();
         });
 
