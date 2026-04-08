@@ -187,6 +187,78 @@ router.get('/profile/:username', async (req, res) => {
   }
 });
 
+// Update profile (owner only) — username, email, password, profile photo
+router.put('/profile', requireAuth, upload.single('profilePhoto'), async (req, res) => {
+  try {
+    const { username, email, currentPassword, newPassword, confirmPassword } = req.body;
+
+    const user = await User.findById(req.user.userId);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    if (!currentPassword) {
+      return res.status(400).json({ error: 'Current password is required to make changes' });
+    }
+    const passwordValid = await bcrypt.compare(currentPassword, user.password);
+    if (!passwordValid) return res.status(401).json({ error: 'Current password is incorrect' });
+
+    if (username && username.trim() !== user.username) {
+      const normalized = username.trim().toLowerCase();
+      const existing = await User.findOne({
+        _id: { $ne: user._id },
+        username: { $regex: new RegExp(`^${normalized}$`, 'i') }
+      });
+      if (existing) return res.status(409).json({ error: 'Username is already taken' });
+      user.username = username.trim();
+    }
+
+    if (email && email.trim().toLowerCase() !== user.email.toLowerCase()) {
+      const normalizedEmail = email.trim().toLowerCase();
+      const existing = await User.findOne({
+        _id: { $ne: user._id },
+        email: { $regex: new RegExp(`^${normalizedEmail}$`, 'i') }
+      });
+      if (existing) return res.status(409).json({ error: 'Email is already registered' });
+      user.email = normalizedEmail;
+    }
+
+    if (newPassword) {
+      if (newPassword !== confirmPassword) {
+        return res.status(400).json({ error: 'New passwords do not match' });
+      }
+      user.password = await bcrypt.hash(newPassword, 12);
+    }
+
+    if (req.file) {
+      user.profilePhoto = {
+        data: req.file.buffer,
+        contentType: req.file.mimetype
+      };
+    }
+
+    await user.save();
+
+    const token = jwt.sign(
+      { userId: user._id, username: user.username, email: user.email, isAdmin: user.isAdmin },
+      SECRET,
+      { expiresIn: '24h' }
+    );
+    res.cookie('session_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+      path: '/',
+    });
+
+    res.json({
+      success: true,
+      user: { userId: user._id, username: user.username, isAdmin: user.isAdmin }
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error updating profile' });
+  }
+});
+
 // Update resume text (owner only)
 router.put('/profile/resume', requireAuth, async (req, res) => {
   try {
