@@ -1,15 +1,18 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '../../components/Navbar/Navbar';
+import EditProfile from '../../components/EditProfile/EditProfile';
 import './UserProfile.css';
 
 export default function UserProfile({ user, setUser }) {
   const { username } = useParams();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
   const [photoError, setPhotoError] = useState(false);
   const [showResumeEditor, setShowResumeEditor] = useState(false);
   const [resumeDraft, setResumeDraft] = useState('');
   const [resumeSaving, setResumeSaving] = useState(false);
+  const [showEditProfile, setShowEditProfile] = useState(false);
 
   const isOwner = user && profile && user.username.toLowerCase() === profile.username.toLowerCase();
 
@@ -22,6 +25,17 @@ export default function UserProfile({ user, setUser }) {
       })
       .catch(() => {});
   }, [username]);
+
+  const handleProfileSaved = (updatedUser) => {
+    setUser(updatedUser);
+    setShowEditProfile(false);
+    if (updatedUser.username.toLowerCase() !== username.toLowerCase()) {
+      navigate(`/user/${encodeURIComponent(updatedUser.username)}`, { replace: true });
+    } else {
+      setProfile(prev => ({ ...prev, username: updatedUser.username }));
+      setPhotoError(false);
+    }
+  };
 
   const handleOpenEditor = () => {
     setResumeDraft(profile.resumeText || '');
@@ -79,9 +93,23 @@ export default function UserProfile({ user, setUser }) {
           )}
 
           {isOwner && (
-            <button className="resume-btn" onClick={handleOpenEditor}>
-              {profile.resumeText ? 'Edit Resume' : 'Add Resume'}
-            </button>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <button className="resume-btn" onClick={handleOpenEditor}>
+                {profile.resumeText ? 'Edit Resume' : 'Add Resume'}
+              </button>
+              <button className="resume-btn" onClick={() => setShowEditProfile(true)}>
+                Edit Profile
+              </button>
+            </div>
+          )}
+
+          {showEditProfile && (
+            <EditProfile
+              user={user}
+              profile={profile}
+              onClose={() => setShowEditProfile(false)}
+              onSaved={handleProfileSaved}
+            />
           )}
 
           {showResumeEditor && (
