@@ -66,7 +66,9 @@ const CreateAccount = ({ onClose, onSuccess }) => {
   return (
     <div className="create-account-modal">
       <div className="create-account">
-        <button onClick={onClose} className="close-button click-button">X</button>
+        <button className='close-button click-button !bg-secondary flex justify-center items-center' onClick={onClose}>
+            <span className="material-symbols-outlined">close</span>
+        </button>
         <h1>Create Account</h1>
         <form onSubmit={handleSubmit}>
           <label htmlFor="username">Username:</label>

@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import '../FilterBlock/FilterBlock.css';
+import { JOB_TYPES } from '../../enums/JobTypes';
+import { INDUSTRIES } from '../../enums/Industries';
 
 function FilterBlock(props) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -14,6 +16,7 @@ function FilterBlock(props) {
       if (props.jobType) params.append('jobType', props.jobType);
       if (props.industry) params.append('industry', props.industry);
       if (props.salary && Number(props.salary) > 0) params.append('salary', props.salary);
+      if (props.sort) params.append('sort', props.sort);
 
       const response = await fetch(`/api/search?${params.toString()}`, {
         method: 'GET',
@@ -47,13 +50,26 @@ function FilterBlock(props) {
         <br />
         <div className="p-2">
            <div className="flex flex-col">
+              <label className="font-bold text-xl">Sort By</label>
+              <select name="sortFilter" className="bg-black text-white p-2 mt-1 rounded-sm" value={props.sort} onChange={(e) => props.onSortChange(e)}>
+                <option value="date-desc">Date (Newest First)</option>
+                <option value="date-asc">Date (Oldest First)</option>
+                <option value="title-asc">Title (A-Z)</option>
+                <option value="title-desc">Title (Z-A)</option>
+                <option value="industry-asc">Industry (A-Z)</option>
+                <option value="industry-desc">Industry (Z-A)</option>
+              </select>
+            </div>
+
+            <br />
+
+           <div className="flex flex-col">
               <label className="font-bold text-xl">Job Type</label>
               <select name="JobTypeFilter" className="bg-black text-white p-2 mt-1 rounded-sm" value={props.jobType} onChange={(e) => props.onJobTypeChange(e)}>
                 <option value="">All</option>
-                <option value="full-time">Full-time</option>
-                <option value="part-time">Part-time</option>
-                <option value="contract">Contract</option>
-                <option value="internship">Internship</option>
+                {JOB_TYPES.map(({ value, label }) => (
+                  <option key={value} value={value}>{label}</option>
+                ))}
               </select>
             </div>
 
@@ -63,26 +79,9 @@ function FilterBlock(props) {
               <label className="font-bold text-xl">Industry</label>
               <select name="industryFilter" className="bg-black text-white p-2 mt-1 rounded-sm" value={props.industry} onChange={(e) => props.onIndustryChange(e)}>
                 <option className="bg-black" value="">All</option>
-                <option value="Information Technology">Information Technology</option>
-                <option value="Healthcare">Healthcare</option>
-                <option value="Education">Education</option>
-                <option value="Finance">Finance</option>
-                <option value="Retail">Retail</option>
-                <option value="Manufacturing">Manufacturing</option>
-                <option value="Construction">Construction</option>
-                <option value="Hospitality">Hospitality</option>
-                <option value="Transportation and Logistics">Transportation and Logistics</option>
-                <option value="Sales">Sales</option>
-                <option value="Marketing and Advertising">Marketing and Advertising</option>
-                <option value="Customer Service">Customer Service</option>
-                <option value="Government and Public Administration">Government and Public Administration</option>
-                <option value="Engineering">Engineering</option>
-                <option value="Real Estate">Real Estate</option>
-                <option value="Media and Entertainment">Media and Entertainment</option>
-                <option value="Telecommunications">Telecommunications</option>
-                <option value="Agriculture">Agriculture</option>
-                <option value="Energy and Utilities">Energy and Utilities</option>
-                <option value="Legal Services">Legal Services</option>
+                {INDUSTRIES.map(industry => (
+                  <option key={industry} value={industry}>{industry}</option>
+                ))}
               </select>
             </div>
 

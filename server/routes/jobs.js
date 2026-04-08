@@ -7,7 +7,7 @@ const { requireAuth } = require('../middleware/auth');
 
 router.get('/api/loadJobs', async (req, res) => {
   try {
-    const jobs = await Job.find();
+    const jobs = await Job.find().sort({ createdAt: -1 });
     res.json(jobs);
   } catch (error) {
     console.error('Error fetching jobs:', error);
@@ -87,9 +87,8 @@ router.delete('/api/deleteJob/:jobId', requireAuth, async (req, res) => {
 
 router.get('/api/search', async (req, res) => {
     try {
-        const { q, jobType, industry, salary } = req.query;
-        const filter = {};
-
+          const { q, jobType, industry, salary, sort } = req.query;
+          const filter = {};
         if (q) {
             const regex = new RegExp(q, 'i');
             filter.$or = [
@@ -111,7 +110,15 @@ router.get('/api/search', async (req, res) => {
             filter.salary = { $gte: Number(salary) };
         }
 
-        const results = await Job.find(filter);
+        let sortQuery = { createdAt: -1 };
+          if (sort === 'date-asc') sortQuery = { createdAt: 1 };
+          else if (sort === 'date-desc') sortQuery = { createdAt: -1 };
+          else if (sort === 'title-asc') sortQuery = { title: 1 };
+          else if (sort === 'title-desc') sortQuery = { title: -1 };
+          else if (sort === 'industry-asc') sortQuery = { industry: 1 };
+          else if (sort === 'industry-desc') sortQuery = { industry: -1 };
+
+          const results = await Job.find(filter).collation({ locale: 'en' }).sort(sortQuery);
         res.json(results);
     } catch (error) {
         console.error('Search error:', error);

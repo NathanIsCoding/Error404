@@ -5,14 +5,18 @@ const Job = require('../models/Job');
 const Resume = require('../models/Resume');
 const CoverLetter = require('../models/CoverLetter');
 const SupportTicket = require('../models/SupportTicket');
+const JobApplication = require('../models/JobApplication');
+const ProfileComment = require('../models/ProfileComment');
 
 async function clearDatabase() {
   try {
     await mongoose.connect(process.env.MONGODB_URI);
     await CoverLetter.deleteMany({});
     await Resume.deleteMany({});
-    await User.deleteMany({});
+    await ProfileComment.deleteMany({});
+    await JobApplication.deleteMany({});
     await Job.deleteMany({});
+    await User.deleteMany({});
     await SupportTicket.deleteMany({});
     console.log('Database completely erased!');
     

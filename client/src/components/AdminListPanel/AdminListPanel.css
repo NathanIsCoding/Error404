@@ -14,13 +14,13 @@
     font-weight: 600;
     font-size: 0.9rem;
     cursor: pointer;
-    border: 2px solid black;
+    border: 2px solid var(--color-black);;
     transition: background-color 0.2s, color 0.2s;
 }
 
 .tab {
     background-color: transparent;
-    color: black;
+    color: var(--color-black);
 }
 
 .tab:hover {
@@ -28,7 +28,7 @@
 }
 
 .tab-active {
-    background-color: black;
+    background-color: var(--color-black);;
     color: white;
 }
 
@@ -38,8 +38,8 @@
     font-weight: 700;
     font-size: 0.9rem;
     cursor: pointer;
-    border: 2px solid black;
-    background-color: black;
+    border: 2px solid var(--color-black);;
+    background-color: var(--color-black);;
     color: white;
     transition: transform 0.15s ease, opacity 0.15s ease;
 }
