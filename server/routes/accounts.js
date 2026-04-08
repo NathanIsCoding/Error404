@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const User = require('../models/User');
+const ProfileComment = require('../models/ProfileComment');
 const crypto = require('crypto');
 const https = require('https');
 const bcrypt = require('bcrypt');
@@ -179,7 +180,8 @@ router.get('/profile/:username', async (req, res) => {
       userId: user._id,
       username: user.username,
       createdAt: user.createdAt,
-      resumeText: user.resumeText || ''
+      resumeText: user.resumeText || '',
+      rating: user.rating ?? 0
     });
   } catch (err) {
     console.error(err);
@@ -324,6 +326,99 @@ router.patch('/toggleAdmin/:userId', requireAuth, async (req, res) => {
         console.error('Error toggling admin:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
+});
+
+async function recalculateRating(profileUserId) {
+  const ratedComments = await ProfileComment.find({ profileUserId, rating: { $ne: null } });
+  const avg = ratedComments.length
+    ? ratedComments.reduce((sum, c) => sum + c.rating, 0) / ratedComments.length
+    : 0;
+  await User.findByIdAndUpdate(profileUserId, { rating: Math.round(avg * 10) / 10 });
+}
+
+// GET comments for a profile
+router.get('/profile/:username/comments', async (req, res) => {
+  try {
+    const user = await User.findOne({
+      username: { $regex: new RegExp(`^${req.params.username.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') }
+    });
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    const comments = await ProfileComment.find({ profileUserId: user._id })
+      .sort({ createdAt: -1 })
+      .lean();
+    res.json(comments);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error fetching comments' });
+  }
+});
+
+// POST a comment on a profile
+router.post('/profile/:username/comments', requireAuth, async (req, res) => {
+  try {
+    const { text, rating } = req.body;
+    if (!text || typeof text !== 'string' || !text.trim()) {
+      return res.status(400).json({ error: 'Comment text is required' });
+    }
+    if (text.trim().length > 1000) {
+      return res.status(400).json({ error: 'Comment must be 1000 characters or fewer' });
+    }
+    if (rating !== undefined && rating !== null) {
+      if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+        return res.status(400).json({ error: 'Rating must be an integer between 1 and 5' });
+      }
+    }
+
+    const profileUser = await User.findOne({
+      username: { $regex: new RegExp(`^${req.params.username.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') }
+    });
+    if (!profileUser) return res.status(404).json({ error: 'User not found' });
+
+    const author = await User.findById(req.user.userId);
+    if (!author) return res.status(404).json({ error: 'Author not found' });
+
+    if (String(author._id) === String(profileUser._id)) {
+      return res.status(403).json({ error: 'You cannot comment on your own profile' });
+    }
+
+    const comment = await ProfileComment.create({
+      profileUserId: profileUser._id,
+      authorId: author._id,
+      authorUsername: author.username,
+      text: text.trim(),
+      rating: rating ?? null
+    });
+
+    if (rating != null) await recalculateRating(profileUser._id);
+
+    res.status(201).json(comment);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error posting comment' });
+  }
+});
+
+// DELETE a comment (author or admin only)
+router.delete('/profile/:username/comments/:commentId', requireAuth, async (req, res) => {
+  try {
+    const comment = await ProfileComment.findById(req.params.commentId);
+    if (!comment) return res.status(404).json({ error: 'Comment not found' });
+
+    const isAuthor = String(comment.authorId) === String(req.user.userId);
+    if (!isAuthor && !req.user.isAdmin) {
+      return res.status(403).json({ error: 'Not authorized to delete this comment' });
+    }
+
+    const hadRating = comment.rating != null;
+    const profileUserId = comment.profileUserId;
+    await comment.deleteOne();
+    if (hadRating) await recalculateRating(profileUserId);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error deleting comment' });
+  }
 });
 
 module.exports = router;

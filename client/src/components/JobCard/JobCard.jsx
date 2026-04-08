@@ -1,5 +1,6 @@
 import './JobCard.css';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import INDUSTRY_COLORS from '../../enums/Industries';
 import JOB_TYPE_COLORS from '../../enums/JobTypes';
 
@@ -9,6 +10,7 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
     const [applied, setApplied] = useState(isApplied);
     const [applyError, setApplyError] = useState('');
     const [imageError, setImageError] = useState(false);
+    const [posterRating, setPosterRating] = useState(null);
 
     const creatorPhotoUrl = job?.createdByUserId
         ? `/api/accounts/${encodeURIComponent(job.createdByUserId)}/photo`
@@ -21,6 +23,15 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
     useEffect(() => {
         setImageError(false);
     }, [job?.createdByUserId, job?.jobId, job?._id]);
+
+    useEffect(() => {
+        setPosterRating(null);
+        if (!job?.createdByUsername) return;
+        fetch(`/api/accounts/profile/${encodeURIComponent(job.createdByUsername)}`)
+            .then(res => res.ok ? res.json() : null)
+            .then(data => { if (data) setPosterRating(data.rating); })
+            .catch(() => {});
+    }, [job?.createdByUsername]);
 
     function getSalaryColor(salary) {
         if (salary > 120000) return '#0a9ba3';
@@ -84,6 +95,14 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
         }
     }
 
+    const navigate = useNavigate();
+
+    function handleImageClick() {
+        if (job.createdByUsername) {
+            navigate(`/user/${job.createdByUsername}`);
+        }
+    }
+
     function handleEdit() {
         if (!user || typeof onEdit !== 'function') {
             return;
@@ -96,18 +115,28 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
 
             <div className='flex flex-row justify-between'>
                 <div className='flex flex-row items-center'>
-                    {creatorPhotoUrl && !imageError ? (
-                        <img
-                            src={creatorPhotoUrl}
-                            className='cardImg'
-                            alt={`${job.company} creator`}
-                            onError={() => setImageError(true)}
-                        />
-                    ) : (
-                        <div className='cardImgPlaceholder'>
-                            {(job.company || '?').charAt(0).toUpperCase()}
-                        </div>
-                    )}
+                    <div className='flex flex-col items-center' style={{ marginRight: '10px' }}>
+                        {creatorPhotoUrl && !imageError ? (
+                            <img
+                                src={creatorPhotoUrl}
+                                className='cardImg'
+                                alt={`${job.company} creator`}
+                                onError={() => setImageError(true)}
+                                onClick={handleImageClick}
+                                style={{ cursor: 'pointer' }}
+                            />
+                        ) : (
+                            <div className='cardImgPlaceholder' onClick={handleImageClick} style={{ cursor: 'pointer' }}>
+                                {(job.company || '?').charAt(0).toUpperCase()}
+                            </div>
+                        )}
+                        {posterRating !== null && (
+                            <div className='flex items-center gap-0.5' style={{ fontSize: '11px', color: '#facc15' }}>
+                                <span className='material-symbols-outlined' style={{ fontSize: '11px' }}>star</span>
+                                <span style={{ color: '#ccc' }}>{posterRating.toFixed(1)}</span>
+                            </div>
+                        )}
+                    </div>
                     <div className='textRow'>
                         <div className="Tags">
                                 <span className='items-center rounded-sm' style={{backgroundColor: INDUSTRY_COLORS[job.industry] ?? INDUSTRY_COLORS.default}}>{job.industry}</span>
