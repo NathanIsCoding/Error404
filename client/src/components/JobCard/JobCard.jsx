@@ -148,9 +148,9 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
                             </div>
                         )}
                         {posterRating !== null && (
-                            <div className='flex items-center gap-0.5' style={{ fontSize: '11px', color: '#facc15' }}>
-                                <span className='material-symbols-outlined' style={{ fontSize: '11px' }}>star</span>
-                                <span style={{ color: '#ccc' }}>{posterRating.toFixed(1)}</span>
+                            <div className='flex items-center gap-0.5 text-sm text-yellow-400'>
+                                <span className='material-symbols-outlined !text-sm'>star</span>
+                                <span className='text-gray-400'>{posterRating.toFixed(1)}</span>
                             </div>
                         )}
                     </div>
