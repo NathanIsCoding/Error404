@@ -1,6 +1,11 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import JobCard from '../components/JobCard/JobCard';
 
+jest.mock('react-router-dom', () => ({
+    ...jest.requireActual('react-router-dom'),
+    useNavigate: () => jest.fn(),
+}));
+
 const mockJob = {
     _id: 'job-1',
     title: 'Software Engineer',

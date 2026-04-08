@@ -1,7 +1,7 @@
 # Error404
 
-Backend start cmd: npm start
-Frontend start cmd: npm run dev
+Run Project:
+- npm run dev (in both directories)
 
 Testing:
 - npm test (in both directories)

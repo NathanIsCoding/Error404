@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
+    "dev": "nodemon ./bin/www",
     "test:db": "node ./scripts/test-db.js",
     "test:docker": "node ./scripts/test-db-docker.js",
     "clear:db": "node ./scripts/clear-db.js",
