@@ -8,8 +8,6 @@
     "test:docker": "node ./scripts/test-db-docker.js",
     "clear:db": "node ./scripts/clear-db.js",
     "populate:db": "node ./scripts/populate-db.js",
-    "populateUser:db": "node ./scripts/populate-users-db.js",
-    "populateSupport:db": "node ./scripts/populate-support-db.js",
     "test": "jest"
   },
   "dependencies": {
