@@ -2,9 +2,10 @@ const { execSync } = require('child_process');
 const path = require('path');
 
 const scripts = [
-  'populate-jobs-db.js',
   'populate-users-db.js',
+  'populate-jobs-db.js',
   'populate-support-db.js',
+  'populate-ratings-db.js',
 ];
 
 for (const script of scripts) {

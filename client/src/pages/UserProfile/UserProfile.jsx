@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Navbar from '../../components/Navbar/Navbar';
+import Paginator from '../../components/Paginator/Paginator';
 import './UserProfile.css';
+
+const COMMENTS_PER_PAGE = 5;
 
 export default function UserProfile({ user, setUser }) {
   const { username } = useParams();
@@ -11,6 +14,7 @@ export default function UserProfile({ user, setUser }) {
   const [resumeDraft, setResumeDraft] = useState('');
   const [resumeSaving, setResumeSaving] = useState(false);
   const [comments, setComments] = useState([]);
+  const [commentsPage, setCommentsPage] = useState(0);
   const [commentText, setCommentText] = useState('');
   const [commentRating, setCommentRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
@@ -32,7 +36,7 @@ export default function UserProfile({ user, setUser }) {
   useEffect(() => {
     fetch(`/api/accounts/profile/${encodeURIComponent(username)}/comments`)
       .then(res => res.ok ? res.json() : [])
-      .then(setComments)
+      .then(data => { setComments(data); setCommentsPage(0); })
       .catch(() => {});
   }, [username]);
 
@@ -55,6 +59,7 @@ export default function UserProfile({ user, setUser }) {
       }
       const newComment = await res.json();
       setComments(prev => [newComment, ...prev]);
+      setCommentsPage(0);
       setCommentText('');
       setCommentRating(0);
       if (commentRating) refreshRating();
@@ -242,7 +247,7 @@ export default function UserProfile({ user, setUser }) {
             {comments.length === 0 && (
               <p className="comments-empty">No comments yet.</p>
             )}
-            {comments.map(comment => (
+            {comments.slice(commentsPage * COMMENTS_PER_PAGE, (commentsPage + 1) * COMMENTS_PER_PAGE).map(comment => (
               <div key={comment._id} className="comment-item">
                 <div className="comment-header">
                   <Link to={`/user/${comment.authorUsername}`} className="comment-author">
@@ -262,6 +267,13 @@ export default function UserProfile({ user, setUser }) {
               </div>
             ))}
           </div>
+          {comments.length > COMMENTS_PER_PAGE && (
+            <Paginator
+              currentPage={commentsPage}
+              totalPages={Math.ceil(comments.length / COMMENTS_PER_PAGE)}
+              onPageChange={setCommentsPage}
+            />
+          )}
         </div>
       )}
     </div>

@@ -2,6 +2,7 @@ require('dotenv').config({ path: require('path').resolve(__dirname, '../../.env'
 const mongoose = require('mongoose');
 const crypto = require('crypto');
 const Job = require('../models/Job');
+const User = require('../models/User');
 
 const locations = ['San Francisco, CA', 'New York, NY', 'Los Angeles, CA', 'Austin, TX', 'Seattle, WA', 'Boston, MA', 'Denver, CO', 'Portland, OR', 'Chicago, IL', 'Remote'];
 const industries = [
@@ -60,9 +61,10 @@ function generateJobDescription(title) {
   return getRandomElement(descriptions);
 }
 
-function generateJobs(count) {
+function generateJobs(count, users) {
   const jobs = [];
   for (let i = 0; i < count; i++) {
+    const user = getRandomElement(users);
     jobs.push({
       company: getRandomCompany(),
       jobId: generateJobId(),
@@ -72,7 +74,9 @@ function generateJobs(count) {
       salary: getRandomSalary(getRandomElement(jobTypes)),
       location: getRandomElement(locations),
       description: generateJobDescription(getRandomElement(jobTitles)),
-      isActive: Math.random() > 0.1
+      isActive: Math.random() > 0.1,
+      createdByUserId: user._id.toString(),
+      createdByUsername: user.username,
     });
   }
   return jobs;
@@ -83,11 +87,18 @@ async function populateDB() {
     console.log('Connecting to MongoDB...');
     await mongoose.connect(process.env.MONGODB_URI);
     console.log('Connected to MongoDB');
+    const users = await User.find({}, '_id username').lean();
+    if (users.length === 0) {
+      console.error('No users found. Run populate-users-db.js first.');
+      process.exit(1);
+    }
+    console.log(`Found ${users.length} users`);
+
     console.log('Clearing existing jobs...');
     await Job.deleteMany({});
     console.log('Cleared jobs collection');
     console.log('Generating 100 jobs...');
-    const jobs = generateJobs(100);
+    const jobs = generateJobs(100, users);
     const insertedJobs = await Job.insertMany(jobs);
     console.log('Inserted ' + insertedJobs.length + ' jobs');
 
