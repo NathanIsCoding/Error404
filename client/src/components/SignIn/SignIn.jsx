@@ -55,7 +55,9 @@ const SignIn = ({ onClose, onSuccess, onCreateAccount }) => {
   return (
     <div className="login-modal">
       <div className="login">
-        <button onClick={onClose} className="close-button click-button">X</button>
+        <button className='close-button click-button !bg-secondary flex justify-center items-center' onClick={onClose}>
+            <span className="material-symbols-outlined">close</span>
+        </button>
         <h1>Sign In</h1>
         <form onSubmit={handleSubmit}>
           <label htmlFor="username">Username:</label>
