@@ -5,6 +5,7 @@ const request = require('supertest');
 const jwt = require('jsonwebtoken');
 const accountsRouter = require('../routes/accounts');
 const User = require('../models/User');
+const ProfileComment = require('../models/ProfileComment');
 const db = require('./db');
 const bcrypt = require('bcrypt');
 
@@ -338,6 +339,157 @@ describe('Accounts API', () => {
         .patch('/api/accounts/toggleAdmin/nonexistent-id')
         .set('Cookie', `session_token=${adminToken}`);
       expect(res.statusCode).toBe(404);
+    });
+  });
+
+  describe('GET /:id/photo', () => {
+    it('should return 404 when user does not exist', async () => {
+      const { Types } = require('mongoose');
+      const fakeId = new Types.ObjectId().toString();
+      const res = await request(app).get(`/api/accounts/${fakeId}/photo`);
+      expect(res.statusCode).toBe(404);
+    });
+  });
+
+  describe('PUT /api/accounts/profile/resume', () => {
+    it('should return 400 when resumeText is not a string', async () => {
+      const hashedPassword = await bcrypt.hash('password', 12);
+      const created = await User.create({ userId: 'user-1', username: 'testuser', email: 'test@test.com', password: hashedPassword });
+      const token = jwt.sign({ userId: created._id, username: 'testuser', isAdmin: false }, 'test-secret');
+
+      const res = await request(app).put('/api/accounts/profile/resume').set('Cookie', `session_token=${token}`).send({ resumeText: 42 });
+
+      expect(res.statusCode).toBe(400);
+    });
+  });
+
+  describe('GET /api/accounts/profile/:username/comments', () => {
+    it('should return empty array when user has no comments', async () => {
+      await User.create({ userId: 'user-1', username: 'testuser', email: 'test@test.com', password: 'hashed' });
+
+      const res = await request(app).get('/api/accounts/profile/testuser/comments');
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toEqual([]);
+    });
+
+    it('should return 404 for a non-existent user', async () => {
+      const res = await request(app).get('/api/accounts/profile/ghost/comments');
+      expect(res.statusCode).toBe(404);
+    });
+  });
+
+  describe('POST /api/accounts/profile/:username/comments', () => {
+    let profileUser, commenter, commenterToken;
+
+    beforeEach(async () => {
+      const hashed = await bcrypt.hash('password', 12);
+      profileUser = await User.create({ userId: 'profile-user', username: 'profileuser', email: 'profile@test.com', password: hashed });
+      commenter = await User.create({ userId: 'commenter-1', username: 'commenter', email: 'commenter@test.com', password: hashed });
+      commenterToken = jwt.sign({ userId: commenter._id, username: 'commenter', isAdmin: false }, 'test-secret');
+    });
+
+    it('should post a comment with a rating', async () => {
+      const res = await request(app).post('/api/accounts/profile/profileuser/comments').set('Cookie', `session_token=${commenterToken}`).send({ text: 'Great employer!', rating: 5 });
+
+      expect(res.statusCode).toBe(201);
+      expect(res.body.text).toBe('Great employer!');
+      expect(res.body.rating).toBe(5);
+    });
+
+    it('should post a comment without a rating', async () => {
+      const res = await request(app).post('/api/accounts/profile/profileuser/comments').set('Cookie', `session_token=${commenterToken}`).send({ text: 'Decent place.' });
+
+      expect(res.statusCode).toBe(201);
+      expect(res.body.rating).toBeNull();
+    });
+
+    it('should return 400 when text is missing', async () => {
+      const res = await request(app).post('/api/accounts/profile/profileuser/comments').set('Cookie', `session_token=${commenterToken}`).send({ rating: 3 });
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it('should return 400 when text exceeds 1000 characters', async () => {
+      const res = await request(app).post('/api/accounts/profile/profileuser/comments').set('Cookie', `session_token=${commenterToken}`).send({ text: 'a'.repeat(1001) });
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it('should return 400 when rating is out of range', async () => {
+      const res = await request(app).post('/api/accounts/profile/profileuser/comments').set('Cookie', `session_token=${commenterToken}`).send({ text: 'Bad rating value', rating: 6 });
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it('should return 403 when commenting on own profile', async () => {
+      const selfToken = jwt.sign({ userId: profileUser._id, username: 'profileuser', isAdmin: false }, 'test-secret');
+
+      const res = await request(app).post('/api/accounts/profile/profileuser/comments').set('Cookie', `session_token=${selfToken}`).send({ text: 'I love myself.' });
+
+      expect(res.statusCode).toBe(403);
+    });
+
+    it('should return 404 for a non-existent profile', async () => {
+      const res = await request(app).post('/api/accounts/profile/ghost/comments').set('Cookie', `session_token=${commenterToken}`).send({ text: 'Hello?' });
+
+      expect(res.statusCode).toBe(404);
+    });
+
+    it('should return 401 if not authenticated', async () => {
+      const res = await request(app).post('/api/accounts/profile/profileuser/comments').send({ text: 'No auth.' });
+
+      expect(res.statusCode).toBe(401);
+    });
+  });
+
+  describe('DELETE /api/accounts/profile/:username/comments/:commentId', () => {
+    let profileUser, commenter, commenterToken, comment;
+
+    beforeEach(async () => {
+      const hashed = await bcrypt.hash('password', 12);
+      profileUser = await User.create({ userId: 'profile-user', username: 'profileuser', email: 'profile@test.com', password: hashed });
+      commenter = await User.create({ userId: 'commenter-1', username: 'commenter', email: 'commenter@test.com', password: hashed });
+      commenterToken = jwt.sign({ userId: commenter._id, username: 'commenter', isAdmin: false }, 'test-secret');
+      comment = await ProfileComment.create({ profileUserId: profileUser._id, authorId: commenter._id, authorUsername: 'commenter', text: 'Nice!', rating: 4 });
+    });
+
+    it('should allow the author to delete their own comment', async () => {
+      const res = await request(app).delete(`/api/accounts/profile/profileuser/comments/${comment._id}`).set('Cookie', `session_token=${commenterToken}`);
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.success).toBe(true);
+    });
+
+    it('should allow an admin to delete any comment', async () => {
+      const res = await request(app).delete(`/api/accounts/profile/profileuser/comments/${comment._id}`).set('Cookie', `session_token=${adminToken}`);
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.success).toBe(true);
+    });
+
+    it('should return 403 when a non-author non-admin tries to delete', async () => {
+      const hashed = await bcrypt.hash('password', 12);
+      const other = await User.create({ userId: 'other-1', username: 'other', email: 'other@test.com', password: hashed });
+      const otherToken = jwt.sign({ userId: other._id, username: 'other', isAdmin: false }, 'test-secret');
+
+      const res = await request(app).delete(`/api/accounts/profile/profileuser/comments/${comment._id}`).set('Cookie', `session_token=${otherToken}`);
+
+      expect(res.statusCode).toBe(403);
+    });
+
+    it('should return 404 when comment does not exist', async () => {
+      const { Types } = require('mongoose');
+      const fakeId = new Types.ObjectId().toString();
+
+      const res = await request(app).delete(`/api/accounts/profile/profileuser/comments/${fakeId}`).set('Cookie', `session_token=${commenterToken}`);
+
+      expect(res.statusCode).toBe(404);
+    });
+
+    it('should return 401 if not authenticated', async () => {
+      const res = await request(app).delete(`/api/accounts/profile/profileuser/comments/${comment._id}`);
+
+      expect(res.statusCode).toBe(401);
     });
   });
 
