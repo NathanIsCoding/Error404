@@ -165,4 +165,104 @@ describe('Applications API', () => {
       expect(res.body[0].userId.username).toBe('applicant');
     });
   });
+
+  describe('PATCH /api/applications/:applicationId/status', () => {
+    it('returns 401 when unauthenticated', async () => {
+      const res = await request(app)
+        .patch(`/api/applications/${new mongoose.Types.ObjectId()}/status`)
+        .send({ status: 'accepted' });
+      expect(res.statusCode).toBe(401);
+    });
+
+    it('returns 400 for invalid status', async () => {
+      const token = jwt.sign({ userId: new mongoose.Types.ObjectId().toString(), isAdmin: false }, 'test-secret');
+      const res = await request(app)
+        .patch(`/api/applications/${new mongoose.Types.ObjectId()}/status`)
+        .set('Cookie', `session_token=${token}`)
+        .send({ status: 'invalid_status' });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.body.success).toBe(false);
+      expect(res.body.message).toBe('Invalid status');
+    });
+
+    it('updates application status when authorized as the job owner', async () => {
+      const jobOwner = await User.create({ userId: 'owner-1', username: 'owner', email: 'owner@test.com', password: 'hash' });
+      const applicant = await User.create({ userId: 'app-1', username: 'app', email: 'app@test.com', password: 'hash' });
+      const job = await Job.create({
+        jobId: 'job-1', title: 'Developer', company: 'Co', jobType: 'full-time', industry: 'Engineering', salary: 1000, description: 'Test', location: 'Remote',
+        createdByUserId: jobOwner.userId
+      });
+      const application = await JobApplication.create({ userId: applicant._id, jobId: job._id });
+
+      const token = jwt.sign({ userId: jobOwner.userId, isAdmin: false }, 'test-secret');
+
+      const res = await request(app)
+        .patch(`/api/applications/${application._id}/status`)
+        .set('Cookie', `session_token=${token}`)
+        .send({ status: 'accepted' });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.status).toBe('accepted');
+
+      const updated = await JobApplication.findById(application._id);
+      expect(updated.status).toBe('accepted');
+    });
+
+    it('returns 403 when trying to update status as non-owner', async () => {
+      const jobOwner = await User.create({ userId: 'owner-2', username: 'owner2', email: 'owner2@test.com', password: 'hash' });
+      const otherUser = await User.create({ userId: 'other-1', username: 'other', email: 'other@test.com', password: 'hash' });
+      const job = await Job.create({
+        jobId: 'job-2', title: 'Dev', company: 'Co', jobType: 'full-time', industry: 'Engineering', salary: 1000, description: 'Test', location: 'Remote',
+        createdByUserId: jobOwner.userId
+      });
+      const application = await JobApplication.create({ userId: new mongoose.Types.ObjectId(), jobId: job._id });
+
+      const token = jwt.sign({ userId: otherUser.userId, isAdmin: false }, 'test-secret');
+
+      const res = await request(app)
+        .patch(`/api/applications/${application._id}/status`)
+        .set('Cookie', `session_token=${token}`)
+        .send({ status: 'rejected' });
+
+      expect(res.statusCode).toBe(403);
+      expect(res.body.message).toBe('Unauthorized');
+    });
+  });
+
+  describe('GET /api/applications/job/:jobId', () => {
+    it('returns 401 when unauthenticated', async () => {
+      const res = await request(app).get('/api/applications/job/some-job');
+      expect(res.statusCode).toBe(401);
+    });
+
+    it('returns 403 when not the job owner', async () => {
+      await Job.create({
+        jobId: 'job-3', title: 'Dev', company: 'Co', jobType: 'full-time', industry: 'Engineering', salary: 1000, description: 'Test', location: 'Remote',
+        createdByUserId: 'actual-owner'
+      });
+      const token = jwt.sign({ userId: 'not-owner', isAdmin: false }, 'test-secret');
+      const res = await request(app).get('/api/applications/job/job-3').set('Cookie', `session_token=${token}`);
+      expect(res.statusCode).toBe(403);
+      expect(res.body.message).toBe('Unauthorized to view these applications');
+    });
+
+    it('returns applications for the job when authorized', async () => {
+      const jobOwner = await User.create({ userId: 'owner-3', username: 'owner3', email: 'owner3@test.com', password: 'hash' });
+      const dbJob = await Job.create({
+        jobId: 'job-4', title: 'Dev', company: 'Co', jobType: 'full-time', industry: 'Engineering', salary: 1000, description: 'Test', location: 'Remote',
+        createdByUserId: jobOwner.userId
+      });
+      const applicant = await User.create({ userId: 'app-3', username: 'app3', email: 'app3@test.com', password: 'hash' });
+      await JobApplication.create({ userId: applicant._id, jobId: dbJob._id });
+
+      const token = jwt.sign({ userId: jobOwner.userId, isAdmin: false }, 'test-secret');
+      const res = await request(app).get('/api/applications/job/job-4').set('Cookie', `session_token=${token}`);
+      expect(res.statusCode).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data).toHaveLength(1);
+      expect(res.body.data[0].userId.username).toBe('app3');
+    });
+  });
 });
