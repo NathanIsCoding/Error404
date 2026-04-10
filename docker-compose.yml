@@ -1,6 +1,18 @@
 version: '3.8'
 
 services:
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://backend:3000
+    depends_on:
+      - backend
+    restart: unless-stopped
+
   backend:
     build:
       context: ./server

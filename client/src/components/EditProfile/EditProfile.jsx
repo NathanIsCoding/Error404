@@ -20,15 +20,18 @@ export default function EditProfile({ user, profile, onClose, onSaved }) {
     }
   };
 
-  const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-
     if (newPassword && newPassword !== confirmPassword) {
       setError('New passwords do not match');
       return;
     }
-
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$&*.,?+-]).{8,}$/;
+    if (newPassword && !passwordRegex.test(newPassword)) {
+      setError('Password must be at least 8 characters long, contain at least one capital letter, and one special symbol.');
+      return;
+    }
+    
     setSaving(true);
     try {
       const formData = new FormData();
