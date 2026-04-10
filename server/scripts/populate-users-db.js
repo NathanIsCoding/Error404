@@ -51,6 +51,12 @@ function generateEmail(firstName, lastName, index) {
   return getRandomElement(variants);
 }
 
+function randomPastDate(daysBack = 365) {
+  const now = new Date();
+  const offsetMs = Math.floor(Math.random() * daysBack) * 24 * 60 * 60 * 1000;
+  return new Date(now.getTime() - offsetMs);
+}
+
 function generateRating() {
   // Weighted toward higher ratings, some users have 0 (no rating yet)
   const rand = Math.random();
@@ -88,6 +94,7 @@ async function generateUsers(count, hashedPassword) {
       description: getRandomElement(descriptions),
       rating: generateRating(),
       isAdmin: i === 0, // Make the first user an admin
+      createdAt: randomPastDate(),
       createdJobs: [],
     });
   }

@@ -108,7 +108,7 @@ function MainApp({user, setUser}) {
 
     const fetchMyApplications = async () => {
       try {
-        const response = await fetch(`/api/applications/${encodeURIComponent(user.username)}`, {
+        const response = await fetch(`/api/applications/user/${encodeURIComponent(user.username)}`, {
           credentials: 'include'
         })
 
