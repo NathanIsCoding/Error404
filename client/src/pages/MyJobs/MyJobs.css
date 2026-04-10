@@ -15,8 +15,7 @@
   margin-bottom: 12px;
   border-radius: 12px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
 }
 
 .my-job-card .job-info {
@@ -55,4 +54,59 @@
 
 .edit-btn:hover {
   background-color: #2b2b2b;
+}
+
+.app-action-btn {
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.app-action-btn.accept {
+  background-color: #2da882;
+  border: 1px solid #2da882;
+}
+
+.app-action-btn.accept:hover {
+  background-color: #248b6b;
+  border-color: #248b6b;
+}
+
+.app-action-btn.reject {
+  background-color: #e23b5d;
+  border: 1px solid #e23b5d;
+}
+
+.app-action-btn.reject:hover {
+  background-color: #c42b4a;
+  border-color: #c42b4a;
+}
+
+.app-action-btn.undo {
+  background-color: #555;
+  border: 1px solid #555;
+}
+
+.app-action-btn.undo:hover {
+  background-color: #444;
+  border-color: #444;
+}
+
+.app-action-btn.profile {
+  background-color: #3b82f6;
+  border: 1px solid #3b82f6;
+}
+
+.app-action-btn.profile:hover {
+  background-color: #2563eb;
+  border-color: #2563eb;
 }

@@ -136,19 +136,19 @@ function MyJobs({ user, setUser }) {
 
         {jobs.map((job) => (
           <div key={job.jobId} className="my-job-card bg-primary block">
-            <div className="flex justify-between items-start">
+            <div className="flex flex-col sm:flex-row justify-between items-start gap-3 sm:gap-0">
               <div className="job-info">
                 <p><strong>{job.title}</strong> at {job.company}</p>
                 <p>Location: {job.location} &middot; {job.jobType}</p>
                 <p>Salary: {new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD' }).format(job.salary)}</p>
               </div>
-              <div className="job-actions flex flex-col items-end gap-2">
-                <span className="job-date">{new Date(job.createdAt).toLocaleDateString()}</span>
-                <div className="flex gap-2">
-                  <button onClick={() => toggleApplications(job.jobId)} className='edit-btn' style={{ backgroundColor: '#2da882' }}>
+              <div className="job-actions flex flex-col items-start sm:items-end gap-2 w-full sm:w-auto">
+                <span className="job-date self-start sm:self-end">{new Date(job.createdAt).toLocaleDateString()}</span>
+                <div className="flex gap-2 w-full sm:w-auto">
+                  <button onClick={() => toggleApplications(job.jobId)} className='edit-btn flex-1 sm:flex-none' style={{ backgroundColor: '#2da882' }}>
                     {expandedJobId === job.jobId ? 'Hide Apps' : 'View Apps'}
                   </button>
-                  <button onClick={() => setJobBeingEdited(job)} className='edit-btn'>
+                  <button onClick={() => setJobBeingEdited(job)} className='edit-btn flex-1 sm:flex-none'>
                     Edit
                   </button>
                 </div>
@@ -165,28 +165,26 @@ function MyJobs({ user, setUser }) {
                 ) : (
                   <div className="flex flex-col gap-2">
                     {jobApplications[job.jobId].map((app) => (
-                      <div key={app._id} className="p-3 bg-secondary rounded flex justify-between items-center">
-                        <div>
+                      <div key={app._id} className="p-3 bg-secondary rounded flex flex-col sm:flex-row justify-between items-start gap-3 sm:gap-4">
+                        <div className="w-full sm:w-auto">
                           <p className="font-bold">{app.userId?.username}</p>
                           <p className="text-sm">{app.userId?.email}</p>
                           <p className="text-sm mt-1">Status: <span className="font-semibold capitalize">{app.status || 'pending'}</span></p>
                         </div>
-                        <div className="flex flex-col items-end gap-2">
-                          <p className="text-sm">Applied: {new Date(app.createdAt).toLocaleDateString()}</p>
-                          <div className="flex gap-2">
+                        <div className="flex flex-col sm:items-end w-full sm:w-auto gap-2">
+                          <p className="text-sm self-start sm:self-end">Applied: {new Date(app.createdAt).toLocaleDateString()}</p>
+                          <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-start sm:justify-end">
                             {(!app.status || app.status === 'pending') && (
                               <>
                                 <button 
                                   onClick={() => handleUpdateStatus(job.jobId, app._id, 'accepted')}
-                                  style={{ padding: '0.2rem 0.5rem', backgroundColor: '#2da882', color: 'white', borderRadius: '4px', border: 'none', cursor: 'pointer' }}
-                                  className="text-sm"
+                                  className="app-action-btn accept flex-1 sm:flex-none"
                                 >
                                   Accept
                                 </button>
                                 <button 
                                   onClick={() => handleUpdateStatus(job.jobId, app._id, 'rejected')}
-                                  style={{ padding: '0.2rem 0.5rem', backgroundColor: '#cc2d4d', color: 'white', borderRadius: '4px', border: 'none', cursor: 'pointer' }}
-                                  className="text-sm"
+                                  className="app-action-btn reject flex-1 sm:flex-none"
                                 >
                                   Reject
                                 </button>
@@ -195,16 +193,14 @@ function MyJobs({ user, setUser }) {
                             {(app.status === 'accepted' || app.status === 'rejected') && (
                               <button 
                                 onClick={() => handleUpdateStatus(job.jobId, app._id, 'pending')}
-                                style={{ padding: '0.2rem 0.5rem', backgroundColor: '#888', color: 'white', borderRadius: '4px', border: 'none', cursor: 'pointer' }}
-                                className="text-sm"
+                                className="app-action-btn undo flex-1 sm:flex-none"
                               >
                                 Undo
                               </button>
                             )}
                             <Link 
                               to={`/user/${encodeURIComponent(app.userId?.username)}`} 
-                              className="text-sm" 
-                              style={{ padding: '0.2rem 0.5rem', backgroundColor: '#3a8fd4', color: 'white', borderRadius: '4px', textDecoration: 'none' }}
+                              className="app-action-btn profile flex-1 sm:flex-none"
                             >
                               View Profile
                             </Link>
