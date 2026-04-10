@@ -51,7 +51,7 @@ To run fronent tests in Docker:
 docker-compose run --rm frontend-test
 ```
 
-To run backend tests locally (development):
+To run backend(/server) or frontent(/client) tests locally (development):
 ```bash
 npm test   # in either /client or /server
 ```
