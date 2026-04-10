@@ -42,15 +42,14 @@ Frontend: http://localhost:5173
 Backend: http://localhost:3000
 
 ## Testing
-
-```bash
-npm test   # in either /client or /server
-```
-
 To run backend tests in Docker:
-
 ```bash
 docker-compose run --rm backend npm test
+```
+
+To run backend tests locally (development):
+```bash
+npm test   # in either /client or /server
 ```
 
 Figma Link: https://www.figma.com/design/gp5XfhU1UvCCuYPDm965kN/Web-UI?node-id=0-1&p=f&t=WdMoPw9Y1dr6hqgZ-0
