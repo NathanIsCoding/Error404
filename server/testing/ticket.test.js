@@ -71,5 +71,20 @@ describe('Ticket API', () => {
       expect(res.statusCode).toBe(404);
       expect(res.body.message).toBe('Ticket not found');
     });
+
+    it('returns 404 when deleting an already-deleted ticket', async () => {
+      await Ticket.create({
+        ticketId: 'ticket-gone',
+        userId: 'u-1',
+        title: 'Gone',
+        description: 'Already deleted',
+      });
+
+      await request(app).delete('/api/deleteTicket/ticket-gone');
+      const res = await request(app).delete('/api/deleteTicket/ticket-gone');
+
+      expect(res.statusCode).toBe(404);
+      expect(res.body.message).toBe('Ticket not found');
+    });
   });
 });

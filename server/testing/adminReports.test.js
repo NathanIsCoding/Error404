@@ -189,6 +189,26 @@ describe('GET /api/admin/reports', () => {
 
     });
 
+    describe('Comment counts', () => {
+
+        it('counts new comments within the selected range', async () => {
+            const uid = new mongoose.Types.ObjectId();
+            const aid = new mongoose.Types.ObjectId();
+            await ProfileComment.create([
+                { profileUserId: uid, authorId: aid, authorUsername: 'a', text: 'Recent', createdAt: daysAgo(5)  },
+                { profileUserId: uid, authorId: aid, authorUsername: 'a', text: 'Old',    createdAt: daysAgo(60) },
+            ]);
+
+            const res = await request(app)
+                .get('/?range=30d')
+                .set('Cookie', `session_token=${adminToken}`);
+
+            expect(res.body.comments.total).toBe(2);
+            expect(res.body.comments.new).toBe(1);
+        });
+
+    });
+
     describe('Ticket counts', () => {
 
         it('counts open and resolved tickets correctly', async () => {
@@ -245,6 +265,46 @@ describe('GET /api/admin/reports', () => {
 
             const res = await request(app)
                 .get('/')
+                .set('Cookie', `session_token=${adminToken}`);
+
+            expect(res.body.users.new).toBe(1);
+        });
+
+        it('treats an unknown range value the same as "all"', async () => {
+            await User.create([
+                { userId: 'u1', username: 'a', email: 'a@test.com', password: 'x', createdAt: daysAgo(400) },
+                { userId: 'u2', username: 'b', email: 'b@test.com', password: 'x', createdAt: daysAgo(5)   },
+            ]);
+
+            const res = await request(app)
+                .get('/?range=foo')
+                .set('Cookie', `session_token=${adminToken}`);
+
+            expect(res.statusCode).toBe(200);
+            expect(res.body.users.new).toBe(2);
+        });
+
+        it('filters correctly with range=7d', async () => {
+            await User.create([
+                { userId: 'u1', username: 'a', email: 'a@test.com', password: 'x', createdAt: daysAgo(3)  },
+                { userId: 'u2', username: 'b', email: 'b@test.com', password: 'x', createdAt: daysAgo(10) },
+            ]);
+
+            const res = await request(app)
+                .get('/?range=7d')
+                .set('Cookie', `session_token=${adminToken}`);
+
+            expect(res.body.users.new).toBe(1);
+        });
+
+        it('filters correctly with range=90d', async () => {
+            await User.create([
+                { userId: 'u1', username: 'a', email: 'a@test.com', password: 'x', createdAt: daysAgo(45)  },
+                { userId: 'u2', username: 'b', email: 'b@test.com', password: 'x', createdAt: daysAgo(120) },
+            ]);
+
+            const res = await request(app)
+                .get('/?range=90d')
                 .set('Cookie', `session_token=${adminToken}`);
 
             expect(res.body.users.new).toBe(1);
