@@ -28,6 +28,22 @@ npm run dev
 Frontend: http://localhost:5173  
 Backend: http://localhost:3000
 
+## Database Population
+
+The database is automatically populated with sample data on startup. A hardcoded admin account is always created with the following credentials:
+
+| Field    | Value       |
+|----------|-------------|
+| Username | `adminuser` |
+| Password | `pass123`   |
+
+To manually re-run the population scripts:
+
+```bash
+# In /server
+node scripts/populate-db.js
+```
+
 ## Testing
 
 ```bash
