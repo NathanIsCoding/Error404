@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import Navbar from '../../components/Navbar/Navbar'
 import CreateJobListing from '../../components/CreateJobListing/CreateJobListing'
 import './MyJobs.css'
@@ -9,6 +10,9 @@ function MyJobs({ user, setUser }) {
   const [error, setError] = useState('')
   const [jobBeingEdited, setJobBeingEdited] = useState(null)
   const [showCreateJobListing, setShowCreateJobListing] = useState(false)
+  const [expandedJobId, setExpandedJobId] = useState(null)
+  const [jobApplications, setJobApplications] = useState({})
+  const [loadingApps, setLoadingApps] = useState({})
 
   useEffect(() => {
     const fetchMyJobs = async () => {
@@ -28,6 +32,63 @@ function MyJobs({ user, setUser }) {
 
     fetchMyJobs()
   }, [])
+
+  const fetchApplicationsForJob = async (jobId) => {
+    if (jobApplications[jobId]) return; // already fetched
+    
+    setLoadingApps(prev => ({ ...prev, [jobId]: true }))
+    try {
+      const response = await fetch(`/api/applications/job/${jobId}`, { credentials: 'include' })
+      const json = await response.json()
+      if (json.success) {
+        setJobApplications(prev => ({ ...prev, [jobId]: json.data }))
+      } else {
+        console.error('Failed to fetch applications:', json.message)
+        setJobApplications(prev => ({ ...prev, [jobId]: [] }))
+      }
+    } catch (err) {
+      console.error('Failed to fetch applications:', err)
+      setJobApplications(prev => ({ ...prev, [jobId]: [] }))
+    } finally {
+      setLoadingApps(prev => ({ ...prev, [jobId]: false }))
+    }
+  }
+
+  const handleUpdateStatus = async (jobId, applicationId, status) => {
+    try {
+      const response = await fetch(`/api/applications/${applicationId}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ status })
+      })
+      const json = await response.json()
+      if (json.success) {
+        setJobApplications(prev => {
+          const appsForJob = prev[jobId] || []
+          return {
+            ...prev,
+            [jobId]: appsForJob.map(app => 
+              app._id === applicationId ? { ...app, status: json.data.status } : app
+            )
+          }
+        })
+      } else {
+        console.error('Failed to update status:', json.message)
+      }
+    } catch (err) {
+      console.error('Error updating status:', err)
+    }
+  }
+
+  const toggleApplications = (jobId) => {
+    if (expandedJobId === jobId) {
+      setExpandedJobId(null)
+    } else {
+      setExpandedJobId(jobId)
+      fetchApplicationsForJob(jobId)
+    }
+  }
 
   const applyEditedJob = (updatedJob) => {
     setJobs((prev) => prev.map((job) => (job.jobId === updatedJob.jobId ? updatedJob : job)))
@@ -74,18 +135,87 @@ function MyJobs({ user, setUser }) {
         )}
 
         {jobs.map((job) => (
-          <div key={job.jobId} className="my-job-card bg-primary">
-            <div className="job-info">
-              <p><strong>{job.title}</strong> at {job.company}</p>
-              <p>Location: {job.location} &middot; {job.jobType}</p>
-              <p>Salary: {new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD' }).format(job.salary)}</p>
+          <div key={job.jobId} className="my-job-card bg-primary block">
+            <div className="flex justify-between items-start">
+              <div className="job-info">
+                <p><strong>{job.title}</strong> at {job.company}</p>
+                <p>Location: {job.location} &middot; {job.jobType}</p>
+                <p>Salary: {new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD' }).format(job.salary)}</p>
+              </div>
+              <div className="job-actions flex flex-col items-end gap-2">
+                <span className="job-date">{new Date(job.createdAt).toLocaleDateString()}</span>
+                <div className="flex gap-2">
+                  <button onClick={() => toggleApplications(job.jobId)} className='edit-btn' style={{ backgroundColor: '#2da882' }}>
+                    {expandedJobId === job.jobId ? 'Hide Apps' : 'View Apps'}
+                  </button>
+                  <button onClick={() => setJobBeingEdited(job)} className='edit-btn'>
+                    Edit
+                  </button>
+                </div>
+              </div>
             </div>
-            <div className="job-actions">
-              <span className="job-date">{new Date(job.createdAt).toLocaleDateString()}</span>
-              <button onClick={() => setJobBeingEdited(job)} className='edit-btn'>
-                Edit
-              </button>
-            </div>
+
+            {expandedJobId === job.jobId && (
+              <div className="mt-4 p-4 border-t border-gray-600">
+                <h3 className="font-bold mb-2">Applications</h3>
+                {loadingApps[job.jobId] ? (
+                  <p>Loading applications...</p>
+                ) : !jobApplications[job.jobId] || jobApplications[job.jobId].length === 0 ? (
+                  <p>No applications yet.</p>
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    {jobApplications[job.jobId].map((app) => (
+                      <div key={app._id} className="p-3 bg-secondary rounded flex justify-between items-center">
+                        <div>
+                          <p className="font-bold">{app.userId?.username}</p>
+                          <p className="text-sm">{app.userId?.email}</p>
+                          <p className="text-sm mt-1">Status: <span className="font-semibold capitalize">{app.status || 'pending'}</span></p>
+                        </div>
+                        <div className="flex flex-col items-end gap-2">
+                          <p className="text-sm">Applied: {new Date(app.createdAt).toLocaleDateString()}</p>
+                          <div className="flex gap-2">
+                            {(!app.status || app.status === 'pending') && (
+                              <>
+                                <button 
+                                  onClick={() => handleUpdateStatus(job.jobId, app._id, 'accepted')}
+                                  style={{ padding: '0.2rem 0.5rem', backgroundColor: '#2da882', color: 'white', borderRadius: '4px', border: 'none', cursor: 'pointer' }}
+                                  className="text-sm"
+                                >
+                                  Accept
+                                </button>
+                                <button 
+                                  onClick={() => handleUpdateStatus(job.jobId, app._id, 'rejected')}
+                                  style={{ padding: '0.2rem 0.5rem', backgroundColor: '#cc2d4d', color: 'white', borderRadius: '4px', border: 'none', cursor: 'pointer' }}
+                                  className="text-sm"
+                                >
+                                  Reject
+                                </button>
+                              </>
+                            )}
+                            {(app.status === 'accepted' || app.status === 'rejected') && (
+                              <button 
+                                onClick={() => handleUpdateStatus(job.jobId, app._id, 'pending')}
+                                style={{ padding: '0.2rem 0.5rem', backgroundColor: '#888', color: 'white', borderRadius: '4px', border: 'none', cursor: 'pointer' }}
+                                className="text-sm"
+                              >
+                                Undo
+                              </button>
+                            )}
+                            <Link 
+                              to={`/user/${encodeURIComponent(app.userId?.username)}`} 
+                              className="text-sm" 
+                              style={{ padding: '0.2rem 0.5rem', backgroundColor: '#3a8fd4', color: 'white', borderRadius: '4px', textDecoration: 'none' }}
+                            >
+                              View Profile
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         ))}
       </div>

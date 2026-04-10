@@ -15,6 +15,11 @@ const jobApplicationSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Resume'
   },
+  status: {
+    type: String,
+    enum: ['pending', 'accepted', 'rejected'],
+    default: 'pending'
+  },
   createdAt: {
     type: Date,
     default: Date.now
