@@ -25,6 +25,14 @@ services:
       - mongo
     restart: unless-stopped
 
+  frontend-test:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+      target: test
+    profiles:
+      - test
+
   mongo:
     image: mongo:7
     volumes:

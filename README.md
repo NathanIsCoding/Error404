@@ -46,6 +46,10 @@ To run backend tests in Docker:
 ```bash
 docker-compose run --rm backend npm test
 ```
+To run fronent tests in Docker:
+```bash
+docker-compose run --rm frontend-test
+```
 
 To run backend tests locally (development):
 ```bash
