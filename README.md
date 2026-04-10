@@ -47,6 +47,12 @@ Backend: http://localhost:3000
 npm test   # in either /client or /server
 ```
 
+To run backend tests in Docker:
+
+```bash
+docker-compose run --rm backend npm test
+```
+
 Figma Link: https://www.figma.com/design/gp5XfhU1UvCCuYPDm965kN/Web-UI?node-id=0-1&p=f&t=WdMoPw9Y1dr6hqgZ-0
 
-Time zone: UTC−07:00
+
