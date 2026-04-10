@@ -74,9 +74,11 @@ function MyJobs({ user, setUser }) {
           }
         })
       } else {
+        alert('Failed to update status: ' + json.message)
         console.error('Failed to update status:', json.message)
       }
     } catch (err) {
+      alert('Error updating status: ' + err.message)
       console.error('Error updating status:', err)
     }
   }
@@ -174,17 +176,27 @@ function MyJobs({ user, setUser }) {
                         <div className="flex flex-col sm:items-end w-full sm:w-auto gap-2">
                           <p className="text-sm self-start sm:self-end">Applied: {new Date(app.createdAt).toLocaleDateString()}</p>
                           <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-start sm:justify-end">
-                            {(!app.status || app.status === 'pending') && (
+                            {(!app.status || app.status.toLowerCase() === 'pending') && (
                               <>
                                 <button 
-                                  onClick={() => handleUpdateStatus(job.jobId, app._id, 'accepted')}
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleUpdateStatus(job.jobId, app._id, 'accepted');
+                                  }}
                                   className="app-action-btn accept flex-1 sm:flex-none"
+                                  disabled={loadingApps[job.jobId]}
                                 >
                                   Accept
                                 </button>
                                 <button 
-                                  onClick={() => handleUpdateStatus(job.jobId, app._id, 'rejected')}
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleUpdateStatus(job.jobId, app._id, 'rejected');
+                                  }}
                                   className="app-action-btn reject flex-1 sm:flex-none"
+                                  disabled={loadingApps[job.jobId]}
                                 >
                                   Reject
                                 </button>
@@ -192,8 +204,13 @@ function MyJobs({ user, setUser }) {
                             )}
                             {(app.status === 'accepted' || app.status === 'rejected') && (
                               <button 
-                                onClick={() => handleUpdateStatus(job.jobId, app._id, 'pending')}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleUpdateStatus(job.jobId, app._id, 'pending');
+                                }}
                                 className="app-action-btn undo flex-1 sm:flex-none"
+                                disabled={loadingApps[job.jobId]}
                               >
                                 Undo
                               </button>

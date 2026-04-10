@@ -49,7 +49,7 @@ router.patch('/:applicationId/status', requireAuth, async (req, res) => {
       return sendError(res, 'Invalid status', 400);
     }
 
-    const application = await JobApplication.findById(applicationId).populate('jobId');
+    const application = await JobApplication.findById(applicationId);
     if (!application) {
       return sendError(res, 'Application not found', 404);
     }
@@ -120,8 +120,8 @@ router.delete('/:jobId', requireAuth, async (req, res) => {
   }
 });
 
-// GET /api/applications/:username - View all applications sent by :username
-router.get('/:username', requireAuth, async (req, res) => {
+// GET /api/applications/user/:username - View all applications sent by :username
+router.get('/user/:username', requireAuth, async (req, res) => {
   try {
     const { username } = req.params;
 

@@ -112,9 +112,9 @@ describe('Applications API', () => {
     });
   });
 
-  describe('GET /api/applications/:username', () => {
+  describe('GET /api/applications/user/:username', () => {
     it('returns 401 when unauthenticated', async () => {
-      const res = await request(app).get('/api/applications/someone');
+      const res = await request(app).get('/api/applications/user/someone');
       expect(res.statusCode).toBe(401);
     });
 
@@ -122,7 +122,7 @@ describe('Applications API', () => {
       const token = jwt.sign({ userId: new mongoose.Types.ObjectId().toString(), isAdmin: false }, 'test-secret');
 
       const res = await request(app)
-        .get('/api/applications/missing')
+        .get('/api/applications/user/missing')
         .set('Cookie', `session_token=${token}`);
 
       expect(res.statusCode).toBe(404);
@@ -156,7 +156,7 @@ describe('Applications API', () => {
       const token = jwt.sign({ userId: applicant._id.toString(), username: 'applicant', isAdmin: false }, 'test-secret');
 
       const res = await request(app)
-        .get('/api/applications/applicant')
+        .get('/api/applications/user/applicant')
         .set('Cookie', `session_token=${token}`);
 
       expect(res.statusCode).toBe(200);
