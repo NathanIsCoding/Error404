@@ -13,6 +13,19 @@ Then open http://localhost:4000
 
 > `-v` deletes volumes (clears any stale MongoDB lock files), `--remove-orphans` removes leftover containers from old setups.
 
+The database starts empty. To populate it with sample data, run this against the running backend container:
+
+```bash
+docker compose exec backend npm run populate:db
+```
+
+This connects to MongoDB and inserts sample users, jobs, ratings, and support data. A hardcoded admin account is always created:
+
+| Field    | Value       |
+|----------|-------------|
+| Username | `adminuser` |
+| Password | `pass123`   |
+
 ## Run locally (development)
 
 ```bash
@@ -27,22 +40,6 @@ npm run dev
 
 Frontend: http://localhost:5173  
 Backend: http://localhost:3000
-
-## Database Population
-
-The database is automatically populated with sample data on startup. A hardcoded admin account is always created with the following credentials:
-
-| Field    | Value       |
-|----------|-------------|
-| Username | `adminuser` |
-| Password | `pass123`   |
-
-To manually re-run the population scripts:
-
-```bash
-# In /server
-node scripts/populate-db.js
-```
 
 ## Testing
 
