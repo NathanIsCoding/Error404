@@ -2,7 +2,7 @@
 
 ## Run with Docker
 
-Fresh start / hard reset — run this any time things seem broken:
+Fresh start / hard reset - run this any time things seem broken:
 
 ```bash
 docker compose down -v --remove-orphans
