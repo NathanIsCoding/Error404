@@ -12,8 +12,10 @@
 }
 
 .create-account {
+  overflow: auto;
   width: clamp(400px, 80vw, 800px);
-  margin: 0 auto;
+  height: 32em;
+  margin: 1em auto;
   padding: 40px 20px 20px 20px;
   border: 1px solid #216138;
   border-radius: 10px;
