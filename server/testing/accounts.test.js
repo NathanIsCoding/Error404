@@ -203,13 +203,13 @@ describe('Accounts API', () => {
     });
 
     it('should return 409 when username differs only in case', async () => {
-      await request(app).post('/api/accounts').send({ username: 'caseuser', email: 'first@test.com', password: 'password123' });
-      const res = await request(app).post('/api/accounts').send({ username: 'CASEUSER', email: 'second@test.com', password: 'password123' });
+      await request(app).post('/api/accounts').send({ username: 'caseuser', email: 'first@test.com', password: 'Password123!' });
+      const res = await request(app).post('/api/accounts').send({ username: 'CASEUSER', email: 'second@test.com', password: 'Password123!' });
       expect(res.statusCode).toBe(409);
     });
 
     it('should return 400 when username is whitespace only', async () => {
-      const res = await request(app).post('/api/accounts').send({ username: '   ', email: 'ws@test.com', password: 'password123' });
+      const res = await request(app).post('/api/accounts').send({ username: '   ', email: 'ws@test.com', password: 'Password123!' });
       expect(res.statusCode).toBe(400);
     });
   });
