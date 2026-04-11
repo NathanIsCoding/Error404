@@ -32,6 +32,9 @@ router.post('/api/jobs', requireAuth, async (req, res) => {
         if (!title || !company || !jobType || !industry || salary === undefined || !location || !description) {
             return res.status(400).json({ error: 'Missing required fields' });
         }
+        if (title.length < 3 || company.length < 2 || description.length < 10) {
+            return res.status(400).json({ error: 'Fields are too short (title min 3, company min 2, description min 10)' });
+        }
 
         const industryValue = String(industry).trim();
 

@@ -91,6 +91,11 @@ router.post('/', upload.single('profilePhoto'), async (req, res) => {
     return res.status(400).json({ error: 'Username and email are required to create an account' });
   }
 
+  const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$&*.,?+-]).{8,}$/;
+  if (!password || !passwordRegex.test(password)) {
+    return res.status(400).json({ error: 'Password must be at least 8 characters long, contain at least one capital letter, and one special symbol.' });
+  }
+
   const hashedPassword = await bcrypt.hash(password, 12);
 
   const accountToStore = {
@@ -226,6 +231,10 @@ router.put('/profile', requireAuth, upload.single('profilePhoto'), async (req, r
     if (newPassword) {
       if (newPassword !== confirmPassword) {
         return res.status(400).json({ error: 'New passwords do not match' });
+      }
+      const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$&*.,?+-]).{8,}$/;
+      if (!passwordRegex.test(newPassword)) {
+        return res.status(400).json({ error: 'Password must be at least 8 characters long, contain at least one capital letter, and one special symbol.' });
       }
       user.password = await bcrypt.hash(newPassword, 12);
     }

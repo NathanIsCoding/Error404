@@ -25,9 +25,17 @@ const CreateAccount = ({ onClose, onSuccess }) => {
     if (e) e.preventDefault();
     if (password !== verifyPassword) {
       setPasswordInvalid(true);
+      setResponseMessage('Passwords do not match.');
+      return;
+    }
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$&*.,?+-]).{8,}$/;
+    if (!passwordRegex.test(password)) {
+      setPasswordInvalid(true);
+      setResponseMessage('Password must be at least 8 characters long, contain at least one capital letter, and one special symbol.');
       return;
     }
     setPasswordInvalid(false);
+    setResponseMessage('');
     // server will stamp the creation time in UTC−07:00, so we don't
     // send our own timestamp here; keep the payload as small as possible
     const formData = new FormData();

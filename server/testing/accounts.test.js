@@ -174,42 +174,42 @@ describe('Accounts API', () => {
     });
 
     it('should create a new account with valid fields', async () => {
-      const res = await request(app).post('/api/accounts').send({ username: 'newuser', email: 'new@test.com', password: 'password123' });
+      const res = await request(app).post('/api/accounts').send({ username: 'newuser', email: 'new@test.com', password: 'Password123!' });
 
       expect(res.statusCode).toBe(200);
       expect(res.body.account.username).toBe('newuser');
     });
 
     it('should return 409 if username is already taken', async () => {
-      await request(app).post('/api/accounts').send({ username: 'dupuser', email: 'first@test.com', password: 'password123' });
+      await request(app).post('/api/accounts').send({ username: 'dupuser', email: 'first@test.com', password: 'Password123!' });
 
-      const res = await request(app).post('/api/accounts').send({ username: 'dupuser', email: 'second@test.com', password: 'password123' });
+      const res = await request(app).post('/api/accounts').send({ username: 'dupuser', email: 'second@test.com', password: 'Password123!' });
 
       expect(res.statusCode).toBe(409);
     });
 
     it('should return 409 if email is already registered', async () => {
-      await request(app).post('/api/accounts').send({ username: 'user1', email: 'dup@test.com', password: 'password123' });
+      await request(app).post('/api/accounts').send({ username: 'user1', email: 'dup@test.com', password: 'Password123!' });
 
-      const res = await request(app).post('/api/accounts').send({ username: 'user2', email: 'dup@test.com', password: 'password123' });
+      const res = await request(app).post('/api/accounts').send({ username: 'user2', email: 'dup@test.com', password: 'Password123!' });
 
       expect(res.statusCode).toBe(409);
     });
 
     it('should return 400 if username or email is missing', async () => {
-      const res = await request(app).post('/api/accounts').send({ password: 'password123' });
+      const res = await request(app).post('/api/accounts').send({ password: 'Password123!' });
 
       expect(res.statusCode).toBe(400);
     });
 
     it('should return 409 when username differs only in case', async () => {
-      await request(app).post('/api/accounts').send({ username: 'caseuser', email: 'first@test.com', password: 'password123' });
-      const res = await request(app).post('/api/accounts').send({ username: 'CASEUSER', email: 'second@test.com', password: 'password123' });
+      await request(app).post('/api/accounts').send({ username: 'caseuser', email: 'first@test.com', password: 'Password123!' });
+      const res = await request(app).post('/api/accounts').send({ username: 'CASEUSER', email: 'second@test.com', password: 'Password123!' });
       expect(res.statusCode).toBe(409);
     });
 
     it('should return 400 when username is whitespace only', async () => {
-      const res = await request(app).post('/api/accounts').send({ username: '   ', email: 'ws@test.com', password: 'password123' });
+      const res = await request(app).post('/api/accounts').send({ username: '   ', email: 'ws@test.com', password: 'Password123!' });
       expect(res.statusCode).toBe(400);
     });
   });
