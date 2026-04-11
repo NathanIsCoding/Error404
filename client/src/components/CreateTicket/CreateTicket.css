@@ -1,0 +1,66 @@
+/* CreateTicket.css */
+.create-ticket-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.create-ticket {
+  background-color: #1e1e1e !important;
+  padding: 2rem !important;
+  border-radius: 0.5rem !important;
+  width: 90% !important;
+  max-width: 32rem !important;
+  position: relative !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+}
+
+.create-ticket .close-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background-color: #2a2a2a;
+  border-radius: 9999px;
+  padding: 0.25rem;
+  cursor: pointer;
+  border: none;
+}
+
+.create-ticket input, .create-ticket textarea {
+  width: 100% !important;
+  padding: 0.5rem !important;
+  border-radius: 0.25rem !important;
+  background-color: #2f2f2f !important;
+  color: white !important;
+  border: 1px solid #4b5563 !important;
+  margin-bottom: 1rem;
+  box-sizing: border-box;
+}
+
+.create-ticket button[type="submit"] {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 0.25rem;
+  background-color: #2563eb;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+}
+
+.create-ticket button[type="submit"]:disabled {
+  background-color: #4b5563;
+  cursor: not-allowed;
+}
+
+.create-ticket label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #d1d5db;
+}

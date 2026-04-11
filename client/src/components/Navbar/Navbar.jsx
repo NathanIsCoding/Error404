@@ -1,13 +1,15 @@
 import {useState, useEffect} from 'react';
 import '../Navbar/Navbar.css'
 import { useNavigate, useLocation } from 'react-router-dom';
+import CreateTicket from '../CreateTicket/CreateTicket.jsx';
 
-export default function Navbar({user, setUser, onSignIn}) {
+export default function Navbar({user, setUser, onSignIn, onCreateTicket}) {
 
   const navigate = useNavigate();
   const location = useLocation();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [localShowCreateTicket, setLocalShowCreateTicket] = useState(false);
 
   useEffect(() => {
     setDropdownOpen(false);
@@ -91,6 +93,10 @@ export default function Navbar({user, setUser, onSignIn}) {
                     <span className='material-symbols-outlined text-[18px]'>assignment</span>
                     My Applications
                   </button>
+                  <button className='dropdown-button flex items-center gap-2 whitespace-nowrap' onClick={(e) => { e.preventDefault(); if (onCreateTicket) onCreateTicket(); else setLocalShowCreateTicket(true); }}>
+                    <span className='material-symbols-outlined text-[18px]'>support_agent</span>
+                    Contact Support
+                  </button>
                   <button className='dropdown-button !rounded-b-lg flex items-center gap-2' onClick={handleSignOut}>
                     <span className='material-symbols-outlined text-[18px]'>logout</span>
                     Sign Out
@@ -141,6 +147,10 @@ export default function Navbar({user, setUser, onSignIn}) {
                       <span className='material-symbols-outlined'>assignment</span>
                       My Applications
                     </button>
+                    <button className='!bg-[#2a2a2a] text-left w-full flex items-center gap-2' onClick={() => { setSheetOpen(false); if(onCreateTicket) onCreateTicket(); else setLocalShowCreateTicket(true); }}>
+                      <span className='material-symbols-outlined'>support_agent</span>
+                      Contact Support
+                    </button>
                     <button className='!bg-red-800 text-left w-full flex items-center gap-2 mt-2' onClick={handleSignOut}>
                       <span className='material-symbols-outlined'>logout</span>
                       Sign Out
@@ -152,6 +162,10 @@ export default function Navbar({user, setUser, onSignIn}) {
           </>
         )}
       </div>
+
+      {localShowCreateTicket && (
+        <CreateTicket onClose={() => setLocalShowCreateTicket(false)} />
+      )}
     </nav>
   );
 }

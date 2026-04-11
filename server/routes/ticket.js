@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 const Ticket = require('../models/SupportTicket');
+const { requireAuth } = require('../middleware/auth');
+const crypto = require('crypto');
 
 router.get('/api/loadTickets', async (req, res) => {
 	try {
@@ -10,6 +12,35 @@ router.get('/api/loadTickets', async (req, res) => {
 		console.error('Error fetching tickets:', error);
 		res.status(500).json({ error: 'Failed to fetch tickets' });
 	}
+});
+
+router.post('/api/createTicket', requireAuth, async (req, res) => {
+    try {
+        const { title, description } = req.body;
+        if (!title) {
+            return res.status(400).json({ error: 'Title is required' });
+        }
+
+        let ticketId = `TKT-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
+        let existing = await Ticket.findOne({ ticketId });
+        while (existing) {
+            ticketId = `TKT-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
+            existing = await Ticket.findOne({ ticketId });
+        }
+
+        const newTicket = await Ticket.create({
+            ticketId,
+            userId: req.user.userId,
+            title,
+            description: description || '',
+            resolved: false
+        });
+
+        res.status(201).json(newTicket);
+    } catch (error) {
+        console.error('Error creating ticket:', error);
+        res.status(500).json({ error: 'Failed to create ticket' });
+    }
 });
 
 router.delete('/api/deleteTicket/:ticketId', async (req, res) => {

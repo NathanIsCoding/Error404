@@ -7,6 +7,18 @@ const db = require('./db');
 
 const app = express();
 app.use(express.json());
+// Mock requireAuth middleware
+jest.mock('../middleware/auth', () => ({
+  requireAuth: (req, res, next) => {
+    if (req.headers.authorization === 'Bearer valid') {
+      req.user = { userId: 'u-auth-1' };
+      next();
+    } else {
+      res.status(401).json({ error: 'Not authenticated' });
+    }
+  }
+}));
+
 app.use(ticketRouter);
 
 beforeAll(async () => await db.connect());
@@ -44,6 +56,49 @@ describe('Ticket API', () => {
 
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveLength(2);
+    });
+  });
+
+  describe('POST /api/createTicket', () => {
+    it('creates a new support ticket successfully', async () => {
+      const res = await request(app)
+        .post('/api/createTicket')
+        .set('Authorization', 'Bearer valid')
+        .send({
+          title: 'My new ticket',
+          description: 'Something is broken'
+        });
+
+      expect(res.statusCode).toBe(201);
+      expect(res.body).toHaveProperty('ticketId');
+      expect(res.body.title).toBe('My new ticket');
+      expect(res.body.description).toBe('Something is broken');
+      expect(res.body.resolved).toBe(false);
+
+      const savedTicket = await Ticket.findOne({ ticketId: res.body.ticketId });
+      expect(savedTicket).toBeTruthy();
+      expect(savedTicket.userId).toBe('u-auth-1');
+    });
+
+    it('returns 400 if title is missing', async () => {
+      const res = await request(app)
+        .post('/api/createTicket')
+        .set('Authorization', 'Bearer valid')
+        .send({
+           description: 'Only description'
+        });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.body).toHaveProperty('error', 'Title is required');
+    });
+
+    it('returns 401 if unauthenticated', async () => {
+      const res = await request(app)
+        .post('/api/createTicket')
+        .send({ title: 'Auth test' });
+
+      expect(res.statusCode).toBe(401);
+      expect(res.body).toHaveProperty('error', 'Not authenticated');
     });
   });
 

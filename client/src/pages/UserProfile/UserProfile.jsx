@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import Navbar from '../../components/Navbar/Navbar';
 import Paginator from '../../components/Paginator/Paginator';
 import EditProfile from '../../components/EditProfile/EditProfile';
+import CreateTicket from '../../components/CreateTicket/CreateTicket';
 import './UserProfile.css';
 
 const COMMENTS_PER_PAGE = 5;
@@ -23,6 +24,7 @@ export default function UserProfile({ user, setUser }) {
   const [commentError, setCommentError] = useState('');
   const [commentSubmitting, setCommentSubmitting] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
+  const [showReport, setShowReport] = useState(false);
 
   const isOwner = user && profile && user.username.toLowerCase() === profile.username.toLowerCase();
 
@@ -166,6 +168,31 @@ export default function UserProfile({ user, setUser }) {
           <div className="profile-joined">
             Joined {new Date(profile.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
           </div>
+          
+          {user && !isOwner && (
+            <button
+              className="report-btn"
+              onClick={() => setShowReport(true)}
+              style={{
+                position: 'absolute',
+                top: '1rem',
+                right: '1rem',
+                background: 'none',
+                border: 'none',
+                color: '#ef4444',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.25rem',
+                fontSize: '0.875rem'
+              }}
+              title="Report User"
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: '1.25rem' }}>flag</span>
+              Report User
+            </button>
+          )}
+
           <div className="profile-rating">
             <StarDisplay value={profile.rating ?? 0} size="22px" />
             <span className="profile-rating-value">
@@ -189,6 +216,14 @@ export default function UserProfile({ user, setUser }) {
                 Edit Profile
               </button>
             </div>
+          )}
+
+          {showReport && (
+            <CreateTicket
+              onClose={() => setShowReport(false)}
+              initialTitle={`[Report User] ${profile.username}`}
+              initialDescription={`Reported User ID: ${profile.userId}\n\nPlease specify why you are reporting this user:`}
+            />
           )}
 
           {showEditProfile && (

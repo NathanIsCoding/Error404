@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import INDUSTRY_COLORS from '../../enums/Industries';
 import JOB_TYPE_COLORS from '../../enums/JobTypes';
+import CreateTicket from '../CreateTicket/CreateTicket';
 
 function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit }) {
 
@@ -11,6 +12,7 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
     const [applyError, setApplyError] = useState('');
     const [imageError, setImageError] = useState(false);
     const [posterRating, setPosterRating] = useState(null);
+    const [showReport, setShowReport] = useState(false);
 
     const creatorPhotoUrl = job?.createdByUserId
         ? `/api/accounts/${encodeURIComponent(job.createdByUserId)}/photo`
@@ -174,6 +176,15 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
 
                 <div className='flex flex-row md:flex-col justify-end items-center md:items-end gap-1 mt-2 md:mt-0'>
                     <div className='flex gap-1'>
+                        {user && (
+                            <button 
+                                className='applyButton !bg-gray-700 flex justify-center items-center' 
+                                onClick={() => setShowReport(true)}
+                                title="Report Job"
+                            >
+                                <span className="material-symbols-outlined text-red-500">flag</span>
+                            </button>
+                        )}
                         {(user?.isAdmin || user?.userId === job.createdByUserId) && (
                             <button className='applyButton !bg-blue-500 flex justify-center items-center' onClick={handleEdit}>
                                 <span className="material-symbols-outlined">edit</span>
@@ -204,6 +215,13 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
                 </div>
             )}
 
+            {showReport && (
+                <CreateTicket
+                    onClose={() => setShowReport(false)}
+                    initialTitle={`[Report Job] ${job.title} at ${job.company}`}
+                    initialDescription={`Reported Job ID: ${job._id}\n\nPlease specify why you are reporting this listing:`}
+                />
+            )}
 
         </div>
     );
