@@ -1,13 +1,61 @@
 # Error404
 
-Run Project:
-- npm run dev (in both directories)
+## Run with Docker
 
-Testing:
-- npm test (in both directories)
+Fresh start / hard reset - run this any time things seem broken:
 
-backend is on localhost:3000
+```bash
+docker compose down -v --remove-orphans
+docker compose up --build
+```
+
+Then open http://localhost:4000
+
+> `-v` deletes volumes (clears any stale MongoDB lock files), `--remove-orphans` removes leftover containers from old setups.
+
+The database starts empty. To populate it with sample data, run this against the running backend container:
+
+```bash
+docker compose exec backend npm run populate:db
+```
+
+This connects to MongoDB and inserts sample users, jobs, ratings, and support data. A hardcoded admin account is always created:
+
+| Field    | Value       |
+|----------|-------------|
+| Username | `adminuser` |
+| Password | `pass123`   |
+
+## Run locally (development)
+
+```bash
+# In /server
+npm install
+npm run dev
+
+# In /client
+npm install
+npm run dev
+```
+
+Frontend: http://localhost:5173  
+Backend: http://localhost:3000
+
+## Testing
+To run backend tests in Docker:
+```bash
+docker-compose run --rm backend npm test
+```
+To run fronent tests in Docker:
+```bash
+docker-compose run --rm frontend-test
+```
+
+To run backend (/server) or frontent (/client) tests locally (development):
+```bash
+npm test   # in either /client or /server
+```
 
 Figma Link: https://www.figma.com/design/gp5XfhU1UvCCuYPDm965kN/Web-UI?node-id=0-1&p=f&t=WdMoPw9Y1dr6hqgZ-0
 
-Time zone: UTC−07:00
+
