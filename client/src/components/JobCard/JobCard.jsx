@@ -174,7 +174,7 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
 
                 <div className='flex flex-row md:flex-col justify-end items-center md:items-end gap-1 mt-2 md:mt-0'>
                     <div className='flex gap-1'>
-                        {user?.isAdmin && (
+                        {(user?.isAdmin || user?.userId === job.createdByUserId) && (
                             <button className='applyButton !bg-blue-500 flex justify-center items-center' onClick={handleEdit}>
                                 <span className="material-symbols-outlined">edit</span>
                             </button>
