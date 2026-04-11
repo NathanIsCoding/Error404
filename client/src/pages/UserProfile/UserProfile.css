@@ -5,6 +5,7 @@
 }
 
 .profile-card {
+    position: relative;
     max-width: 480px;
     margin: 0 auto;
     background-color: #1a1a1a;
