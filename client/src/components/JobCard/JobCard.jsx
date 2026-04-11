@@ -185,7 +185,7 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
                                 <span className="material-symbols-outlined text-red-500">flag</span>
                             </button>
                         )}
-                        {user?.isAdmin && (
+                        {(user?.isAdmin || user?.userId === job.createdByUserId) && (
                             <button className='applyButton !bg-blue-500 flex justify-center items-center' onClick={handleEdit}>
                                 <span className="material-symbols-outlined">edit</span>
                             </button>
