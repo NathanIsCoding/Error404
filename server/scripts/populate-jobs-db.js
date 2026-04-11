@@ -61,6 +61,12 @@ function generateJobDescription(title) {
   return getRandomElement(descriptions);
 }
 
+function randomPastDate(daysBack = 365) {
+  const now = new Date();
+  const offsetMs = Math.floor(Math.random() * daysBack) * 24 * 60 * 60 * 1000;
+  return new Date(now.getTime() - offsetMs);
+}
+
 function generateJobs(count, users) {
   const jobs = [];
   for (let i = 0; i < count; i++) {
@@ -74,6 +80,7 @@ function generateJobs(count, users) {
       salary: getRandomSalary(getRandomElement(jobTypes)),
       location: getRandomElement(locations),
       description: generateJobDescription(getRandomElement(jobTitles)),
+      createdAt: randomPastDate(),
       isActive: Math.random() > 0.1,
       createdByUserId: user._id.toString(),
       createdByUsername: user.username,

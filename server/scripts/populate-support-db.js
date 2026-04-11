@@ -44,7 +44,7 @@ function getRandomElement(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-function randomPastDate(daysBack = 90) {
+function randomPastDate(daysBack = 365) {
   const now = new Date();
   const offsetMs = Math.floor(Math.random() * daysBack) * 24 * 60 * 60 * 1000;
   return new Date(now.getTime() - offsetMs);

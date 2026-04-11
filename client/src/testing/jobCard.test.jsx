@@ -12,6 +12,7 @@ const mockJob = {
     company: 'Acme Corp',
     salary: 80000,
     description: 'Build cool things.',
+    createdByUserId: 'owner-1',
 };
 
 beforeEach(() => {

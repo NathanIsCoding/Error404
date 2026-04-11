@@ -91,7 +91,7 @@ describe('Jobs API', () => {
     it('should delete specified job from id', async () => {
         // Seed Job
         await Job.create(job);
-        
+
         const res = await request(app).delete('/api/deleteJob/'+job.jobId).set('Cookie', `session_token=${adminToken}`);
         expect(res.statusCode).toBe(200);
 
@@ -103,6 +103,18 @@ describe('Jobs API', () => {
     it('should return 404 if job does not exist', async () => {
         const res = await request(app).delete('/api/deleteJob/'+job.jobId).set('Cookie', `session_token=${adminToken}`);
         expect(res.statusCode).toBe(404);
+    });
+
+    it('should return 401 if not authenticated', async () => {
+        await Job.create(job);
+        const res = await request(app).delete('/api/deleteJob/' + job.jobId);
+        expect(res.statusCode).toBe(401);
+    });
+
+    it('should return 403 for non-admin users', async () => {
+        await Job.create(job);
+        const res = await request(app).delete('/api/deleteJob/' + job.jobId).set('Cookie', `session_token=${testToken}`);
+        expect(res.statusCode).toBe(403);
     });
 
   });
@@ -143,6 +155,16 @@ describe('Jobs API', () => {
 
     it('should return 400 if required fields are missing', async () => {
         const res = await request(app).post('/api/jobs').set('Cookie', `session_token=${testToken}`).send({ title: 'Incomplete Job' });
+        expect(res.statusCode).toBe(400);
+    });
+
+    it('should return 400 if salary is zero', async () => {
+        const res = await request(app).post('/api/jobs').set('Cookie', `session_token=${testToken}`).send({ ...job, salary: 0 });
+        expect(res.statusCode).toBe(400);
+    });
+
+    it('should return 400 if salary is negative', async () => {
+        const res = await request(app).post('/api/jobs').set('Cookie', `session_token=${testToken}`).send({ ...job, salary: -5000 });
         expect(res.statusCode).toBe(400);
     });
 
@@ -257,6 +279,43 @@ describe('Jobs API', () => {
         expect(res.body).toHaveLength(1);
     });
 
+    it('should match jobs case-insensitively by title', async () => {
+        await Job.create(job);
+
+        const res = await request(app).get('/api/search').query({ q: 'software engineer' });
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toHaveLength(1);
+    });
+
+    it('should filter jobs by industry', async () => {
+        await Job.create([
+            job,
+            {
+                jobId: 'job-search-3',
+                title: 'Accountant',
+                company: 'Finance Co',
+                jobType: 'full-time',
+                industry: 'Finance',
+                salary: 70000,
+                location: 'Toronto',
+                description: 'Crunch numbers.',
+            },
+        ]);
+
+        const res = await request(app).get('/api/search').query({ industry: 'Engineering' });
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toHaveLength(1);
+        expect(res.body[0].industry).toBe('Engineering');
+    });
+
+    it('should match jobs by company name', async () => {
+        await Job.create(job);
+
+        const res = await request(app).get('/api/search').query({ q: 'Acme' });
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toHaveLength(1);
+    });
+
     it('should apply multiple filters together', async () => {
         await Job.create([
             job,
@@ -314,6 +373,25 @@ describe('Jobs API', () => {
     it('should return 404 if the job does not exist', async () => {
         const res = await request(app).put('/api/updateJob/nonexistent-id').set('Cookie', `session_token=${testToken}`).send({ title: 'Ghost Job' });
         expect(res.statusCode).toBe(404);
+    });
+
+    it('should return 401 if not authenticated', async () => {
+        await Job.create(job);
+        const res = await request(app).put('/api/updateJob/' + job.jobId).send({ title: 'Ghost Job' });
+        expect(res.statusCode).toBe(401);
+    });
+
+    it('should return 403 if the user is not the job owner', async () => {
+        await Job.create({ ...job, createdByUserId: 'user-2' });
+        const res = await request(app).put('/api/updateJob/' + job.jobId).set('Cookie', `session_token=${testToken}`).send({ title: 'Stolen Edit' });
+        expect(res.statusCode).toBe(403);
+    });
+
+    it('should allow an admin to update a job they did not create', async () => {
+        await Job.create({ ...job, createdByUserId: 'user-2' });
+        const res = await request(app).put('/api/updateJob/' + job.jobId).set('Cookie', `session_token=${adminToken}`).send({ title: 'Admin Override' });
+        expect(res.statusCode).toBe(200);
+        expect(res.body.title).toBe('Admin Override');
     });
 
   });

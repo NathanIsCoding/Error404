@@ -7,6 +7,7 @@ import AdminJobCard from '../../components/AdminJobCard/AdminJobCard.jsx'
 import AdminListPanel from '../../components/AdminListPanel/AdminListPanel.jsx'
 import AdminSupportTicketPanel from '../../components/AdminSupportTicketPanel/AdminSupportTicketPanel.jsx'
 import CreateJobListing from '../../components/CreateJobListing/CreateJobListing.jsx'
+import ReportsPanel from '../../components/ReportsPanel/ReportsPanel.jsx'
 
 function Admin({ user, setUser }) { 
 
@@ -239,7 +240,7 @@ function Admin({ user, setUser }) {
                     </div>
 
                    <AdminListPanel
-                        title={activeTab === 'users' ? 'User List' : 'Job List'}
+                        title={activeTab === 'users' ? 'User List' : activeTab === 'jobs' ? 'Job List' : 'Reports'}
                         items={activeTab === 'users' ? allUsers : allJobs}
                         CardComponent={activeTab === 'users' ? UserCard : AdminJobCard}
                         filterFn={activeTab === 'users' ? userFilterFn : jobFilterFn}
@@ -250,6 +251,7 @@ function Admin({ user, setUser }) {
                         onCreateJob={() => setShowCreateJobListing(true)}
                         onToggle={activeTab === 'users' ? handleToggleUser : undefined}
                         onToggleAdmin={activeTab === 'users' ? handleToggleAdmin : undefined}
+                        reportsContent={<ReportsPanel />}
                     />
 
                 </div>

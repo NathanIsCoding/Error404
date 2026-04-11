@@ -70,7 +70,7 @@ async function populateDB() {
           authorUsername: reviewer.username,
           text: getRandomElement(commentTexts),
           rating: getRandomInt(1, 5),
-          createdAt: new Date(Date.now() - getRandomInt(0, 90) * 24 * 60 * 60 * 1000),
+          createdAt: new Date(Date.now() - getRandomInt(0, 365) * 24 * 60 * 60 * 1000),
         });
       }
     }

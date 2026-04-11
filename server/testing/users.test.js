@@ -44,6 +44,15 @@ describe('Users API', () => {
       expect(res.body.error).toBe('Admin access required');
     });
 
+    it('returns empty array when no users exist', async () => {
+      const res = await request(app)
+        .get('/api/loadUsers')
+        .set('Cookie', `session_token=${adminToken}`);
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toEqual([]);
+    });
+
     it('returns users for admin without passwords', async () => {
       await User.create([
         {
