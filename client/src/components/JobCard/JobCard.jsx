@@ -179,7 +179,7 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
                                 <span className="material-symbols-outlined">edit</span>
                             </button>
                         )}
-                        {applied ? (
+                        {user?.userId !== job.createdByUserId && (applied ? (
                             <button className='applyButton !bg-red-600 flex justify-center items-center' onClick={handleApply}>
                                 <span className="material-symbols-outlined">close</span>
                             </button>
@@ -187,7 +187,7 @@ function JobCard({ job, user, isApplied = false, onApplied, onRetracted, onEdit 
                             <button className='applyButton !bg-green-600 flex justify-center items-center !px-0' onClick={handleApply}>
                                 <span className="material-symbols-outlined">add</span>
                             </button>
-                        )}
+                        ))}
                     </div>
                     <button onClick={clicked} className='expandButton flex justify-center items-center !bg-black'>
                         <span className="material-symbols-outlined">{isExpanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}</span>

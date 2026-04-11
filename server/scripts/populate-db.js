@@ -4,6 +4,7 @@ const path = require('path');
 const scripts = [
   'populate-users-db.js',
   'populate-jobs-db.js',
+  'populate-applications-db.js',
   'populate-support-db.js',
   'populate-ratings-db.js',
 ];

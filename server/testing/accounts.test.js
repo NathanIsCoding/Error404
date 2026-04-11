@@ -145,6 +145,13 @@ describe('Accounts API', () => {
       expect(res.statusCode).toBe(404);
     });
 
+    it('should login successfully when username case differs', async () => {
+      const hashedPassword = await bcrypt.hash(user.password, 12);
+      await User.create({ ...user, password: hashedPassword });
+      const res = await request(app).post('/api/accounts/login').send({ username: user.username.toUpperCase(), password: user.password });
+      expect(res.statusCode).toBe(200);
+    });
+
     it('should set a session_token cookie on successful login', async () => {
       const hashedPassword = await bcrypt.hash(user.password, 12);
       await User.create({ ...user, password: hashedPassword });
@@ -193,6 +200,67 @@ describe('Accounts API', () => {
       const res = await request(app).post('/api/accounts').send({ password: 'Password123!' });
 
       expect(res.statusCode).toBe(400);
+    });
+
+    it('should return 409 when username differs only in case', async () => {
+      await request(app).post('/api/accounts').send({ username: 'caseuser', email: 'first@test.com', password: 'password123' });
+      const res = await request(app).post('/api/accounts').send({ username: 'CASEUSER', email: 'second@test.com', password: 'password123' });
+      expect(res.statusCode).toBe(409);
+    });
+
+    it('should return 400 when username is whitespace only', async () => {
+      const res = await request(app).post('/api/accounts').send({ username: '   ', email: 'ws@test.com', password: 'password123' });
+      expect(res.statusCode).toBe(400);
+    });
+  });
+
+  describe('PUT /api/accounts/profile', () => {
+    let profileUser, profileToken;
+
+    beforeEach(async () => {
+      const hashed = await bcrypt.hash('correct-password', 12);
+      profileUser = await User.create({ userId: 'user-edit-1', username: 'edituser', email: 'edit@test.com', password: hashed });
+      profileToken = jwt.sign({ userId: profileUser._id, username: 'edituser', isAdmin: false }, 'test-secret');
+    });
+
+    it('should return 401 if not authenticated', async () => {
+      const res = await request(app).put('/api/accounts/profile').send({ currentPassword: 'correct-password', username: 'newname' });
+      expect(res.statusCode).toBe(401);
+    });
+
+    it('should return 400 when currentPassword is missing', async () => {
+      const res = await request(app).put('/api/accounts/profile').set('Cookie', `session_token=${profileToken}`).send({ username: 'newname' });
+      expect(res.statusCode).toBe(400);
+    });
+
+    it('should return 401 when currentPassword is wrong', async () => {
+      const res = await request(app).put('/api/accounts/profile').set('Cookie', `session_token=${profileToken}`).send({ currentPassword: 'wrong-password', username: 'newname' });
+      expect(res.statusCode).toBe(401);
+    });
+
+    it('should return 409 when the new username is already taken', async () => {
+      const hashed = await bcrypt.hash('pw', 12);
+      await User.create({ userId: 'user-edit-2', username: 'takenname', email: 'taken@test.com', password: hashed });
+      const res = await request(app).put('/api/accounts/profile').set('Cookie', `session_token=${profileToken}`).send({ currentPassword: 'correct-password', username: 'takenname' });
+      expect(res.statusCode).toBe(409);
+    });
+
+    it('should return 409 when the new email is already registered', async () => {
+      const hashed = await bcrypt.hash('pw', 12);
+      await User.create({ userId: 'user-edit-3', username: 'otheredituser', email: 'taken@test.com', password: hashed });
+      const res = await request(app).put('/api/accounts/profile').set('Cookie', `session_token=${profileToken}`).send({ currentPassword: 'correct-password', email: 'taken@test.com' });
+      expect(res.statusCode).toBe(409);
+    });
+
+    it('should return 400 when new passwords do not match', async () => {
+      const res = await request(app).put('/api/accounts/profile').set('Cookie', `session_token=${profileToken}`).send({ currentPassword: 'correct-password', newPassword: 'abc123', confirmPassword: 'xyz789' });
+      expect(res.statusCode).toBe(400);
+    });
+
+    it('should successfully update the username', async () => {
+      const res = await request(app).put('/api/accounts/profile').set('Cookie', `session_token=${profileToken}`).send({ currentPassword: 'correct-password', username: 'updatedname' });
+      expect(res.statusCode).toBe(200);
+      expect(res.body.user.username).toBe('updatedname');
     });
   });
 
@@ -421,6 +489,45 @@ describe('Accounts API', () => {
       expect(res.statusCode).toBe(400);
     });
 
+    it('should return 400 when rating is below 1', async () => {
+      const res = await request(app).post('/api/accounts/profile/profileuser/comments').set('Cookie', `session_token=${commenterToken}`).send({ text: 'Zero rating', rating: 0 });
+      expect(res.statusCode).toBe(400);
+    });
+
+    it('should accept rating of 1 (lower boundary)', async () => {
+      const res = await request(app).post('/api/accounts/profile/profileuser/comments').set('Cookie', `session_token=${commenterToken}`).send({ text: 'Minimum rating', rating: 1 });
+      expect(res.statusCode).toBe(201);
+      expect(res.body.rating).toBe(1);
+    });
+
+    it('should accept rating of 5 (upper boundary)', async () => {
+      const res = await request(app).post('/api/accounts/profile/profileuser/comments').set('Cookie', `session_token=${commenterToken}`).send({ text: 'Maximum rating', rating: 5 });
+      expect(res.statusCode).toBe(201);
+      expect(res.body.rating).toBe(5);
+    });
+
+    it('should return 400 when rating is a float', async () => {
+      const res = await request(app).post('/api/accounts/profile/profileuser/comments').set('Cookie', `session_token=${commenterToken}`).send({ text: 'Float rating', rating: 3.5 });
+      expect(res.statusCode).toBe(400);
+    });
+
+    it('should accept a comment with exactly 1000 characters', async () => {
+      const res = await request(app).post('/api/accounts/profile/profileuser/comments').set('Cookie', `session_token=${commenterToken}`).send({ text: 'a'.repeat(1000) });
+      expect(res.statusCode).toBe(201);
+    });
+
+    it('should return 400 when text is whitespace only', async () => {
+      const res = await request(app).post('/api/accounts/profile/profileuser/comments').set('Cookie', `session_token=${commenterToken}`).send({ text: '   ' });
+      expect(res.statusCode).toBe(400);
+    });
+
+    it('should update the profile rating when a rated comment is posted', async () => {
+      await request(app).post('/api/accounts/profile/profileuser/comments').set('Cookie', `session_token=${commenterToken}`).send({ text: 'Good!', rating: 4 });
+
+      const updated = await User.findById(profileUser._id);
+      expect(updated.rating).toBe(4);
+    });
+
     it('should return 403 when commenting on own profile', async () => {
       const selfToken = jwt.sign({ userId: profileUser._id, username: 'profileuser', isAdmin: false }, 'test-secret');
 
@@ -490,6 +597,15 @@ describe('Accounts API', () => {
       const res = await request(app).delete(`/api/accounts/profile/profileuser/comments/${comment._id}`);
 
       expect(res.statusCode).toBe(401);
+    });
+
+    it('should recalculate rating to 0 after the only rated comment is deleted', async () => {
+      await User.findByIdAndUpdate(profileUser._id, { rating: 4 });
+
+      await request(app).delete(`/api/accounts/profile/profileuser/comments/${comment._id}`).set('Cookie', `session_token=${commenterToken}`);
+
+      const updated = await User.findById(profileUser._id);
+      expect(updated.rating).toBe(0);
     });
   });
 

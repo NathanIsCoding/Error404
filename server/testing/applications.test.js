@@ -129,6 +129,40 @@ describe('Applications API', () => {
       expect(res.body.error).toBe('User not found');
     });
 
+    it('allows viewing another user\'s applications when authenticated', async () => {
+      const applicant = await User.create({
+        userId: 'applicant-other',
+        username: 'otherapplicant',
+        email: 'other@example.com',
+        password: 'hashed',
+      });
+      const viewer = await User.create({
+        userId: 'viewer-1',
+        username: 'viewer',
+        email: 'viewer@example.com',
+        password: 'hashed',
+      });
+      const job = await Job.create({
+        jobId: 'job-other-1',
+        title: 'Analyst',
+        company: 'Corp',
+        jobType: 'full-time',
+        industry: 'Finance',
+        salary: 60000,
+        location: 'Remote',
+        description: 'Analyse things',
+      });
+      await JobApplication.create({ userId: applicant._id, jobId: job._id });
+
+      const viewerToken = jwt.sign({ userId: viewer._id.toString(), username: 'viewer', isAdmin: false }, 'test-secret');
+      const res = await request(app)
+        .get('/api/applications/user/otherapplicant')
+        .set('Cookie', `session_token=${viewerToken}`);
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveLength(1);
+    });
+
     it('returns populated applications for the username', async () => {
       const applicant = await User.create({
         userId: 'applicant-1',
@@ -210,6 +244,36 @@ describe('Applications API', () => {
       expect(updated.status).toBe('accepted');
     });
 
+    it('returns 404 when application does not exist', async () => {
+      const token = jwt.sign({ userId: new mongoose.Types.ObjectId().toString(), isAdmin: false }, 'test-secret');
+      const res = await request(app)
+        .patch(`/api/applications/${new mongoose.Types.ObjectId()}/status`)
+        .set('Cookie', `session_token=${token}`)
+        .send({ status: 'accepted' });
+
+      expect(res.statusCode).toBe(404);
+      expect(res.body.message).toBe('Application not found');
+    });
+
+    it('accepts "pending" as a valid status', async () => {
+      const jobOwner = await User.create({ userId: 'owner-p', username: 'ownerp', email: 'ownerp@test.com', password: 'hash' });
+      const applicant = await User.create({ userId: 'app-p', username: 'appp', email: 'appp@test.com', password: 'hash' });
+      const job = await Job.create({
+        jobId: 'job-p', title: 'Dev', company: 'Co', jobType: 'full-time', industry: 'Engineering', salary: 1000, description: 'Test', location: 'Remote',
+        createdByUserId: jobOwner.userId
+      });
+      const application = await JobApplication.create({ userId: applicant._id, jobId: job._id, status: 'accepted' });
+      const token = jwt.sign({ userId: jobOwner.userId, isAdmin: false }, 'test-secret');
+
+      const res = await request(app)
+        .patch(`/api/applications/${application._id}/status`)
+        .set('Cookie', `session_token=${token}`)
+        .send({ status: 'pending' });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.data.status).toBe('pending');
+    });
+
     it('returns 403 when trying to update status as non-owner', async () => {
       const jobOwner = await User.create({ userId: 'owner-2', username: 'owner2', email: 'owner2@test.com', password: 'hash' });
       const otherUser = await User.create({ userId: 'other-1', username: 'other', email: 'other@test.com', password: 'hash' });
@@ -235,6 +299,13 @@ describe('Applications API', () => {
     it('returns 401 when unauthenticated', async () => {
       const res = await request(app).get('/api/applications/job/some-job');
       expect(res.statusCode).toBe(401);
+    });
+
+    it('returns 404 when job does not exist', async () => {
+      const token = jwt.sign({ userId: 'some-user', isAdmin: false }, 'test-secret');
+      const res = await request(app).get('/api/applications/job/nonexistent-job').set('Cookie', `session_token=${token}`);
+      expect(res.statusCode).toBe(404);
+      expect(res.body.message).toBe('Job not found');
     });
 
     it('returns 403 when not the job owner', async () => {
