@@ -73,7 +73,7 @@ const CreateAccount = ({ onClose, onSuccess }) => {
 
   return (
     <div className="create-account-modal">
-      <div className="create-account">
+      <div className="create-account scroll-box">
         <button className='close-button click-button !bg-secondary flex justify-center items-center' onClick={onClose}>
             <span className="material-symbols-outlined">close</span>
         </button>
