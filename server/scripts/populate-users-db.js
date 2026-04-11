@@ -93,7 +93,7 @@ async function generateUsers(count, hashedPassword) {
       password: hashedPassword,
       description: getRandomElement(descriptions),
       rating: generateRating(),
-      isAdmin: i === 0, // Make the first user an admin
+      isAdmin: false,
       createdAt: randomPastDate(),
       createdJobs: [],
     });
@@ -114,9 +114,21 @@ async function populateDB() {
 
     console.log('Generating 50 users...');
     const hashedPassword = await bcrypt.hash('pass123', 12);
+
+    const adminUser = {
+      userId: generateUserId(),
+      username: 'adminuser',
+      email: 'admin@error404.com',
+      password: hashedPassword,
+      description: 'Site administrator.',
+      rating: 0,
+      isAdmin: true,
+      createdJobs: [],
+    };
+
     const users = await generateUsers(50, hashedPassword);
-    const insertedUsers = await User.insertMany(users);
-    console.log(`Inserted ${insertedUsers.length} users`);
+    const insertedUsers = await User.insertMany([adminUser, ...users]);
+    console.log(`Inserted ${insertedUsers.length} users (including hardcoded admin)`);
 
     console.log('Database population complete!');
   } catch (error) {
